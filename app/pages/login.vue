@@ -25,14 +25,13 @@ async function handleLogin() {
   <div class="min-h-screen flex items-center justify-center px-4">
     <UCard class="w-full max-w-sm shadow-lg bg-white! ring-0">
       <div class="flex flex-col items-center gap-6 py-4">
-        <!-- Logo + Mascote -->
-        <AppLogo />
-        <AppMascot :size="160" />
+        <AppMascot :size="250" />
 
         <!-- Formulário -->
         <div class="flex flex-col gap-3 w-full">
           <UInput
             v-model="form.email"
+            color="secondary"
             leading-icon="i-lucide-mail"
             placeholder="E-mail"
             type="email"
@@ -42,6 +41,7 @@ async function handleLogin() {
 
           <UInput
             v-model="form.password"
+            color="secondary"
             leading-icon="i-lucide-lock"
             placeholder="Senha"
             type="password"
@@ -49,7 +49,13 @@ async function handleLogin() {
             autocomplete="current-password"
           />
 
-          <UButton block size="lg" :loading="loading" @click="handleLogin">
+          <UButton
+            block
+            size="lg"
+            color="secondary"
+            :loading="loading"
+            @click="handleLogin"
+          >
             Entrar
           </UButton>
         </div>

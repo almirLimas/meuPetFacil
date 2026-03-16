@@ -1,6 +1,6 @@
 <template>
   <img
-    :src="'/mascot.png'"
+    :src="'/anninLogo.png'"
     alt="Mascote Pet-Fácil"
     :width="size"
     :height="size"
