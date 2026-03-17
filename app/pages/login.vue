@@ -72,7 +72,7 @@ async function handleLogin() {
           </NuxtLink>
           <span aria-hidden="true">|</span>
           <NuxtLink
-            to="/cadastro"
+            to="/cadastro-cliente"
             class="text-blue-500 underline underline-offset-2 hover:text-blue-700 transition-colors"
           >
             Criar conta
