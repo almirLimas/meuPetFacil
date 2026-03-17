@@ -93,34 +93,41 @@ const lembretesVacinas = [
 <template>
   <!-- ── Row 1: Stats ── -->
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-    <div
+    <DashboardStatCard
       v-for="stat in stats"
       :key="stat.lines[0]"
-      class="bg-white dark:bg-neutral-800 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3"
+      :lines="stat.lines"
+      :value="stat.value"
+      :icon="stat.icon"
+      :bg-color="stat.bgColor"
+      :icon-color="stat.iconColor"
+    />
+  </div>
+
+  <!-- ── Ações Rápidas ── -->
+  <div class="flex flex-wrap gap-3">
+    <NuxtLink
+      to="/cadastro-cliente"
+      class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm transition-opacity hover:opacity-90"
+      style="background-color: #f5a523"
     >
-      <div>
-        <p class="text-xs text-gray-500 dark:text-gray-400 leading-snug">
-          <span v-for="(line, i) in stat.lines" :key="i">
-            {{ line }}<br v-if="i < stat.lines.length - 1" />
-          </span>
-        </p>
-        <p
-          class="text-3xl font-extrabold text-gray-800 dark:text-gray-100 mt-1 leading-none"
-        >
-          {{ stat.value }}
-        </p>
-      </div>
-      <div
-        class="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-        :style="{ backgroundColor: stat.bgColor }"
-      >
-        <UIcon
-          :name="stat.icon"
-          class="size-6"
-          :style="{ color: stat.iconColor }"
-        />
-      </div>
-    </div>
+      <UIcon name="i-lucide-user-plus" class="size-4" />
+      Novo Cliente
+    </NuxtLink>
+    <button
+      class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm transition-opacity hover:opacity-90"
+      style="background-color: #4aade8"
+    >
+      <UIcon name="i-lucide-calendar-plus" class="size-4" />
+      Novo Agendamento
+    </button>
+    <button
+      class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm transition-opacity hover:opacity-90"
+      style="background-color: #5cc86b"
+    >
+      <UIcon name="i-lucide-syringe" class="size-4" />
+      Registrar Vacina
+    </button>
   </div>
 
   <!-- ── Row 2: Agenda | Últimos Clientes ── -->
