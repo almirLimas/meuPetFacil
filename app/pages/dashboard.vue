@@ -92,7 +92,7 @@ const lembretesVacinas = [
 
 <template>
   <!-- ── Row 1: Stats ── -->
-  <div class="grid grid-cols-4 gap-4">
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
     <div
       v-for="stat in stats"
       :key="stat.lines[0]"
@@ -124,7 +124,7 @@ const lembretesVacinas = [
   </div>
 
   <!-- ── Row 2: Agenda | Últimos Clientes ── -->
-  <div class="grid grid-cols-2 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <!-- Agenda de Hoje -->
     <div
       class="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm overflow-hidden flex flex-col"
@@ -221,7 +221,7 @@ const lembretesVacinas = [
   </div>
 
   <!-- ── Row 3: Serviços Populares | Controle de Estoque ── -->
-  <div class="grid grid-cols-2 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <!-- Serviços Populares -->
     <div class="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm p-4">
       <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-4">
@@ -338,7 +338,7 @@ const lembretesVacinas = [
       >
     </div>
     <div class="p-4">
-      <div class="grid grid-cols-4 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <div
           v-for="v in lembretesVacinas"
           :key="v.pet + v.vacina"

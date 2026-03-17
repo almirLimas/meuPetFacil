@@ -10,6 +10,19 @@ const menuItems = [
   { label: "Serviços", icon: "i-lucide-briefcase", to: "/servicos" },
   { label: "Relatórios", icon: "i-lucide-bar-chart-2", to: "/relatorios" },
 ];
+
+// Começa fechado no mobile
+onMounted(() => {
+  if (window.innerWidth < 768) open.value = false;
+});
+
+// Fecha a sidebar ao navegar no mobile
+watch(
+  () => route.path,
+  () => {
+    if (import.meta.client && window.innerWidth < 768) open.value = false;
+  },
+);
 </script>
 
 <template>
@@ -40,7 +53,7 @@ const menuItems = [
         placeholder="Buscar..."
         leading-icon="i-lucide-search"
         size="sm"
-        class="rounded-full max-w-xs w-full"
+        class="rounded-full max-w-xs w-full hidden md:block"
       />
 
       <template #right>
@@ -88,11 +101,20 @@ const menuItems = [
 
     <!-- ===== BODY (sidebar + page content) ===== -->
     <div class="flex flex-1 min-h-0">
+      <!-- Backdrop mobile -->
+      <Teleport to="body">
+        <div
+          v-if="open"
+          class="fixed inset-0 bg-black/40 z-40 md:hidden"
+          @click="open = false"
+        />
+      </Teleport>
+
       <!-- Sidebar -->
       <transition name="sidebar">
         <aside
           v-show="open"
-          class="w-44 shrink-0 m-4 mr-0 bg-white dark:bg-neutral-800 rounded-2xl shadow-sm py-3 flex flex-col gap-0.5"
+          class="fixed top-16 left-0 bottom-0 z-50 w-56 md:relative md:top-auto md:left-auto md:bottom-auto md:z-auto md:w-44 shrink-0 md:m-4 md:mr-0 bg-white dark:bg-neutral-800 md:rounded-2xl shadow-xl md:shadow-sm py-3 flex flex-col gap-0.5 overflow-y-auto"
         >
           <NuxtLink
             v-for="item in menuItems"
@@ -122,18 +144,35 @@ const menuItems = [
 </template>
 
 <style scoped>
+/* Mobile: slide in/out from left */
 .sidebar-enter-active,
 .sidebar-leave-active {
   transition:
-    width 0.2s ease,
-    opacity 0.2s ease,
-    margin 0.2s ease;
-  overflow: hidden;
+    transform 0.25s ease,
+    opacity 0.2s ease;
 }
 .sidebar-enter-from,
 .sidebar-leave-to {
-  width: 0;
+  transform: translateX(-100%);
   opacity: 0;
-  margin: 0;
+}
+
+/* Desktop: shrink width */
+@media (min-width: 768px) {
+  .sidebar-enter-active,
+  .sidebar-leave-active {
+    transition:
+      width 0.2s ease,
+      opacity 0.2s ease,
+      margin 0.2s ease;
+    overflow: hidden;
+  }
+  .sidebar-enter-from,
+  .sidebar-leave-to {
+    transform: none;
+    width: 0;
+    opacity: 0;
+    margin: 0;
+  }
 }
 </style>
