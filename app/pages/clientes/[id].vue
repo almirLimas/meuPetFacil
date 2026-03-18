@@ -126,7 +126,11 @@ const dadosFields = computed(() => {
           >
             Voltar
           </UButton>
-          <UButton color="secondary" leading-icon="i-lucide-pencil">
+          <UButton
+            color="secondary"
+            leading-icon="i-lucide-pencil"
+            @click="navigateTo(`/clientes/${id}/editar`)"
+          >
             Editar
           </UButton>
         </div>

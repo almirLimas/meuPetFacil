@@ -171,6 +171,7 @@ const getAvatarColor = (id: string) =>
               variant="ghost"
               size="xs"
               :aria-label="`Editar ${row.original.nome}`"
+              @click="navigateTo(`/clientes/${row.original.id}/editar`)"
             />
           </div>
         </template>
