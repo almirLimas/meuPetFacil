@@ -15,13 +15,15 @@ const state = defineModel<ClienteFormState>({ required: true });
 const formRef = ref();
 
 defineExpose({
-  async validate(): Promise<boolean> {
+  validate: async (): Promise<boolean> => {
+    // Dispara o UForm para exibir erros visuais nos campos
     try {
       await formRef.value?.validate();
-      return true;
     } catch {
-      return false;
+      // erros de campo são mostrados pelo UForm
     }
+    // Zod safeParse é o resultado canônico (compatível com Zod v4)
+    return schema.safeParse(state.value).success;
   },
 });
 </script>

@@ -17,13 +17,13 @@ const state = defineModel<ClienteFormState>({ required: true });
 const formRef = ref();
 
 defineExpose({
-  async validate(): Promise<boolean> {
+  validate: async (): Promise<boolean> => {
     try {
       await formRef.value?.validate();
-      return true;
     } catch {
-      return false;
+      // erros de campo são mostrados pelo UForm
     }
+    return schema.safeParse(state.value).success;
   },
 });
 </script>

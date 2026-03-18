@@ -5,6 +5,11 @@ const route = useRoute();
 const menuItems = [
   { label: "Dashboard", icon: "i-lucide-layout-dashboard", to: "/dashboard" },
   { label: "Clientes", icon: "i-lucide-users", to: "/clientes" },
+  {
+    label: "Novo Cliente",
+    icon: "i-lucide-user-plus",
+    to: "/cadastro-cliente",
+  },
   { label: "Agenda", icon: "i-lucide-calendar", to: "/agenda" },
   { label: "Vacinas", icon: "i-lucide-syringe", to: "/vacinas" },
   { label: "Serviços", icon: "i-lucide-briefcase", to: "/servicos" },

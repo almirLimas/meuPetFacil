@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import type { StepperItem } from "@nuxt/ui";
 import type { ClienteFormState } from "~/types/cliente";
+import { useClienteStore } from "~/stores/cliente";
+
+const clienteStore = useClienteStore();
+const toast = useToast();
 
 // -- Estado compartilhado entre os steps --------------------------------------
 const state = reactive<ClienteFormState>({
@@ -46,16 +50,29 @@ const isLastStep = computed(
   () => currentStep.value === stepperItems.length - 1,
 );
 
+// Steps além do atual ficam desabilitados (não clicáveis)
+const stepperItemsComputed = computed(() =>
+  stepperItems.map((item, idx) => ({
+    ...item,
+    disabled: idx > currentStep.value,
+  })),
+);
+
+// Bloqueia navegação via clique direto no stepper para frente;
+// permite voltar para steps anteriores já visitados
+const onStepClick = (index: string | number | undefined) => {
+  if (typeof index === "number" && index < currentStep.value)
+    currentStep.value = index;
+};
+
 // -- Refs dos componentes de step (para chamar validate()) ---------------------
 const stepDados = ref();
 const stepEndereco = ref();
 const stepInfo = ref();
 const stepRefs = [stepDados, stepEndereco, stepInfo];
 
-// -- Navega��o -----------------------------------------------------------------
-const isLoading = ref(false);
-
-async function handleNext() {
+// -- Navegação -----------------------------------------------------------------
+const handleNext = async () => {
   const valid = await stepRefs[currentStep.value]?.value?.validate();
   if (!valid) return;
 
@@ -64,25 +81,22 @@ async function handleNext() {
   } else {
     currentStep.value++;
   }
-}
+};
 
-function handlePrev() {
+const handlePrev = () => {
   if (currentStep.value > 0) currentStep.value--;
-}
+};
 
 // -- Submit final --------------------------------------------------------------
-const toast = useToast();
-
-async function submitForm() {
-  isLoading.value = true;
+const submitForm = async () => {
   try {
-    // TODO: integrar com API
-    console.log("Cadastro cliente:", state);
+    await clienteStore.salvar({ ...state });
     toast.add({ title: "Cliente cadastrado com sucesso!", color: "success" });
-  } finally {
-    isLoading.value = false;
+    navigateTo("/clientes");
+  } catch {
+    toast.add({ title: "Erro ao cadastrar cliente", color: "error" });
   }
-}
+};
 </script>
 
 <template>
@@ -94,9 +108,10 @@ async function submitForm() {
             Cadastro de Cliente
           </h1>
           <UStepper
-            :items="stepperItems"
+            :items="stepperItemsComputed"
             :model-value="currentStep"
             class="w-full"
+            @update:model-value="onStepClick"
           />
         </template>
 
@@ -134,7 +149,7 @@ async function submitForm() {
               :trailing-icon="
                 isLastStep ? 'i-lucide-check' : 'i-lucide-arrow-right'
               "
-              :loading="isLoading"
+              :loading="clienteStore.loading"
               @click="handleNext"
             >
               {{ isLastStep ? "Salvar cliente" : "Próximo" }}

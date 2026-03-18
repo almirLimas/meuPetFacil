@@ -1,23 +1,19 @@
 <script setup lang="ts">
+import { useAuthStore } from "~/stores/auth";
+
 definePageMeta({
   layout: false,
 });
+
+const auth = useAuthStore();
 
 const form = reactive({
   email: "",
   password: "",
 });
 
-const loading = ref(false);
-
 async function handleLogin() {
-  loading.value = true;
-  try {
-    // TODO: integrar com API de autenticação
-    console.log("Login:", form);
-  } finally {
-    loading.value = false;
-  }
+  await auth.login(form.email, form.password);
 }
 </script>
 
@@ -53,7 +49,7 @@ async function handleLogin() {
             block
             size="lg"
             color="secondary"
-            :loading="loading"
+            :loading="auth.loading"
             @click="handleLogin"
           >
             Entrar
@@ -72,7 +68,7 @@ async function handleLogin() {
           </NuxtLink>
           <span aria-hidden="true">|</span>
           <NuxtLink
-            to="/cadastro-cliente"
+            to="/criar-conta"
             class="text-blue-500 underline underline-offset-2 hover:text-blue-700 transition-colors"
           >
             Criar conta

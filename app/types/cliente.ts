@@ -16,3 +16,9 @@ export interface ClienteFormState {
   observacoes: string;
   status: string;
 }
+
+export interface Cliente extends ClienteFormState {
+  id: string;
+  createdAt: string;
+  updatedAt?: string;
+}
