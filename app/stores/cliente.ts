@@ -32,10 +32,17 @@ export const useClienteStore = defineStore("cliente", () => {
     loading.value = true;
     try {
       // TODO: integrar com API
+      const clienteId = crypto.randomUUID();
       const novo: Cliente = {
         ...dados,
-        id: crypto.randomUUID(),
+        id: clienteId,
         createdAt: new Date().toISOString(),
+        pets: dados.pets.map((p) => ({
+          ...p,
+          id: crypto.randomUUID(),
+          clienteId,
+          createdAt: new Date().toISOString(),
+        })),
       };
       clientes.value.push(novo);
       console.log("Cliente salvo:", novo);
@@ -47,7 +54,7 @@ export const useClienteStore = defineStore("cliente", () => {
 
   const atualizar = async (
     id: string,
-    dados: Partial<ClienteFormState>,
+    dados: Partial<Omit<ClienteFormState, "pets">>,
   ): Promise<void> => {
     loading.value = true;
     try {
@@ -58,7 +65,7 @@ export const useClienteStore = defineStore("cliente", () => {
         // Remove chaves indefinidas para não sobrescrever campos obrigatórios
         const patch = Object.fromEntries(
           Object.entries(dados).filter(([, v]) => v !== undefined),
-        ) as Partial<ClienteFormState>;
+        ) as Partial<Cliente>;
         clientes.value[idx] = {
           ...atual,
           ...patch,

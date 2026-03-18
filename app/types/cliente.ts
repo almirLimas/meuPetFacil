@@ -1,3 +1,5 @@
+import type { Pet, PetFormState } from "./pet";
+
 export interface ClienteFormState {
   nome: string;
   cpf: string;
@@ -15,10 +17,12 @@ export interface ClienteFormState {
   comoConheceu: string;
   observacoes: string;
   status: string;
+  pets: PetFormState[];
 }
 
-export interface Cliente extends ClienteFormState {
+export interface Cliente extends Omit<ClienteFormState, "pets"> {
   id: string;
   createdAt: string;
   updatedAt?: string;
+  pets: Pet[];
 }

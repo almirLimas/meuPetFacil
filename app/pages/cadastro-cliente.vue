@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { StepperItem } from "@nuxt/ui";
 import type { ClienteFormState } from "~/types/cliente";
+import type { PetFormState } from "~/types/pet";
 import { useClienteStore } from "~/stores/cliente";
 
 const clienteStore = useClienteStore();
@@ -24,6 +25,7 @@ const state = reactive<ClienteFormState>({
   comoConheceu: "",
   observacoes: "",
   status: "Ativo",
+  pets: [] as PetFormState[],
 });
 
 // -- Stepper -------------------------------------------------------------------
@@ -42,6 +44,11 @@ const stepperItems: StepperItem[] = [
     title: "Informações",
     description: "Status e observações",
     icon: "i-lucide-clipboard-list",
+  },
+  {
+    title: "Pets",
+    description: "Nome, raça e mais",
+    icon: "i-lucide-paw-print",
   },
 ];
 
@@ -69,7 +76,8 @@ const onStepClick = (index: string | number | undefined) => {
 const stepDados = ref();
 const stepEndereco = ref();
 const stepInfo = ref();
-const stepRefs = [stepDados, stepEndereco, stepInfo];
+const stepPets = ref();
+const stepRefs = [stepDados, stepEndereco, stepInfo, stepPets];
 
 // -- Navegação -----------------------------------------------------------------
 const handleNext = async () => {
@@ -130,6 +138,11 @@ const submitForm = async () => {
             v-else-if="currentStep === 2"
             ref="stepInfo"
             v-model="state"
+          />
+          <CadastroClienteStepPets
+            v-else-if="currentStep === 3"
+            ref="stepPets"
+            v-model="state.pets"
           />
         </div>
 
