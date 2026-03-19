@@ -1,5 +1,15 @@
 <script setup lang="ts">
-const stats = [
+const agenda = useMockAgenda();
+
+const today = new Date().toISOString().slice(0, 10);
+
+const proximosAgendamentos = computed(
+  () =>
+    agenda.value.filter((a) => a.data >= today && a.status === "agendado")
+      .length,
+);
+
+const stats = computed(() => [
   {
     lines: ["Clientes Ativos"],
     value: "120",
@@ -9,7 +19,7 @@ const stats = [
   },
   {
     lines: ["Próximos", "Agendamentos"],
-    value: "8",
+    value: String(proximosAgendamentos.value),
     icon: "i-lucide-calendar",
     bgColor: "#E0F0FF",
     iconColor: "#4AADE8",
@@ -28,14 +38,19 @@ const stats = [
     bgColor: "#E0FBF4",
     iconColor: "#2CC0A0",
   },
-];
+]);
 
-const agendaItems = [
-  { time: "09:00", service: "Banho", pet: "Rex", highlight: true },
-  { time: "10:30", service: "Consulta", pet: "Luna", highlight: true },
-  { time: "13:00", service: "Tosa", pet: "Nina", highlight: true },
-  { time: "15:00", service: "Vacinação", pet: "Bob", highlight: false },
-];
+const agendaItems = computed(() =>
+  agenda.value
+    .filter((a) => a.data === today)
+    .sort((a, b) => a.hora.localeCompare(b.hora))
+    .map((a) => ({
+      time: a.hora,
+      service: a.servico,
+      pet: a.pet,
+      highlight: a.status === "agendado",
+    })),
+);
 
 const cadastros = [
   { name: "Laura & Mia", initials: "L", bg: "#F9C5D1" },
@@ -51,12 +66,34 @@ const servicosPopulares = [
   { label: "Hospedagem", percent: 20, color: "#9B6BB5" },
 ];
 
-const estoque = [
-  { icon: "i-lucide-beef", label: "Ração Cães", value: "8 kg" },
-  { icon: "i-lucide-beef", label: "Ração Gatos", value: "5 kg" },
-  { icon: "i-lucide-droplets", label: "Shampoo", value: "12 un." },
-  { icon: "i-lucide-toy-brick", label: "Brinquedos", value: "30 un." },
-];
+const produtos = useMockProdutos();
+
+const iconeCategoria: Record<string, string> = {
+  racao: "i-lucide-beef",
+  higiene: "i-lucide-droplets",
+  medicamento: "i-lucide-pill",
+  acessorio: "i-lucide-toy-brick",
+  outros: "i-lucide-package",
+};
+
+const estoqueResumo = computed(() =>
+  produtos.value
+    .filter((p) => p.ativo)
+    .slice(0, 4)
+    .map((p) => ({
+      icon: iconeCategoria[p.categoria] ?? "i-lucide-package",
+      label: p.nome,
+      value: `${p.quantidadeAtual} ${p.unidade}`,
+      alerta: p.quantidadeAtual <= p.quantidadeMinima,
+    })),
+);
+
+const totalAlertasEstoque = computed(
+  () =>
+    produtos.value.filter(
+      (p) => p.ativo && p.quantidadeAtual <= p.quantidadeMinima,
+    ).length,
+);
 
 const lembretesVacinas = [
   {
@@ -114,13 +151,14 @@ const lembretesVacinas = [
       <UIcon name="i-lucide-user-plus" class="size-4" />
       Novo Cliente
     </NuxtLink>
-    <button
+    <NuxtLink
+      to="/agenda"
       class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm transition-opacity hover:opacity-90"
       style="background-color: #4aade8"
     >
       <UIcon name="i-lucide-calendar-plus" class="size-4" />
       Novo Agendamento
-    </button>
+    </NuxtLink>
     <button
       class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm transition-opacity hover:opacity-90"
       style="background-color: #5cc86b"
@@ -169,12 +207,13 @@ const lembretesVacinas = [
           </span>
         </div>
         <div class="flex justify-end mt-auto pt-2">
-          <button
+          <NuxtLink
+            to="/agenda"
             class="text-white text-xs rounded-full px-4 py-1.5 transition-opacity hover:opacity-90"
             style="background-color: #4aade8"
           >
             Ver Todas &rsaquo;
-          </button>
+          </NuxtLink>
         </div>
       </div>
     </div>
@@ -307,21 +346,45 @@ const lembretesVacinas = [
       </div>
       <div class="p-4 flex flex-col gap-3">
         <div
-          v-for="item in estoque"
+          v-for="item in estoqueResumo"
           :key="item.label"
           class="flex items-center gap-3 text-sm"
         >
           <UIcon
             :name="item.icon"
             class="size-5 shrink-0"
-            style="color: #4aade8"
+            :style="{ color: item.alerta ? '#E85A5A' : '#4AADE8' }"
           />
           <span class="text-gray-600 dark:text-gray-300 flex-1"
             >{{ item.label }}:</span
           >
-          <span class="font-semibold text-gray-700 dark:text-gray-100">{{
-            item.value
-          }}</span>
+          <span
+            class="font-semibold"
+            :class="
+              item.alerta ? 'text-red-500' : 'text-gray-700 dark:text-gray-100'
+            "
+            >{{ item.value }}</span
+          >
+          <UIcon
+            v-if="item.alerta"
+            name="i-lucide-alert-triangle"
+            class="size-3.5 text-amber-500"
+          />
+        </div>
+        <div class="flex justify-between items-center mt-auto pt-2">
+          <span
+            v-if="totalAlertasEstoque > 0"
+            class="text-xs text-amber-600 font-medium"
+          >
+            {{ totalAlertasEstoque }} produto(s) em alerta
+          </span>
+          <NuxtLink
+            to="/estoque"
+            class="text-white text-xs rounded-full px-4 py-1.5 transition-opacity hover:opacity-90 ml-auto"
+            style="background-color: #4aade8"
+          >
+            Ver Estoque &rsaquo;
+          </NuxtLink>
         </div>
       </div>
     </div>
