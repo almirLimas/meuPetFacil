@@ -37,6 +37,13 @@ export const useAuthStore = defineStore("auth", () => {
       token.value = res.access_token;
       usuario.value = { ...res.usuario, lastAccess: new Date().toISOString() };
       navigateTo("/dashboard");
+    } catch (err: unknown) {
+      const { show } = useApiError();
+      const data = (err as { data?: { message?: string | string[] } })?.data;
+      const msg = Array.isArray(data?.message)
+        ? data.message.join(", ")
+        : (data?.message ?? "Falha ao realizar login. Tente novamente.");
+      show(msg);
     } finally {
       loading.value = false;
     }
@@ -57,6 +64,13 @@ export const useAuthStore = defineStore("auth", () => {
         body: dados,
       });
       navigateTo("/login");
+    } catch (err: unknown) {
+      const { show } = useApiError();
+      const data = (err as { data?: { message?: string | string[] } })?.data;
+      const msg = Array.isArray(data?.message)
+        ? data.message.join(", ")
+        : (data?.message ?? "Falha ao criar conta. Tente novamente.");
+      show(msg);
     } finally {
       loading.value = false;
     }

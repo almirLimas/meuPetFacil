@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { z } from "zod";
 import { useAuthStore } from "~/stores/auth";
 
 definePageMeta({
@@ -7,12 +8,33 @@ definePageMeta({
 
 const auth = useAuthStore();
 
-const form = reactive({
-  email: "",
-  password: "",
+const schema = z.object({
+  email: z.string().email("Informe um e-mail válido"),
+  password: z.string().min(5, "A senha deve ter no mínimo 5 caracteres"),
 });
 
+type FormErrors = { email?: string; password?: string };
+
+const form = reactive({ email: "", password: "" });
+const errors = reactive<FormErrors>({});
+
+function validate(): boolean {
+  const result = schema.safeParse(form);
+  errors.email = undefined;
+  errors.password = undefined;
+
+  if (!result.success) {
+    for (const issue of result.error.issues) {
+      const field = issue.path[0] as keyof FormErrors;
+      errors[field] = issue.message;
+    }
+    return false;
+  }
+  return true;
+}
+
 async function handleLogin() {
+  if (!validate()) return;
   await auth.login(form.email, form.password);
 }
 </script>
@@ -25,25 +47,37 @@ async function handleLogin() {
 
         <!-- Formulário -->
         <div class="flex flex-col gap-3 w-full">
-          <UInput
-            v-model="form.email"
-            color="secondary"
-            leading-icon="i-lucide-mail"
-            placeholder="E-mail"
-            type="email"
-            size="lg"
-            autocomplete="email"
-          />
+          <div class="flex flex-col gap-1">
+            <UInput
+              v-model="form.email"
+              color="secondary"
+              leading-icon="i-lucide-mail"
+              placeholder="E-mail"
+              type="email"
+              size="lg"
+              autocomplete="email"
+              :class="errors.email ? 'ring-2 ring-red-400 rounded-md' : ''"
+            />
+            <p v-if="errors.email" class="text-xs text-red-500 pl-1">
+              {{ errors.email }}
+            </p>
+          </div>
 
-          <UInput
-            v-model="form.password"
-            color="secondary"
-            leading-icon="i-lucide-lock"
-            placeholder="Senha"
-            type="password"
-            size="lg"
-            autocomplete="current-password"
-          />
+          <div class="flex flex-col gap-1">
+            <UInput
+              v-model="form.password"
+              color="secondary"
+              leading-icon="i-lucide-lock"
+              placeholder="Senha"
+              type="password"
+              size="lg"
+              autocomplete="current-password"
+              :class="errors.password ? 'ring-2 ring-red-400 rounded-md' : ''"
+            />
+            <p v-if="errors.password" class="text-xs text-red-500 pl-1">
+              {{ errors.password }}
+            </p>
+          </div>
 
           <UButton
             block
