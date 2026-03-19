@@ -1,4 +1,4 @@
-import { defineStore } from "pinia";
+﻿import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import type { Usuario, UsuarioPerfil } from "~/types/usuario";
 import { PERMISSOES } from "~/types/usuario";
@@ -29,19 +29,13 @@ export const useAuthStore = defineStore("auth", () => {
   const login = async (email: string, senha: string) => {
     loading.value = true;
     try {
-      // TODO: integrar com API de autenticação
-      console.log("Login:", { email, senha });
-      // Simulação — remover quando integrar API
-      token.value = "mock-token";
-      usuario.value = {
-        id: "1",
-        nomeCompleto: "Administrador",
-        email,
-        perfil: "admin",
-        status: "ativo",
-        createdAt: new Date().toISOString(),
-        lastAccess: new Date().toISOString(),
-      };
+      const config = useRuntimeConfig();
+      const res = await $fetch<{ access_token: string; usuario: Usuario }>(
+        `${config.public.apiUrl}/auth/login`,
+        { method: "POST", body: { email, senha } },
+      );
+      token.value = res.access_token;
+      usuario.value = { ...res.usuario, lastAccess: new Date().toISOString() };
       navigateTo("/dashboard");
     } finally {
       loading.value = false;
@@ -57,8 +51,11 @@ export const useAuthStore = defineStore("auth", () => {
   }) => {
     loading.value = true;
     try {
-      // TODO: integrar com API de registro — senha deve ser hasheada no backend
-      console.log("Registro de usuário:", { ...dados, senha: "[REDACTED]" });
+      const config = useRuntimeConfig();
+      await $fetch(`${config.public.apiUrl}/auth/registrar`, {
+        method: "POST",
+        body: dados,
+      });
       navigateTo("/login");
     } finally {
       loading.value = false;
