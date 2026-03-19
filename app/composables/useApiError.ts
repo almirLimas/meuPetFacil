@@ -1,13 +1,15 @@
-const message = ref<string | null>(null);
-
 export const useApiError = () => {
+  const toast = useToast();
+
   const show = (msg: string) => {
-    message.value = msg;
+    toast.add({
+      title: "Ocorreu um erro",
+      description: msg,
+      color: "error",
+      icon: "i-lucide-circle-alert",
+      duration: 5000,
+    });
   };
 
-  const clear = () => {
-    message.value = null;
-  };
-
-  return { message: readonly(message), show, clear };
+  return { show };
 };

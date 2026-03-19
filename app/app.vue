@@ -1,7 +1,6 @@
 <template>
-  <UApp>
+  <UApp :toaster="{ position: 'top-center' }">
     <NuxtRouteAnnouncer />
-    <AppErrorModal />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
