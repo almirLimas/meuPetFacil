@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import * as z from "zod";
 import type { PetFormState } from "~/types/pet";
-import { PET_ESPECIES, PET_TAMANHOS } from "~/types/pet";
+import { PET_ESPECIES, PET_TAMANHOS, PET_SEXOS } from "~/types/pet";
 
 const pets = defineModel<PetFormState[]>({ required: true });
 
@@ -11,6 +11,7 @@ const emptyPet = (): PetFormState => ({
   nome: "",
   raca: "",
   especie: "Cão",
+  sexo: undefined,
   tamanho: undefined,
   idade: "",
   peso: "",
@@ -144,6 +145,17 @@ defineExpose({
           <USelect
             v-model="formPet.especie"
             :items="PET_ESPECIES"
+            class="w-full"
+          />
+        </UFormField>
+
+        <!-- Sexo -->
+        <UFormField label="Sexo" name="sexo">
+          <USelect
+            v-model="formPet.sexo"
+            :items="PET_SEXOS"
+            value-key="value"
+            placeholder="Selecione..."
             class="w-full"
           />
         </UFormField>

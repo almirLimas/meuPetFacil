@@ -5,8 +5,13 @@ import { PERMISSOES } from "~/types/usuario";
 
 export const useAuthStore = defineStore("auth", () => {
   // -- State ----------------------------------------------------------------
+  // Token persistido em cookie (sobrevive a reloads e é SSR-safe)
+  const token = useCookie<string | null>("auth_token", {
+    default: () => null,
+    maxAge: 60 * 60 * 24 * 7, // 7 dias
+    sameSite: "lax",
+  });
   const usuario = ref<Usuario | null>(null);
-  const token = ref<string | null>(null);
   const loading = ref(false);
 
   // -- Getters --------------------------------------------------------------
@@ -26,6 +31,21 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   // -- Actions --------------------------------------------------------------
+  // Carrega o usuário a partir do token persistido (chamado no middleware)
+  const inicializar = async () => {
+    if (!token.value || usuario.value) return;
+    try {
+      const config = useRuntimeConfig();
+      const res = await $fetch<Usuario>(`${config.public.apiUrl}/auth/perfil`, {
+        headers: { Authorization: `Bearer ${token.value}` },
+      });
+      usuario.value = res;
+    } catch {
+      // Token expirado ou inválido — limpa o cookie
+      token.value = null;
+    }
+  };
+
   const login = async (email: string, senha: string) => {
     loading.value = true;
     try {
@@ -78,7 +98,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   const logout = () => {
     usuario.value = null;
-    token.value = null;
+    token.value = null; // limpa o cookie também
     navigateTo("/login");
   };
 
@@ -100,6 +120,7 @@ export const useAuthStore = defineStore("auth", () => {
     permissoes,
     temPermissao,
     // actions
+    inicializar,
     login,
     registrar,
     logout,

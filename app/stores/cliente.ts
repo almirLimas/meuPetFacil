@@ -1,6 +1,14 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import type { Cliente, ClienteFormState } from "~/types/cliente";
+import type { Pet } from "~/types/pet";
+
+interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+}
 
 export const useClienteStore = defineStore("cliente", () => {
   // -- State ----------------------------------------------------------------
@@ -20,9 +28,12 @@ export const useClienteStore = defineStore("cliente", () => {
   // -- Actions --------------------------------------------------------------
   const listar = async () => {
     loading.value = true;
+    const { apiFetch } = useApi();
     try {
-      // TODO: integrar com API
-      console.log("Listar clientes");
+      const res = await apiFetch<PaginatedResponse<Cliente>>("/clientes", {
+        params: { limit: 100 },
+      });
+      clientes.value = res.data;
     } finally {
       loading.value = false;
     }
@@ -30,23 +41,41 @@ export const useClienteStore = defineStore("cliente", () => {
 
   const salvar = async (dados: ClienteFormState): Promise<Cliente> => {
     loading.value = true;
+    const { apiFetch } = useApi();
     try {
-      // TODO: integrar com API
-      const clienteId = crypto.randomUUID();
-      const novo: Cliente = {
-        ...dados,
-        id: clienteId,
-        createdAt: new Date().toISOString(),
-        pets: dados.pets.map((p) => ({
-          ...p,
-          id: crypto.randomUUID(),
-          clienteId,
-          createdAt: new Date().toISOString(),
-        })),
-      };
-      clientes.value.push(novo);
-      console.log("Cliente salvo:", novo);
-      return novo;
+      const { pets: petsData, ...clienteData } = dados;
+
+      // 1. Criar o cliente
+      const novoCliente = await apiFetch<Cliente>("/clientes", {
+        method: "POST",
+        body: {
+          ...clienteData,
+          cpf: clienteData.cpf.replaceAll(/\D/g, ""),
+        },
+      });
+
+      // 2. Criar cada pet vinculado ao cliente recém-criado
+      const pets = await Promise.all(
+        petsData.map((pet) =>
+          apiFetch<Pet>("/pets", {
+            method: "POST",
+            body: {
+              clienteId: novoCliente.id,
+              nome: pet.nome,
+              especie: pet.especie ?? "Outro",
+              raca: pet.raca || undefined,
+              sexo: pet.sexo || undefined,
+              porte: pet.tamanho,
+              peso: pet.peso || undefined,
+              observacoes: pet.observacoes || undefined,
+            },
+          }),
+        ),
+      );
+
+      const clienteCompleto: Cliente = { ...novoCliente, pets };
+      clientes.value.unshift(clienteCompleto);
+      return clienteCompleto;
     } finally {
       loading.value = false;
     }
@@ -57,23 +86,14 @@ export const useClienteStore = defineStore("cliente", () => {
     dados: Partial<Omit<ClienteFormState, "pets">>,
   ): Promise<void> => {
     loading.value = true;
+    const { apiFetch } = useApi();
     try {
-      // TODO: integrar com API
+      const atualizado = await apiFetch<Cliente>(`/clientes/${id}`, {
+        method: "PATCH",
+        body: dados,
+      });
       const idx = clientes.value.findIndex((c) => c.id === id);
-      const atual = clientes.value[idx];
-      if (idx !== -1 && atual) {
-        // Remove chaves indefinidas para não sobrescrever campos obrigatórios
-        const patch = Object.fromEntries(
-          Object.entries(dados).filter(([, v]) => v !== undefined),
-        ) as Partial<Cliente>;
-        clientes.value[idx] = {
-          ...atual,
-          ...patch,
-          id: atual.id,
-          createdAt: atual.createdAt,
-          updatedAt: new Date().toISOString(),
-        };
-      }
+      if (idx !== -1) clientes.value[idx] = atualizado;
     } finally {
       loading.value = false;
     }
@@ -81,8 +101,9 @@ export const useClienteStore = defineStore("cliente", () => {
 
   const remover = async (id: string): Promise<void> => {
     loading.value = true;
+    const { apiFetch } = useApi();
     try {
-      // TODO: integrar com API
+      await apiFetch(`/clientes/${id}`, { method: "DELETE" });
       clientes.value = clientes.value.filter((c) => c.id !== id);
     } finally {
       loading.value = false;

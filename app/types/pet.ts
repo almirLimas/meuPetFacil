@@ -1,5 +1,6 @@
 export type PetEspecie = "Cão" | "Gato" | "Coelho" | "Ave" | "Réptil" | "Outro";
 export type PetTamanho = "Pequeno" | "Médio" | "Grande" | "Gigante";
+export type PetSexo = "Macho" | "Fêmea";
 
 export const PET_ESPECIES: PetEspecie[] = [
   "Cão",
@@ -8,6 +9,11 @@ export const PET_ESPECIES: PetEspecie[] = [
   "Ave",
   "Réptil",
   "Outro",
+];
+
+export const PET_SEXOS: { label: string; value: PetSexo }[] = [
+  { label: "Macho", value: "Macho" },
+  { label: "Fêmea", value: "Fêmea" },
 ];
 
 export const PET_TAMANHOS: { label: string; value: PetTamanho }[] = [
@@ -21,6 +27,7 @@ export interface PetFormState {
   nome: string;
   raca: string;
   especie?: PetEspecie;
+  sexo?: PetSexo;
   tamanho?: PetTamanho;
   idade: string;
   peso: string;

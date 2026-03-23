@@ -1,11 +1,14 @@
 import { useAuthStore } from "~/stores/auth";
 
-const publicRoutes = ["/login", "/criar-conta"];
+const publicRoutes = new Set(["/login", "/criar-conta"]);
 
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   const auth = useAuthStore();
 
-  if (publicRoutes.includes(to.path)) return;
+  if (publicRoutes.has(to.path)) return;
+
+  // Restaura o usuário a partir do cookie de token (após reload/navegação direta)
+  await auth.inicializar();
 
   if (!auth.isAutenticado) {
     return navigateTo("/login");
