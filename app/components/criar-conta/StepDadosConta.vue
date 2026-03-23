@@ -64,10 +64,9 @@ defineExpose({
 
       <!-- Telefone -->
       <UFormField label="Telefone" name="telefone" class="md:col-span-2">
-        <UInput
+        <InputTelefoneInput
           v-model="state.telefone"
           leading-icon="i-lucide-phone"
-          placeholder="(00) 90000-0000"
           class="w-full"
         />
       </UFormField>

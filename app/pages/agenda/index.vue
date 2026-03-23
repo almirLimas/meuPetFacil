@@ -438,11 +438,7 @@ const salvarAgendamento = () => {
             </div>
 
             <UFormField label="Telefone">
-              <UInput
-                v-model="novoForm.telefone"
-                placeholder="(00) 00000-0000"
-                class="w-full"
-              />
+              <InputTelefoneInput v-model="novoForm.telefone" class="w-full" />
             </UFormField>
 
             <UFormField label="Observações">

@@ -4,8 +4,13 @@ import type { ClienteFormState } from "~/types/cliente";
 
 const schema = z.object({
   nome: z.string().min(3, "Informe o nome completo"),
-  cpf: z.string().min(11, "CPF inválido"),
-  telefonePrincipal: z.string().min(10, "Telefone inválido"),
+  cpf: z.string().refine((v) => useMask().isValidCpf(v), "CPF inválido"),
+  telefonePrincipal: z
+    .string()
+    .refine(
+      (v) => [10, 11].includes(v.replaceAll(/\D/g, "").length),
+      "Telefone inválido",
+    ),
   telefoneSecundario: z.string().optional(),
   email: z.string().email("E-mail inválido"),
 });
@@ -40,30 +45,18 @@ defineExpose({
       </UFormField>
 
       <UFormField label="CPF" name="cpf" required>
-        <UInput
-          v-model="state.cpf"
-          placeholder="000.000.000-00"
-          class="w-full"
-        />
+        <InputCpfInput v-model="state.cpf" class="w-full" />
       </UFormField>
 
       <UFormField label="Telefone principal" name="telefonePrincipal" required>
-        <UInput
-          v-model="state.telefonePrincipal"
-          placeholder="(00) 90000-0000"
-          class="w-full"
-        />
+        <InputTelefoneInput v-model="state.telefonePrincipal" class="w-full" />
       </UFormField>
 
       <UFormField
         label="Telefone secundário / WhatsApp"
         name="telefoneSecundario"
       >
-        <UInput
-          v-model="state.telefoneSecundario"
-          placeholder="(00) 90000-0000"
-          class="w-full"
-        />
+        <InputTelefoneInput v-model="state.telefoneSecundario" class="w-full" />
       </UFormField>
 
       <UFormField label="E-mail" name="email" required class="md:col-span-2">
