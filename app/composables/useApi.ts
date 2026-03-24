@@ -1,7 +1,7 @@
 /**
  * Composable que centraliza as chamadas HTTP à API do anin-pet.
- * Lê o token diretamente do cookie para garantir que esteja disponível
- * mesmo dentro de ações assíncronas de stores Pinia.
+ * DEVE ser chamado no nível do setup (componente ou store), nunca dentro
+ * de funções assíncronas, para garantir que o contexto Nuxt esteja disponível.
  */
 export const useApi = () => {
   const config = useRuntimeConfig();

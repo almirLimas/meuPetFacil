@@ -15,6 +15,9 @@ export const useClienteStore = defineStore("cliente", () => {
   const clientes = ref<Cliente[]>([]);
   const loading = ref(false);
 
+  // Inicializa o apiFetch no nível do setup para garantir contexto Nuxt válido
+  const { apiFetch } = useApi();
+
   // -- Getters --------------------------------------------------------------
   const total = computed(() => clientes.value.length);
 
@@ -28,7 +31,6 @@ export const useClienteStore = defineStore("cliente", () => {
   // -- Actions --------------------------------------------------------------
   const listar = async () => {
     loading.value = true;
-    const { apiFetch } = useApi();
     try {
       const res = await apiFetch<PaginatedResponse<Cliente>>("/clientes", {
         params: { limit: 100 },
@@ -41,7 +43,6 @@ export const useClienteStore = defineStore("cliente", () => {
 
   const salvar = async (dados: ClienteFormState): Promise<Cliente> => {
     loading.value = true;
-    const { apiFetch } = useApi();
     try {
       const { pets: petsData, ...clienteData } = dados;
 
@@ -86,7 +87,6 @@ export const useClienteStore = defineStore("cliente", () => {
     dados: Partial<Omit<ClienteFormState, "pets">>,
   ): Promise<void> => {
     loading.value = true;
-    const { apiFetch } = useApi();
     try {
       const atualizado = await apiFetch<Cliente>(`/clientes/${id}`, {
         method: "PATCH",
@@ -101,7 +101,6 @@ export const useClienteStore = defineStore("cliente", () => {
 
   const remover = async (id: string): Promise<void> => {
     loading.value = true;
-    const { apiFetch } = useApi();
     try {
       await apiFetch(`/clientes/${id}`, { method: "DELETE" });
       clientes.value = clientes.value.filter((c) => c.id !== id);
