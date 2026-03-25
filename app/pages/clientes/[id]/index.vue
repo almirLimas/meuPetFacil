@@ -1,11 +1,19 @@
 <script setup lang="ts">
+import { useClienteStore } from "~/stores/cliente";
+
 const route = useRoute();
 const id = route.params.id as string;
 
-const clientes = useMockClientes();
-const cliente = computed(() => clientes.value.find((c) => c.id === id) ?? null);
+const clienteStore = useClienteStore();
 
-onMounted(() => {
+// Garante que o cliente está carregado
+await useAsyncData(`cliente-${id}`, async () => {
+  if (!clienteStore.buscarPorId(id)) await clienteStore.listar();
+});
+
+const cliente = computed(() => clienteStore.buscarPorId(id));
+
+watchEffect(() => {
   if (!cliente.value) navigateTo("/clientes");
 });
 
@@ -21,9 +29,10 @@ const AVATAR_COLORS = [
   "#F9C5D7",
 ];
 
-const avatarColor = computed(
-  () => AVATAR_COLORS[Number(id) % AVATAR_COLORS.length] ?? "#FFDAAA",
-);
+const avatarColor = computed(() => {
+  const hash = id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+});
 
 const initials = computed(
   () =>

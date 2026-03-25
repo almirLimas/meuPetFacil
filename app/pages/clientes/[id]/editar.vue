@@ -1,18 +1,42 @@
 <script setup lang="ts">
+import * as z from "zod";
 import type { Pet } from "~/types/pet";
+import { useClienteStore } from "~/stores/cliente";
 
 const route = useRoute();
 const id = route.params.id as string;
 const toast = useToast();
 
-const clientes = useMockClientes();
-const clienteIdx = computed(() => clientes.value.findIndex((c) => c.id === id));
-const cliente = computed(() =>
-  clienteIdx.value === -1 ? null : clientes.value[clienteIdx.value],
-);
+const clienteStore = useClienteStore();
 
-onMounted(() => {
+// Garante que o cliente está carregado
+await useAsyncData(`cliente-edit-${id}`, async () => {
+  if (!clienteStore.buscarPorId(id)) await clienteStore.listar();
+});
+
+const cliente = computed(() => clienteStore.buscarPorId(id));
+
+watchEffect(() => {
   if (!cliente.value) navigateTo("/clientes");
+});
+
+// -- Esquema de validação combinado ------------------------------------------
+const schema = z.object({
+  nome: z.string().min(3, "Informe o nome completo"),
+  cpf: z.string().refine((v) => useMask().isValidCpf(v), "CPF inválido"),
+  telefonePrincipal: z
+    .string()
+    .refine(
+      (v) => [10, 11].includes(v.replaceAll(/\D/g, "").length),
+      "Telefone inválido",
+    ),
+  email: z.string().email("E-mail inválido").or(z.literal("")).optional(),
+  cep: z.string().min(8, "CEP inválido"),
+  rua: z.string().min(1, "Informe a rua"),
+  numero: z.string().min(1, "Informe o número"),
+  bairro: z.string().min(1, "Informe o bairro"),
+  cidade: z.string().min(1, "Informe a cidade"),
+  estado: z.string().min(2, "Informe o estado"),
 });
 
 // -- Estado pré-preenchido ---------------------------------------------------
@@ -56,28 +80,17 @@ const tabItems = [
   { label: "Pets", icon: "i-lucide-paw-print", slot: "pets" as const },
 ];
 
-// -- Refs dos steps ----------------------------------------------------------
-const stepDados = ref();
-const stepEndereco = ref();
-const stepInfo = ref();
-const stepPets = ref();
-
 // -- Salvar ------------------------------------------------------------------
 const saving = ref(false);
 
 const salvar = async () => {
-  // Valida apenas os 3 primeiros steps (pets é opcional)
-  const valids = [
-    stepDados.value?.validate(),
-    stepEndereco.value?.validate(),
-    stepInfo.value?.validate(),
-  ];
-
-  if (!valids.every(Boolean)) {
+  const result = schema.safeParse(state);
+  if (!result.success) {
     toast.add({
       title: "Campos obrigatórios",
       description:
-        "Verifique as abas com erro e preencha os campos obrigatórios.",
+        result.error.errors[0]?.message ??
+        "Verifique os campos e tente novamente.",
       color: "error",
     });
     return;
@@ -85,34 +98,35 @@ const salvar = async () => {
 
   saving.value = true;
 
-  // Preserva ids dos pets já existentes, gera para os novos
-  const petsAtualizados: Pet[] = state.pets.map((p) => ({
-    ...p,
-    id: p.id ?? crypto.randomUUID(),
-    clienteId: id,
-    createdAt: p.createdAt ?? new Date().toISOString(),
-  }));
-
-  if (clienteIdx.value !== -1) {
-    const atual = clientes.value[clienteIdx.value]!;
-    clientes.value[clienteIdx.value] = {
-      ...atual,
-      ...state,
-      pets: petsAtualizados,
-      id: atual.id,
-      createdAt: atual.createdAt,
-      updatedAt: new Date().toISOString(),
+  try {
+    const {
+      pets: _pets,
+      id: _id,
+      codigo: _codigo,
+      createdAt: _createdAt,
+      updatedAt: _updatedAt,
+      // @ts-expect-error _count vem do backend mas não existe no tipo
+      _count,
+      ...clienteData
+    } = state as typeof state & {
+      id?: string;
+      codigo?: number;
+      createdAt?: string;
+      updatedAt?: string;
+      _count?: unknown;
     };
+    await clienteStore.atualizar(id, clienteData);
+    toast.add({ title: "Cliente atualizado!", color: "success" });
+    navigateTo(`/clientes/${id}`);
+  } catch {
+    toast.add({
+      title: "Erro ao salvar",
+      description: "Tente novamente em instantes.",
+      color: "error",
+    });
+  } finally {
+    saving.value = false;
   }
-
-  saving.value = false;
-
-  toast.add({
-    title: "Cliente atualizado!",
-    color: "success",
-  });
-
-  navigateTo(`/clientes/${id}`);
 };
 </script>
 
@@ -146,19 +160,19 @@ const salvar = async () => {
     <UTabs :items="tabItems" class="w-full">
       <template #dados>
         <UCard class="bg-white! ring-0 shadow-sm mt-2">
-          <CadastroClienteStepDadosPessoais ref="stepDados" v-model="state" />
+          <CadastroClienteStepDadosPessoais v-model="state" />
         </UCard>
       </template>
 
       <template #endereco>
         <UCard class="bg-white! ring-0 shadow-sm mt-2">
-          <CadastroClienteStepEndereco ref="stepEndereco" v-model="state" />
+          <CadastroClienteStepEndereco v-model="state" />
         </UCard>
       </template>
 
       <template #info>
         <UCard class="bg-white! ring-0 shadow-sm mt-2">
-          <CadastroClienteStepInformacoes ref="stepInfo" v-model="state" />
+          <CadastroClienteStepInformacoes v-model="state" />
         </UCard>
       </template>
 

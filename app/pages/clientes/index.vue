@@ -2,27 +2,25 @@
 import { getPaginationRowModel } from "@tanstack/vue-table";
 import type { TableColumn } from "@nuxt/ui";
 import type { Cliente } from "~/types/cliente";
+import { useClienteStore } from "~/stores/cliente";
 
 const table = useTemplateRef("table");
+const clienteStore = useClienteStore();
 
-// -- Mock data (shared via composable — substituir por clienteStore.listar() ao integrar API)
-const clientes = useMockClientes();
+// -- Dados da API -------------------------------------------------------------
+const { pending } = await useAsyncData("clientes", () => clienteStore.listar());
+const clientes = computed(() => clienteStore.clientes);
 
 // -- Colunas ------------------------------------------------------------------
 const columns: TableColumn<Cliente>[] = [
   {
+    accessorKey: "codigo",
+    header: "Código",
+    cell: ({ row }) => row.getValue<number>("codigo"),
+  },
+  {
     accessorKey: "nome",
     header: "Nome",
-    cell: ({ row }) => {
-      const initials = row
-        .getValue<string>("nome")
-        .split(" ")
-        .map((n: string) => n[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase();
-      return { initials, nome: row.getValue<string>("nome") };
-    },
   },
   {
     accessorKey: "email",
@@ -68,8 +66,10 @@ const avatarColors = [
   "#F9E4B7",
 ];
 
-const getAvatarColor = (id: string) =>
-  avatarColors[Number(id) % avatarColors.length];
+const getAvatarColor = (id: string) => {
+  const hash = id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  return avatarColors[hash % avatarColors.length];
+};
 </script>
 
 <template>
@@ -118,6 +118,7 @@ const getAvatarColor = (id: string) =>
         v-model:global-filter="globalFilter"
         :data="clientes"
         :columns="columns"
+        :loading="pending"
         :pagination-options="{ getPaginationRowModel: getPaginationRowModel() }"
         :ui="{ tr: 'hover:bg-gray-50 transition-colors' }"
       >

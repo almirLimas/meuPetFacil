@@ -22,6 +22,7 @@ export interface ClienteFormState {
 
 export interface Cliente extends Omit<ClienteFormState, "pets"> {
   id: string;
+  codigo: number;
   createdAt: string;
   updatedAt?: string;
   pets: Pet[];
