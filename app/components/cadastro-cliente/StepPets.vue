@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import * as z from "zod";
-import type { PetFormState } from "~/types/pet";
-import { PET_ESPECIES, PET_TAMANHOS, PET_SEXOS } from "~/types/pet";
+import type { PetFormState, PetEspecie } from "~/types/pet";
+import {
+  PET_ESPECIES,
+  PET_TAMANHOS,
+  PET_SEXOS,
+  RACAS_POR_ESPECIE,
+} from "~/types/pet";
 
 const pets = defineModel<PetFormState[]>({ required: true });
 
 const showForm = ref(false);
+const semPetErro = ref(false);
 
 const emptyPet = (): PetFormState => ({
   nome: "",
@@ -20,9 +26,22 @@ const emptyPet = (): PetFormState => ({
 
 const formPet = reactive<PetFormState>(emptyPet());
 
+// Raças disponíveis de acordo com a espécie selecionada
+const racasDisponiveis = computed(
+  () => RACAS_POR_ESPECIE[(formPet.especie as PetEspecie) ?? "Cão"],
+);
+
+// Ao trocar espécie, limpa raça
+watch(
+  () => formPet.especie,
+  () => {
+    formPet.raca = "";
+  },
+);
+
 const schema = z.object({
   nome: z.string().min(1, "Informe o nome do pet"),
-  raca: z.string().min(1, "Informe a raça"),
+  raca: z.string().min(1, "Selecione a raça"),
 });
 
 const fieldErrors = reactive({ nome: "", raca: "" });
@@ -46,6 +65,7 @@ const addPet = () => {
   pets.value.push({ ...formPet });
   Object.assign(formPet, emptyPet());
   showForm.value = false;
+  semPetErro.value = false;
 };
 
 const removePet = (index: number) => {
@@ -59,9 +79,15 @@ const cancelForm = () => {
   showForm.value = false;
 };
 
-// O step de pets é opcional — sempre válido
+// Pet obrigatório — ao menos 1 pet deve ser adicionado
 defineExpose({
-  validate: (): boolean => true,
+  validate: (): boolean => {
+    if (pets.value.length === 0) {
+      semPetErro.value = true;
+      return false;
+    }
+    return true;
+  },
 });
 </script>
 
@@ -107,11 +133,34 @@ defineExpose({
     <!-- Empty state -->
     <div
       v-else-if="!showForm"
-      class="flex flex-col items-center justify-center gap-2 py-10 text-center text-gray-400 rounded-xl border border-dashed border-gray-200"
+      class="flex flex-col items-center justify-center gap-2 py-10 text-center rounded-xl border-2 border-dashed"
+      :class="
+        semPetErro
+          ? 'border-red-300 bg-red-50'
+          : 'border-gray-200 text-gray-400'
+      "
     >
-      <UIcon name="i-lucide-paw-print" class="text-4xl" />
-      <p class="text-sm font-medium">Nenhum pet adicionado</p>
-      <p class="text-xs">Este passo é opcional</p>
+      <UIcon
+        name="i-lucide-paw-print"
+        class="text-4xl"
+        :class="semPetErro ? 'text-red-400' : 'text-gray-300'"
+      />
+      <p
+        class="text-sm font-medium"
+        :class="semPetErro ? 'text-red-600' : 'text-gray-500'"
+      >
+        Nenhum pet adicionado
+      </p>
+      <p
+        class="text-xs"
+        :class="semPetErro ? 'text-red-500 font-semibold' : 'text-gray-400'"
+      >
+        {{
+          semPetErro
+            ? "Adicione pelo menos 1 pet para continuar"
+            : "Adicione o(s) pet(s) do cliente"
+        }}
+      </p>
     </div>
 
     <!-- Formulário inline de adição -->
@@ -133,9 +182,10 @@ defineExpose({
 
         <!-- Raça -->
         <UFormField label="Raça" name="raca" required :error="fieldErrors.raca">
-          <UInput
+          <USelect
             v-model="formPet.raca"
-            placeholder="Labrador, Persa, SRD..."
+            :items="racasDisponiveis"
+            placeholder="Selecione a raça..."
             class="w-full"
           />
         </UFormField>

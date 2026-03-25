@@ -4,7 +4,14 @@ import type { ClienteFormState } from "~/types/cliente";
 
 const schema = z.object({
   nome: z.string().min(3, "Informe o nome completo"),
-  cpf: z.string().refine((v) => useMask().isValidCpf(v), "CPF inválido"),
+  cpf: z
+    .string()
+    .optional()
+    .refine(
+      (v) =>
+        !v || v.replaceAll(/\D/g, "").length === 0 || useMask().isValidCpf(v),
+      "CPF inválido",
+    ),
   telefonePrincipal: z
     .string()
     .refine(
@@ -12,7 +19,7 @@ const schema = z.object({
       "Telefone inválido",
     ),
   telefoneSecundario: z.string().optional(),
-  email: z.string().email("E-mail inválido"),
+  email: z.string().email("E-mail inválido").optional().or(z.literal("")),
 });
 
 const state = defineModel<ClienteFormState>({ required: true });
@@ -44,7 +51,7 @@ defineExpose({
         />
       </UFormField>
 
-      <UFormField label="CPF" name="cpf" required>
+      <UFormField label="CPF" name="cpf" hint="Opcional">
         <InputCpfInput v-model="state.cpf" class="w-full" />
       </UFormField>
 
@@ -59,7 +66,7 @@ defineExpose({
         <InputTelefoneInput v-model="state.telefoneSecundario" class="w-full" />
       </UFormField>
 
-      <UFormField label="E-mail" name="email" required class="md:col-span-2">
+      <UFormField label="E-mail" name="email" class="md:col-span-2">
         <UInput
           v-model="state.email"
           type="email"

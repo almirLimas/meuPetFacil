@@ -1,5 +1,75 @@
 export type UsuarioPerfil = "admin" | "staff";
 export type UsuarioStatus = "ativo" | "inativo";
+export type PlanoSistema = "basico" | "profissional" | "completo";
+export type FormaPagamento = "cartao" | "boleto" | "pix";
+
+// ── Planos SaaS ──────────────────────────────────────────────────────────────
+
+export interface PlanoInfo {
+  nome: string;
+  preco: number;
+  descricao: string;
+  modulos: string[];
+  destaque?: boolean;
+}
+
+export const PLANOS: Record<PlanoSistema, PlanoInfo> = {
+  basico: {
+    nome: "Petshop Básico",
+    preco: 89,
+    descricao: "Ideal para petshops focados em serviços e atendimento.",
+    modulos: ["dashboard", "clientes", "pets", "agendamentos", "vacinas"],
+  },
+  profissional: {
+    nome: "Petshop + Estoque",
+    preco: 139,
+    descricao: "Para petshops com venda de produtos e controle de estoque.",
+    modulos: [
+      "dashboard",
+      "clientes",
+      "pets",
+      "agendamentos",
+      "vacinas",
+      "estoque",
+    ],
+    destaque: true,
+  },
+  completo: {
+    nome: "Completo",
+    preco: 199,
+    descricao: "Solução completa com financeiro e relatórios avançados.",
+    modulos: [
+      "dashboard",
+      "clientes",
+      "pets",
+      "agendamentos",
+      "vacinas",
+      "estoque",
+      "financeiro",
+      "relatorios",
+    ],
+  },
+};
+
+export const MODULO_LABELS: Record<string, string> = {
+  dashboard: "Dashboard",
+  clientes: "Clientes",
+  pets: "Pets",
+  agendamentos: "Agendamentos",
+  vacinas: "Vacinas",
+  estoque: "Estoque",
+  financeiro: "Financeiro",
+  relatorios: "Relatórios",
+};
+
+export interface DadosCartao {
+  numero: string;
+  nome: string;
+  validade: string;
+  cvv: string;
+}
+
+// ── Usuário ──────────────────────────────────────────────────────────────────
 
 export interface Usuario {
   id: string;
@@ -8,6 +78,7 @@ export interface Usuario {
   telefone?: string;
   perfil: UsuarioPerfil;
   status: UsuarioStatus;
+  plano?: PlanoSistema;
   createdAt: string;
   lastAccess?: string;
   avatar?: string;
@@ -37,13 +108,20 @@ export const PERMISSOES: Record<UsuarioPerfil, string[]> = {
   ],
 };
 
-/** Estado do formulário de criação de conta */
+/** Estado do formulário de criação de conta (landing page → dono do negócio) */
 export interface CriarContaFormState {
+  // Step 1 – Dados da conta
   nomeCompleto: string;
   email: string;
   telefone: string;
   senha: string;
   confirmarSenha: string;
+  // Step 2 – Plano
+  plano: PlanoSistema;
+  // Step 3 – Pagamento
+  formaPagamento: FormaPagamento;
+  dadosCartao: DadosCartao;
+  // Mantido para compatibilidade com StepTipoAcesso (gerenciamento de usuários internos)
   perfil: UsuarioPerfil;
   status: UsuarioStatus;
 }

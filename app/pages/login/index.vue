@@ -10,13 +10,17 @@ const auth = useAuthStore();
 
 const schema = z.object({
   email: z.string().email("Informe um e-mail válido"),
-  password: z.string().min(5, "A senha deve ter no mínimo 5 caracteres"),
+  password: z
+    .string()
+    .min(5, "A senha deve ter no mínimo 5 caracteres")
+    .max(15, "A senha deve ter no máximo 15 caracteres"),
 });
 
 type FormErrors = { email?: string; password?: string };
 
 const form = reactive({ email: "", password: "" });
 const errors = reactive<FormErrors>({});
+const showPassword = ref(false);
 
 function validate(): boolean {
   const result = schema.safeParse(form);
@@ -69,11 +73,22 @@ async function handleLogin() {
               color="secondary"
               leading-icon="i-lucide-lock"
               placeholder="Senha"
-              type="password"
+              :type="showPassword ? 'text' : 'password'"
               size="lg"
+              maxlength="15"
               autocomplete="current-password"
               :class="errors.password ? 'ring-2 ring-red-400 rounded-md' : ''"
-            />
+            >
+              <template #trailing>
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  size="sm"
+                  :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                  @click="showPassword = !showPassword"
+                />
+              </template>
+            </UInput>
             <p v-if="errors.password" class="text-xs text-red-500 pl-1">
               {{ errors.password }}
             </p>

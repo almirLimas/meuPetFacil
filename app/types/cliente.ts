@@ -2,7 +2,7 @@ import type { Pet, PetFormState } from "./pet";
 
 export interface ClienteFormState {
   nome: string;
-  cpf: string;
+  cpf?: string;
   telefonePrincipal: string;
   telefoneSecundario: string;
   email: string;

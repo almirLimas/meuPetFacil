@@ -12,12 +12,19 @@ const toast = useToast();
 
 // -- Estado compartilhado entre os steps -------------------------------------
 const state = reactive<CriarContaFormState>({
+  // Step 1
   nomeCompleto: "",
   email: "",
   telefone: "",
   senha: "",
   confirmarSenha: "",
-  perfil: "staff",
+  // Step 2
+  plano: "profissional",
+  // Step 3
+  formaPagamento: "cartao",
+  dadosCartao: { numero: "", nome: "", validade: "", cvv: "" },
+  // Legacy (mantido para compatibilidade)
+  perfil: "admin",
   status: "ativo",
 });
 
@@ -29,9 +36,14 @@ const stepperItems: StepperItem[] = [
     icon: "i-lucide-user",
   },
   {
-    title: "Tipo de Acesso",
-    description: "Perfil e permissões",
-    icon: "i-lucide-shield",
+    title: "Escolha seu Plano",
+    description: "Módulos e mensalidade",
+    icon: "i-lucide-layout-grid",
+  },
+  {
+    title: "Pagamento",
+    description: "Forma de cobrança",
+    icon: "i-lucide-credit-card",
   },
 ];
 
@@ -56,8 +68,9 @@ const onStepClick = (index: string | number | undefined) => {
 
 // -- Refs dos componentes de step -------------------------------------------
 const stepDados = ref();
-const stepAcesso = ref();
-const stepRefs = [stepDados, stepAcesso];
+const stepPlano = ref();
+const stepPagamento = ref();
+const stepRefs = [stepDados, stepPlano, stepPagamento];
 
 // -- Navegação ---------------------------------------------------------------
 const handleNext = async () => {
@@ -83,11 +96,12 @@ const submitForm = async () => {
       email: state.email,
       telefone: state.telefone || undefined,
       senha: state.senha,
-      perfil: state.perfil,
+      plano: state.plano,
     });
     toast.add({
       title: "Conta criada com sucesso!",
-      description: "Faça login para acessar o sistema.",
+      description:
+        "Seus 14 dias gratuitos começam agora. Faça login para acessar o sistema.",
       color: "success",
     });
   } catch {
@@ -110,7 +124,7 @@ const submitForm = async () => {
           <div class="text-center">
             <h1 class="text-xl font-bold text-gray-800">Criar conta</h1>
             <p class="text-sm text-gray-500 mt-0.5">
-              Preencha os dados para acessar o sistema
+              Comece grátis por 14 dias, sem compromisso
             </p>
           </div>
           <UStepper
@@ -129,9 +143,14 @@ const submitForm = async () => {
           ref="stepDados"
           v-model="state"
         />
-        <CriarContaStepTipoAcesso
+        <CriarContaStepPlano
           v-else-if="currentStep === 1"
-          ref="stepAcesso"
+          ref="stepPlano"
+          v-model="state"
+        />
+        <CriarContaStepPagamento
+          v-else-if="currentStep === 2"
+          ref="stepPagamento"
           v-model="state"
         />
       </div>

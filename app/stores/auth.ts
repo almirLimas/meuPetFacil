@@ -1,6 +1,6 @@
 ﻿import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import type { Usuario, UsuarioPerfil } from "~/types/usuario";
+import type { Usuario, UsuarioPerfil, PlanoSistema } from "~/types/usuario";
 import { PERMISSOES } from "~/types/usuario";
 
 export const useAuthStore = defineStore("auth", () => {
@@ -74,14 +74,14 @@ export const useAuthStore = defineStore("auth", () => {
     email: string;
     telefone?: string;
     senha: string;
-    perfil: UsuarioPerfil;
+    plano: PlanoSistema;
   }) => {
     loading.value = true;
     try {
       const config = useRuntimeConfig();
       await $fetch(`${config.public.apiUrl}/auth/registrar`, {
         method: "POST",
-        body: dados,
+        body: { ...dados, perfil: "admin" },
       });
       navigateTo("/login");
     } catch (err: unknown) {
