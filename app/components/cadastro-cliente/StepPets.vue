@@ -170,6 +170,15 @@ defineExpose({
     >
       <p class="text-sm font-semibold text-gray-700">Novo pet</p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Espécie -->
+        <UFormField label="Espécie" name="especie">
+          <USelect
+            v-model="formPet.especie"
+            :items="PET_ESPECIES"
+            class="w-full"
+          />
+        </UFormField>
+
         <!-- Nome -->
         <UFormField
           label="Nome do pet"
@@ -186,15 +195,6 @@ defineExpose({
             v-model="formPet.raca"
             :items="racasDisponiveis"
             placeholder="Selecione a raça..."
-            class="w-full"
-          />
-        </UFormField>
-
-        <!-- Espécie -->
-        <UFormField label="Espécie" name="especie">
-          <USelect
-            v-model="formPet.especie"
-            :items="PET_ESPECIES"
             class="w-full"
           />
         </UFormField>

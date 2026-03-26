@@ -1,12 +1,16 @@
 <script setup lang="ts">
-const agenda = useMockAgenda();
+const { agendamentos, fetchByDate } = useAgenda();
 
 const today = new Date().toISOString().slice(0, 10);
 
+// Carrega agendamentos de hoje para o resumo do dashboard
+await fetchByDate(today);
+
 const proximosAgendamentos = computed(
   () =>
-    agenda.value.filter((a) => a.data >= today && a.status === "agendado")
-      .length,
+    agendamentos.value.filter(
+      (a) => a.status === "Agendado" || a.status === "Confirmado",
+    ).length,
 );
 
 const stats = computed(() => [
@@ -41,14 +45,16 @@ const stats = computed(() => [
 ]);
 
 const agendaItems = computed(() =>
-  agenda.value
-    .filter((a) => a.data === today)
-    .sort((a, b) => a.hora.localeCompare(b.hora))
+  agendamentos.value
+    .sort((a, b) => a.dataHora.localeCompare(b.dataHora))
     .map((a) => ({
-      time: a.hora,
-      service: a.servico,
-      pet: a.pet,
-      highlight: a.status === "agendado",
+      time: new Date(a.dataHora).toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      service: a.servico.nome,
+      pet: a.pet.nome,
+      highlight: a.status === "Agendado" || a.status === "Confirmado",
     })),
 );
 

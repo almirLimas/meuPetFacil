@@ -1,8 +1,18 @@
 <script setup lang="ts">
 import type { Servico, CategoriaServico, PorteServico } from "~/types/servico";
 
-const servicos = useMockServicos();
+const {
+  servicos,
+  loading,
+  fetchAll,
+  create,
+  update,
+  toggleAtivo: toggleAtivoApi,
+  remove,
+} = useServicos();
 const toast = useToast();
+
+onMounted(() => fetchAll());
 
 // -- Filtros ------------------------------------------------------------------
 const busca = ref("");
@@ -11,11 +21,14 @@ const filtroAtivo = ref<"todos" | "ativo" | "inativo">("todos");
 
 const categorias: { label: string; value: CategoriaServico | "todas" }[] = [
   { label: "Todas", value: "todas" },
-  { label: "Higiene", value: "higiene" },
-  { label: "Estética", value: "estetica" },
-  { label: "Saúde", value: "saude" },
-  { label: "Hospedagem", value: "hospedagem" },
-  { label: "Outros", value: "outros" },
+  { label: "Banho", value: "Banho" },
+  { label: "Tosa", value: "Tosa" },
+  { label: "Consulta", value: "Consulta" },
+  { label: "Vacina", value: "Vacina" },
+  { label: "Internação", value: "Internacao" },
+  { label: "Cirurgia", value: "Cirurgia" },
+  { label: "Exame", value: "Exame" },
+  { label: "Outro", value: "Outro" },
 ];
 
 const servicosFiltrados = computed(() =>
@@ -41,7 +54,7 @@ const resumo = computed(() => ({
   inativos: servicos.value.filter((s) => !s.ativo).length,
   precoMedio:
     servicos.value.length > 0
-      ? servicos.value.reduce((acc, s) => acc + s.preco, 0) /
+      ? servicos.value.reduce((acc, s) => acc + Number(s.preco), 0) /
         servicos.value.length
       : 0,
 }));
@@ -51,41 +64,57 @@ const categoriaConfig: Record<
   CategoriaServico,
   { label: string; bg: string; text: string }
 > = {
-  higiene: {
-    label: "Higiene",
+  Banho: {
+    label: "Banho",
     bg: "bg-blue-100 dark:bg-blue-900/40",
     text: "text-blue-600 dark:text-blue-400",
   },
-  estetica: {
-    label: "Estética",
+  Tosa: {
+    label: "Tosa",
     bg: "bg-pink-100 dark:bg-pink-900/40",
     text: "text-pink-600 dark:text-pink-400",
   },
-  saude: {
-    label: "Saúde",
+  Consulta: {
+    label: "Consulta",
     bg: "bg-green-100 dark:bg-green-900/40",
     text: "text-green-600 dark:text-green-400",
   },
-  hospedagem: {
-    label: "Hospedagem",
-    bg: "bg-purple-100 dark:bg-purple-900/40",
-    text: "text-purple-600 dark:text-purple-400",
+  Vacina: {
+    label: "Vacina",
+    bg: "bg-teal-100 dark:bg-teal-900/40",
+    text: "text-teal-600 dark:text-teal-400",
   },
-  outros: {
-    label: "Outros",
+  Internacao: {
+    label: "Internação",
+    bg: "bg-yellow-100 dark:bg-yellow-900/40",
+    text: "text-yellow-600 dark:text-yellow-400",
+  },
+  Cirurgia: {
+    label: "Cirurgia",
+    bg: "bg-red-100 dark:bg-red-900/40",
+    text: "text-red-600 dark:text-red-400",
+  },
+  Exame: {
+    label: "Exame",
+    bg: "bg-orange-100 dark:bg-orange-900/40",
+    text: "text-orange-600 dark:text-orange-400",
+  },
+  Outro: {
+    label: "Outro",
     bg: "bg-gray-100 dark:bg-neutral-700",
     text: "text-gray-500 dark:text-gray-400",
   },
 };
 
 const porteLabel: Record<PorteServico, string> = {
-  pequeno: "Pequeno",
-  medio: "Médio",
-  grande: "Grande",
-  todos: "Todos",
+  Pequeno: "Pequeno",
+  Medio: "Médio",
+  Grande: "Grande",
+  Todos: "Todos",
 };
 
-const formatDuracao = (min: number) => {
+const formatDuracao = (min?: number) => {
+  if (!min) return "-";
   if (min < 60) return `${min}min`;
   const h = Math.floor(min / 60);
   const m = min % 60;
@@ -93,44 +122,46 @@ const formatDuracao = (min: number) => {
 };
 
 const formatPreco = (v: number) =>
-  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 // -- Ativar/Desativar --------------------------------------------------------
-const toggleAtivo = (id: string) => {
-  const s = servicos.value.find((s) => s.id === id);
-  if (s) {
-    s.ativo = !s.ativo;
-    toast.add({
-      title: s.ativo ? "Serviço ativado" : "Serviço desativado",
-      color: s.ativo ? "success" : "neutral",
-    });
-  }
+const toggleAtivo = async (s: Servico) => {
+  const novoStatus = !s.ativo;
+  await toggleAtivoApi(s.id, novoStatus);
+  toast.add({
+    title: novoStatus ? "Serviço ativado" : "Serviço desativado",
+    color: novoStatus ? "success" : "neutral",
+  });
 };
 
 // -- Modal -------------------------------------------------------------------
 const isModalOpen = ref(false);
 const editando = ref<Servico | null>(null);
+const loadingSalvar = ref(false);
 
 const PORTES: { label: string; value: PorteServico }[] = [
-  { label: "Todos os portes", value: "todos" },
-  { label: "Pequeno", value: "pequeno" },
-  { label: "Médio", value: "medio" },
-  { label: "Grande", value: "grande" },
+  { label: "Todos os portes", value: "Todos" },
+  { label: "Pequeno", value: "Pequeno" },
+  { label: "Médio", value: "Medio" },
+  { label: "Grande", value: "Grande" },
 ];
 
 const CATEGORIAS_SELECT: { label: string; value: CategoriaServico }[] = [
-  { label: "Higiene", value: "higiene" },
-  { label: "Estética", value: "estetica" },
-  { label: "Saúde", value: "saude" },
-  { label: "Hospedagem", value: "hospedagem" },
-  { label: "Outros", value: "outros" },
+  { label: "Banho", value: "Banho" },
+  { label: "Tosa", value: "Tosa" },
+  { label: "Consulta", value: "Consulta" },
+  { label: "Vacina", value: "Vacina" },
+  { label: "Internação", value: "Internacao" },
+  { label: "Cirurgia", value: "Cirurgia" },
+  { label: "Exame", value: "Exame" },
+  { label: "Outro", value: "Outro" },
 ];
 
 const form = reactive({
   nome: "",
-  categoria: "higiene" as CategoriaServico,
-  porte: "todos" as PorteServico,
-  duracaoMin: 60,
+  categoria: "Banho" as CategoriaServico,
+  porte: "Todos" as PorteServico,
+  duracaoMinutos: 60,
   preco: 0,
   descricao: "",
 });
@@ -139,9 +170,9 @@ const abrirNovo = () => {
   editando.value = null;
   Object.assign(form, {
     nome: "",
-    categoria: "higiene",
-    porte: "todos",
-    duracaoMin: 60,
+    categoria: "Banho",
+    porte: "Todos",
+    duracaoMinutos: 60,
     preco: 0,
     descricao: "",
   });
@@ -153,16 +184,16 @@ const abrirEditar = (s: Servico) => {
   Object.assign(form, {
     nome: s.nome,
     categoria: s.categoria,
-    porte: s.porte,
-    duracaoMin: s.duracaoMin,
-    preco: s.preco,
+    porte: s.porte ?? "Todos",
+    duracaoMinutos: s.duracaoMinutos ?? 60,
+    preco: Number(s.preco),
     descricao: s.descricao ?? "",
   });
   isModalOpen.value = true;
 };
 
-const salvar = () => {
-  if (!form.nome || !form.preco || !form.duracaoMin) {
+const salvar = async () => {
+  if (!form.nome || !form.preco || !form.duracaoMinutos) {
     toast.add({
       title: "Preencha todos os campos obrigatórios",
       color: "error",
@@ -170,42 +201,36 @@ const salvar = () => {
     return;
   }
 
-  if (editando.value) {
-    const s = servicos.value.find((s) => s.id === editando.value!.id);
-    if (s) {
-      Object.assign(s, {
-        nome: form.nome,
-        categoria: form.categoria,
-        porte: form.porte,
-        duracaoMin: form.duracaoMin,
-        preco: form.preco,
-        descricao: form.descricao || undefined,
-      });
-    }
-    toast.add({ title: "Serviço atualizado!", color: "success" });
-  } else {
-    servicos.value.push({
-      id: Date.now().toString(),
+  loadingSalvar.value = true;
+  try {
+    const payload = {
       nome: form.nome,
       categoria: form.categoria,
       porte: form.porte,
-      duracaoMin: form.duracaoMin,
+      duracaoMinutos: form.duracaoMinutos,
       preco: form.preco,
       descricao: form.descricao || undefined,
-      ativo: true,
-    });
-    toast.add({ title: "Serviço criado!", color: "success" });
-  }
+    };
 
-  isModalOpen.value = false;
+    if (editando.value) {
+      await update(editando.value.id, payload);
+      toast.add({ title: "Serviço atualizado!", color: "success" });
+    } else {
+      await create(payload);
+      toast.add({ title: "Serviço criado!", color: "success" });
+    }
+
+    isModalOpen.value = false;
+  } catch {
+    toast.add({ title: "Erro ao salvar serviço", color: "error" });
+  } finally {
+    loadingSalvar.value = false;
+  }
 };
 
-const excluir = (id: string) => {
-  const idx = servicos.value.findIndex((s) => s.id === id);
-  if (idx !== -1) {
-    servicos.value.splice(idx, 1);
-    toast.add({ title: "Serviço removido", color: "neutral" });
-  }
+const excluir = async (id: string) => {
+  await remove(id);
+  toast.add({ title: "Serviço removido", color: "neutral" });
 };
 </script>
 
@@ -414,12 +439,12 @@ const excluir = (id: string) => {
             <td
               class="px-4 py-3 text-gray-600 dark:text-gray-300 hidden md:table-cell"
             >
-              {{ porteLabel[s.porte] }}
+              {{ s.porte ? porteLabel[s.porte] : "-" }}
             </td>
             <td
               class="px-4 py-3 text-gray-600 dark:text-gray-300 hidden md:table-cell"
             >
-              {{ formatDuracao(s.duracaoMin) }}
+              {{ formatDuracao(s.duracaoMinutos) }}
             </td>
             <td
               class="px-4 py-3 font-semibold text-gray-800 dark:text-gray-100"
@@ -446,7 +471,7 @@ const excluir = (id: string) => {
                   variant="ghost"
                   size="xs"
                   :title="s.ativo ? 'Desativar' : 'Ativar'"
-                  @click="toggleAtivo(s.id)"
+                  @click="toggleAtivo(s)"
                 />
                 <UButton
                   icon="i-lucide-pencil"
@@ -523,7 +548,7 @@ const excluir = (id: string) => {
             <div class="grid grid-cols-2 gap-3">
               <UFormField label="Duração (minutos) *">
                 <UInput
-                  v-model.number="form.duracaoMin"
+                  v-model.number="form.duracaoMinutos"
                   type="number"
                   min="1"
                   placeholder="60"
