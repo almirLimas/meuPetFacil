@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { CriarContaFormState, UsuarioPerfil } from "~/types/usuario";
 import { PERMISSOES } from "~/types/usuario";
 
@@ -18,8 +18,8 @@ const perfis: {
     descricao:
       "Acesso total ao sistema: clientes, agendamentos, financeiro, relatórios e gerenciamento de usuários.",
     icon: "i-lucide-shield-check",
-    bg: "#FFF0E0",
-    iconColor: "#F5A523",
+    bg: "#EDE9FE",
+    iconColor: "#8B5CF6",
   },
   {
     value: "staff",
@@ -27,8 +27,8 @@ const perfis: {
     descricao:
       "Acesso operacional: clientes, pets, agendamentos, vacinas e estoque. Sem acesso a financeiro ou usuários.",
     icon: "i-lucide-user-check",
-    bg: "#E0F0FF",
-    iconColor: "#4AADE8",
+    bg: "#E0F2FE",
+    iconColor: "#0EA5E9",
   },
 ];
 
@@ -38,8 +38,8 @@ const perfilLabel: Record<UsuarioPerfil, string> = {
 };
 
 const perfilIconColor: Record<UsuarioPerfil, string> = {
-  admin: "#F5A523",
-  staff: "#4AADE8",
+  admin: "#8B5CF6",
+  staff: "#0EA5E9",
 };
 
 const moduloLabels: Record<string, string> = {

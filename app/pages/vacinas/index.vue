@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 type StatusVacina = "urgente" | "proximo" | "vencida" | "ok";
 
 const vacinas = ref([
@@ -100,8 +100,8 @@ const resumoCards = computed(() => [
     label: "Total de Registros",
     value: vacinas.value.length,
     icon: "i-lucide-syringe",
-    bg: "#E0FBF0",
-    color: "#5cc86b",
+    bg: "#D1FAE5",
+    color: "#10B981",
   },
   {
     label: "Urgentes",
@@ -115,7 +115,7 @@ const resumoCards = computed(() => [
     value: vacinas.value.filter((v) => v.status === "proximo").length,
     icon: "i-lucide-clock",
     bg: "#FFF3E0",
-    color: "#F5A523",
+    color: "#8B5CF6",
   },
   {
     label: "Vencidas",
@@ -142,7 +142,7 @@ const resumoCards = computed(() => [
       <UButton
         icon="i-lucide-plus"
         label="Registrar Vacina"
-        style="background-color: #5cc86b"
+        style="background-color: #10B981"
         class="text-white"
       />
     </div>

@@ -323,22 +323,22 @@ const salvarAgendamento = async () => {
             label: 'Total',
             value: resumoDia.total,
             icon: 'i-lucide-calendar',
-            bg: '#E0F0FF',
-            color: '#4AADE8',
+            bg: '#E0F2FE',
+            color: '#0EA5E9',
           },
           {
             label: 'Agendados',
             value: resumoDia.agendados,
             icon: 'i-lucide-clock',
-            bg: '#E0F0FF',
-            color: '#4AADE8',
+            bg: '#E0F2FE',
+            color: '#0EA5E9',
           },
           {
             label: 'Concluídos',
             value: resumoDia.concluidos,
             icon: 'i-lucide-check-circle',
-            bg: '#E0FBF0',
-            color: '#5CC86B',
+            bg: '#D1FAE5',
+            color: '#10B981',
           },
           {
             label: 'Cancelados',
@@ -432,12 +432,12 @@ const salvarAgendamento = async () => {
           <!-- Ícone -->
           <div
             class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-            style="background-color: #e0f0ff"
+            style="background-color: #E0F2FE"
           >
             <UIcon
               name="i-lucide-scissors"
               class="size-4"
-              style="color: #4aade8"
+              style="color: #0EA5E9"
             />
           </div>
 
@@ -620,7 +620,7 @@ const salvarAgendamento = async () => {
                   class="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all"
                   :class="
                     novoForm.modalidade === 'ClienteTraz'
-                      ? 'border-[#4AADE8] bg-blue-50 dark:bg-blue-900/20 text-[#4AADE8]'
+                      ? 'border-[#0EA5E9] bg-sky-50 dark:bg-sky-900/20 text-[#0EA5E9]'
                       : 'border-gray-200 dark:border-neutral-600 text-gray-500 dark:text-gray-400 hover:border-gray-300'
                   "
                   @click="novoForm.modalidade = 'ClienteTraz'"

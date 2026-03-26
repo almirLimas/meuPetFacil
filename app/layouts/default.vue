@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 const open = ref(true);
 const route = useRoute();
 
@@ -73,7 +73,7 @@ watch(
           />
           <span
             class="absolute -top-0.5 -right-0.5 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center pointer-events-none"
-            style="background-color: #f5a523"
+            style="background-color: #8B5CF6"
             >3</span
           >
         </div>
@@ -133,7 +133,7 @@ watch(
                 : 'text-gray-500 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-neutral-700'
             "
             :style="
-              route.path === item.to ? { backgroundColor: '#4AADE8' } : {}
+              route.path === item.to ? { backgroundColor: '#0EA5E9' } : {}
             "
           >
             <UIcon :name="item.icon" class="size-4.5 shrink-0" />

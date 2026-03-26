@@ -4,7 +4,12 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ["@nuxt/ui", "@pinia/nuxt"],
   css: ["~/assets/css/main.css"],
-  ui: {},
+  ui: {
+    colors: {
+      primary: "sky",
+      secondary: "sky",
+    },
+  },
   pinia: {
     storesDirs: ["./app/stores/**"],
   },

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { Servico, CategoriaServico, PorteServico } from "~/types/servico";
 
 const {
@@ -262,15 +262,15 @@ const excluir = async (id: string) => {
             label: 'Total de Serviços',
             value: resumo.total,
             icon: 'i-lucide-briefcase',
-            bg: '#E0F0FF',
-            color: '#4AADE8',
+            bg: '#E0F2FE',
+            color: '#0EA5E9',
           },
           {
             label: 'Ativos',
             value: resumo.ativos,
             icon: 'i-lucide-check-circle',
-            bg: '#E0FBF0',
-            color: '#5CC86B',
+            bg: '#D1FAE5',
+            color: '#10B981',
           },
           {
             label: 'Inativos',
@@ -283,8 +283,8 @@ const excluir = async (id: string) => {
             label: 'Preço Médio',
             value: formatPreco(resumo.precoMedio),
             icon: 'i-lucide-tag',
-            bg: '#FFF0E0',
-            color: '#F5A523',
+            bg: '#EDE9FE',
+            color: '#8B5CF6',
           },
         ]"
         :key="card.label"
@@ -335,7 +335,7 @@ const excluir = async (id: string) => {
             class="px-3 py-1 rounded-full text-xs font-semibold transition-colors"
             :class="
               filtroCategoria === cat.value
-                ? 'bg-[#4AADE8] text-white'
+                ? 'bg-[#0EA5E9] text-white'
                 : 'bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-neutral-600'
             "
             @click="filtroCategoria = cat.value"

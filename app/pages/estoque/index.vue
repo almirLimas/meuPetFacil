@@ -1,15 +1,24 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type {
   Produto,
   CategoriaEstoque,
   TipoMovimentacao,
 } from "~/types/estoque";
 
-const produtos = useMockProdutos();
-const movimentacoes = useMockMovimentacoes();
+const {
+  produtos,
+  movimentacoes,
+  loading,
+  fetchProdutos,
+  fetchMovimentacoes,
+  createProduto,
+  updateProduto,
+  removeProduto,
+  createMovimentacao,
+} = useEstoque();
 const toast = useToast();
 
-const today = new Date().toISOString().slice(0, 10);
+onMounted(() => fetchProdutos());
 
 // -- Filtros ------------------------------------------------------------------
 const busca = ref("");
@@ -18,43 +27,50 @@ const filtroAlerta = ref(false);
 
 const categorias: { label: string; value: CategoriaEstoque | "todas" }[] = [
   { label: "Todas", value: "todas" },
-  { label: "Ração", value: "racao" },
-  { label: "Higiene", value: "higiene" },
-  { label: "Medicamento", value: "medicamento" },
-  { label: "Acessório", value: "acessorio" },
-  { label: "Outros", value: "outros" },
+  { label: "Alimento", value: "Alimento" },
+  { label: "Higiene", value: "Higiene" },
+  { label: "Medicamento", value: "Medicamento" },
+  { label: "Acessório", value: "Acessorio" },
+  { label: "Vacina", value: "Vacina" },
+  { label: "Outro", value: "Outro" },
 ];
 
 const categoriaConfig: Record<
   CategoriaEstoque,
   { label: string; bg: string; text: string; icon: string }
 > = {
-  racao: {
-    label: "Ração",
+  Alimento: {
+    label: "Alimento",
     bg: "bg-amber-100 dark:bg-amber-900/40",
     text: "text-amber-600 dark:text-amber-400",
     icon: "i-lucide-beef",
   },
-  higiene: {
+  Higiene: {
     label: "Higiene",
     bg: "bg-blue-100 dark:bg-blue-900/40",
     text: "text-blue-600 dark:text-blue-400",
     icon: "i-lucide-droplets",
   },
-  medicamento: {
+  Medicamento: {
     label: "Medicamento",
     bg: "bg-red-100 dark:bg-red-900/40",
     text: "text-red-600 dark:text-red-400",
     icon: "i-lucide-pill",
   },
-  acessorio: {
+  Acessorio: {
     label: "Acessório",
     bg: "bg-purple-100 dark:bg-purple-900/40",
     text: "text-purple-600 dark:text-purple-400",
     icon: "i-lucide-toy-brick",
   },
-  outros: {
-    label: "Outros",
+  Vacina: {
+    label: "Vacina",
+    bg: "bg-green-100 dark:bg-green-900/40",
+    text: "text-green-600 dark:text-green-400",
+    icon: "i-lucide-syringe",
+  },
+  Outro: {
+    label: "Outro",
     bg: "bg-gray-100 dark:bg-neutral-700",
     text: "text-gray-500 dark:text-gray-400",
     icon: "i-lucide-package",
@@ -62,7 +78,7 @@ const categoriaConfig: Record<
 };
 
 // -- Computed -----------------------------------------------------------------
-const emAlerta = (p: Produto) => p.quantidadeAtual <= p.quantidadeMinima;
+const emAlerta = (p: Produto) => p.quantidadeAtual <= p.estoqueMinimo;
 
 const produtosFiltrados = computed(() =>
   produtos.value.filter((p) => {
@@ -85,7 +101,7 @@ const resumo = computed(() => ({
     .length,
   valorTotal: produtos.value
     .filter((p) => p.ativo)
-    .reduce((acc, p) => acc + p.quantidadeAtual * p.precoCusto, 0),
+    .reduce((acc, p) => acc + p.quantidadeAtual * Number(p.precoCompra), 0),
 }));
 
 const formatPreco = (v: number) =>
@@ -94,24 +110,26 @@ const formatPreco = (v: number) =>
 // -- Modal produto -----------------------------------------------------------
 const isModalProduto = ref(false);
 const editandoProduto = ref<Produto | null>(null);
+const savingProduto = ref(false);
 
 const CATEGORIAS_SELECT: { label: string; value: CategoriaEstoque }[] = [
-  { label: "Ração", value: "racao" },
-  { label: "Higiene", value: "higiene" },
-  { label: "Medicamento", value: "medicamento" },
-  { label: "Acessório", value: "acessorio" },
-  { label: "Outros", value: "outros" },
+  { label: "Alimento", value: "Alimento" },
+  { label: "Higiene", value: "Higiene" },
+  { label: "Medicamento", value: "Medicamento" },
+  { label: "Acessório", value: "Acessorio" },
+  { label: "Vacina", value: "Vacina" },
+  { label: "Outro", value: "Outro" },
 ];
 
 const UNIDADES = ["un.", "kg", "g", "ml", "L", "cx", "pct"];
 
 const formProduto = reactive({
   nome: "",
-  categoria: "higiene" as CategoriaEstoque,
+  categoria: "Higiene" as CategoriaEstoque,
   unidade: "un.",
   quantidadeAtual: 0,
-  quantidadeMinima: 5,
-  precoCusto: 0,
+  estoqueMinimo: 5,
+  precoCompra: 0,
   precoVenda: 0,
   descricao: "",
 });
@@ -120,11 +138,11 @@ const abrirNovoProduto = () => {
   editandoProduto.value = null;
   Object.assign(formProduto, {
     nome: "",
-    categoria: "higiene",
+    categoria: "Higiene",
     unidade: "un.",
     quantidadeAtual: 0,
-    quantidadeMinima: 5,
-    precoCusto: 0,
+    estoqueMinimo: 5,
+    precoCompra: 0,
     precoVenda: 0,
     descricao: "",
   });
@@ -136,72 +154,68 @@ const abrirEditarProduto = (p: Produto) => {
   Object.assign(formProduto, {
     nome: p.nome,
     categoria: p.categoria,
-    unidade: p.unidade,
+    unidade: p.unidade ?? "un.",
     quantidadeAtual: p.quantidadeAtual,
-    quantidadeMinima: p.quantidadeMinima,
-    precoCusto: p.precoCusto,
-    precoVenda: p.precoVenda ?? 0,
+    estoqueMinimo: p.estoqueMinimo,
+    precoCompra: Number(p.precoCompra),
+    precoVenda: p.precoVenda ? Number(p.precoVenda) : 0,
     descricao: p.descricao ?? "",
   });
   isModalProduto.value = true;
 };
 
-const salvarProduto = () => {
-  if (!formProduto.nome || !formProduto.precoCusto) {
-    toast.add({
-      title: "Preencha nome e preço de custo",
-      color: "error",
-    });
+const salvarProduto = async () => {
+  if (!formProduto.nome || !formProduto.precoCompra) {
+    toast.add({ title: "Preencha nome e preço de compra", color: "error" });
     return;
   }
 
-  if (editandoProduto.value) {
-    const p = produtos.value.find((p) => p.id === editandoProduto.value!.id);
-    if (p) {
-      Object.assign(p, {
-        nome: formProduto.nome,
-        categoria: formProduto.categoria,
-        unidade: formProduto.unidade,
-        quantidadeMinima: formProduto.quantidadeMinima,
-        precoCusto: formProduto.precoCusto,
-        precoVenda: formProduto.precoVenda || undefined,
-        descricao: formProduto.descricao || undefined,
-      });
-    }
-    toast.add({ title: "Produto atualizado!", color: "success" });
-  } else {
-    produtos.value.push({
-      id: Date.now().toString(),
+  savingProduto.value = true;
+  try {
+    const payload = {
       nome: formProduto.nome,
       categoria: formProduto.categoria,
-      unidade: formProduto.unidade,
-      quantidadeAtual: formProduto.quantidadeAtual,
-      quantidadeMinima: formProduto.quantidadeMinima,
-      precoCusto: formProduto.precoCusto,
+      unidade: formProduto.unidade || undefined,
+      estoqueMinimo: formProduto.estoqueMinimo,
+      precoCompra: formProduto.precoCompra,
       precoVenda: formProduto.precoVenda || undefined,
       descricao: formProduto.descricao || undefined,
-      ativo: true,
-    });
-    toast.add({ title: "Produto cadastrado!", color: "success" });
-  }
+    };
 
-  isModalProduto.value = false;
+    if (editandoProduto.value) {
+      await updateProduto(editandoProduto.value.id, payload);
+      toast.add({ title: "Produto atualizado!", color: "success" });
+    } else {
+      await createProduto({
+        ...payload,
+        quantidadeAtual: formProduto.quantidadeAtual,
+      });
+      toast.add({ title: "Produto cadastrado!", color: "success" });
+    }
+    isModalProduto.value = false;
+  } catch {
+    toast.add({ title: "Erro ao salvar produto", color: "error" });
+  } finally {
+    savingProduto.value = false;
+  }
 };
 
-const excluirProduto = (id: string) => {
-  const p = produtos.value.find((p) => p.id === id);
-  if (p) {
-    p.ativo = false;
+const excluirProduto = async (id: string) => {
+  try {
+    await removeProduto(id);
     toast.add({ title: "Produto removido do estoque", color: "neutral" });
+  } catch {
+    toast.add({ title: "Erro ao remover produto", color: "error" });
   }
 };
 
 // -- Modal movimentação ------------------------------------------------------
 const isModalMovimentacao = ref(false);
 const produtoSelecionado = ref<Produto | null>(null);
+const savingMov = ref(false);
 
 const formMov = reactive({
-  tipo: "entrada" as TipoMovimentacao,
+  tipo: "Entrada" as TipoMovimentacao,
   quantidade: 1,
   motivo: "",
 });
@@ -214,47 +228,43 @@ const abrirMovimentacao = (p: Produto, tipo: TipoMovimentacao) => {
   isModalMovimentacao.value = true;
 };
 
-const salvarMovimentacao = () => {
-  const p = produtos.value.find((p) => p.id === produtoSelecionado.value?.id);
-  if (!p) return;
+const salvarMovimentacao = async () => {
+  if (!produtoSelecionado.value) return;
 
   if (formMov.quantidade <= 0) {
     toast.add({ title: "Quantidade deve ser maior que zero", color: "error" });
     return;
   }
 
-  if (formMov.tipo === "saida" && formMov.quantidade > p.quantidadeAtual) {
-    toast.add({
-      title: "Quantidade insuficiente em estoque",
-      color: "error",
-    });
+  if (
+    formMov.tipo === "Saida" &&
+    formMov.quantidade > produtoSelecionado.value.quantidadeAtual
+  ) {
+    toast.add({ title: "Quantidade insuficiente em estoque", color: "error" });
     return;
   }
 
-  if (formMov.tipo === "entrada") {
-    p.quantidadeAtual += formMov.quantidade;
-  } else {
-    p.quantidadeAtual -= formMov.quantidade;
+  savingMov.value = true;
+  try {
+    await createMovimentacao({
+      produtoId: produtoSelecionado.value.id,
+      tipo: formMov.tipo,
+      quantidade: formMov.quantidade,
+      motivo: formMov.motivo || undefined,
+    });
+    toast.add({
+      title:
+        formMov.tipo === "Entrada"
+          ? `+${formMov.quantidade} adicionado(s)`
+          : `-${formMov.quantidade} removido(s)`,
+      color: "success",
+    });
+    isModalMovimentacao.value = false;
+  } catch {
+    toast.add({ title: "Erro ao registrar movimentação", color: "error" });
+  } finally {
+    savingMov.value = false;
   }
-
-  movimentacoes.value.push({
-    id: Date.now().toString(),
-    produtoId: p.id,
-    tipo: formMov.tipo,
-    quantidade: formMov.quantidade,
-    data: today,
-    motivo: formMov.motivo || undefined,
-  });
-
-  toast.add({
-    title:
-      formMov.tipo === "entrada"
-        ? `+${formMov.quantidade} ${p.unidade} adicionado(s)`
-        : `-${formMov.quantidade} ${p.unidade} removido(s)`,
-    color: "success",
-  });
-
-  isModalMovimentacao.value = false;
 };
 
 // -- Histórico de movimentações ----------------------------------------------
@@ -263,14 +273,15 @@ const produtoHistorico = ref<Produto | null>(null);
 
 const historicoFiltrado = computed(() => {
   if (!produtoHistorico.value) return [];
-  return movimentacoes.value
-    .filter((m) => m.produtoId === produtoHistorico.value!.id)
-    .sort((a, b) => b.data.localeCompare(a.data));
+  return movimentacoes.value.filter(
+    (m) => m.produtoId === produtoHistorico.value!.id,
+  );
 });
 
-const abrirHistorico = (p: Produto) => {
+const abrirHistorico = async (p: Produto) => {
   produtoHistorico.value = p;
   isModalHistorico.value = true;
+  await fetchMovimentacoes(p.id);
 };
 </script>
 
@@ -302,15 +313,15 @@ const abrirHistorico = (p: Produto) => {
             label: 'Total de Produtos',
             value: resumo.total,
             icon: 'i-lucide-package',
-            bg: '#E0F0FF',
-            color: '#4AADE8',
+            bg: '#E0F2FE',
+            color: '#0EA5E9',
           },
           {
             label: 'Em Alerta',
             value: resumo.emAlerta,
             icon: 'i-lucide-alert-triangle',
             bg: '#FFF3E0',
-            color: '#F5A523',
+            color: '#8B5CF6',
           },
           {
             label: 'Sem Estoque',
@@ -323,8 +334,8 @@ const abrirHistorico = (p: Produto) => {
             label: 'Valor em Estoque',
             value: formatPreco(resumo.valorTotal),
             icon: 'i-lucide-wallet',
-            bg: '#E0FBF0',
-            color: '#5CC86B',
+            bg: '#D1FAE5',
+            color: '#10B981',
           },
         ]"
         :key="card.label"
@@ -375,7 +386,7 @@ const abrirHistorico = (p: Produto) => {
             class="px-3 py-1 rounded-full text-xs font-semibold transition-colors"
             :class="
               filtroCategoria === cat.value
-                ? 'bg-[#4AADE8] text-white'
+                ? 'bg-[#0EA5E9] text-white'
                 : 'bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-neutral-600'
             "
             @click="filtroCategoria = cat.value"
@@ -399,7 +410,14 @@ const abrirHistorico = (p: Produto) => {
 
       <!-- Empty state -->
       <div
-        v-if="produtosFiltrados.length === 0"
+        v-if="loading"
+        class="flex flex-col items-center justify-center py-16 gap-2 text-gray-400"
+      >
+        <UIcon name="i-lucide-loader-circle" class="text-5xl animate-spin" />
+        <p class="text-sm font-medium">Carregando produtos...</p>
+      </div>
+      <div
+        v-else-if="produtosFiltrados.length === 0"
         class="flex flex-col items-center justify-center py-16 gap-2 text-gray-400"
       >
         <UIcon name="i-lucide-package-x" class="text-5xl" />
@@ -509,12 +527,12 @@ const abrirHistorico = (p: Produto) => {
             <td
               class="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell"
             >
-              {{ p.quantidadeMinima }} {{ p.unidade }}
+              {{ p.estoqueMinimo }} {{ p.unidade }}
             </td>
             <td
               class="px-4 py-3 text-gray-700 dark:text-gray-300 hidden md:table-cell"
             >
-              {{ formatPreco(p.precoCusto) }}
+              {{ formatPreco(Number(p.precoCompra)) }}
             </td>
             <td
               class="px-4 py-3 text-gray-700 dark:text-gray-300 hidden lg:table-cell"
@@ -529,7 +547,7 @@ const abrirHistorico = (p: Produto) => {
                   variant="ghost"
                   size="xs"
                   title="Registrar entrada"
-                  @click="abrirMovimentacao(p, 'entrada')"
+                  @click="abrirMovimentacao(p, 'Entrada')"
                 />
                 <UButton
                   icon="i-lucide-arrow-up-from-line"
@@ -537,7 +555,7 @@ const abrirHistorico = (p: Produto) => {
                   variant="ghost"
                   size="xs"
                   title="Registrar saída"
-                  @click="abrirMovimentacao(p, 'saida')"
+                  @click="abrirMovimentacao(p, 'Saida')"
                 />
                 <UButton
                   icon="i-lucide-history"
@@ -631,7 +649,7 @@ const abrirHistorico = (p: Produto) => {
               </UFormField>
               <UFormField label="Qtd. Mínima (alerta)">
                 <UInput
-                  v-model.number="formProduto.quantidadeMinima"
+                  v-model.number="formProduto.estoqueMinimo"
                   type="number"
                   min="0"
                   class="w-full"
@@ -640,9 +658,9 @@ const abrirHistorico = (p: Produto) => {
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-              <UFormField label="Preço de custo (R$) *">
+              <UFormField label="Preço de compra (R$) *">
                 <UInput
-                  v-model.number="formProduto.precoCusto"
+                  v-model.number="formProduto.precoCompra"
                   type="number"
                   min="0"
                   step="0.01"
@@ -678,7 +696,11 @@ const abrirHistorico = (p: Produto) => {
                 @click="isModalProduto = false"
                 >Cancelar</UButton
               >
-              <UButton color="secondary" @click="salvarProduto">
+              <UButton
+                color="secondary"
+                :loading="savingProduto"
+                @click="salvarProduto"
+              >
                 {{
                   editandoProduto ? "Salvar alterações" : "Cadastrar produto"
                 }}
@@ -699,20 +721,20 @@ const abrirHistorico = (p: Produto) => {
                 <div
                   class="w-7 h-7 rounded-full flex items-center justify-center"
                   :class="
-                    formMov.tipo === 'entrada'
+                    formMov.tipo === 'Entrada'
                       ? 'bg-green-100 dark:bg-green-900/40'
                       : 'bg-red-100 dark:bg-red-900/40'
                   "
                 >
                   <UIcon
                     :name="
-                      formMov.tipo === 'entrada'
+                      formMov.tipo === 'Entrada'
                         ? 'i-lucide-arrow-down-to-line'
                         : 'i-lucide-arrow-up-from-line'
                     "
                     class="size-3.5"
                     :class="
-                      formMov.tipo === 'entrada'
+                      formMov.tipo === 'Entrada'
                         ? 'text-green-600 dark:text-green-400'
                         : 'text-red-600 dark:text-red-400'
                     "
@@ -720,7 +742,7 @@ const abrirHistorico = (p: Produto) => {
                 </div>
                 <h3 class="font-semibold text-gray-800 dark:text-gray-100">
                   {{
-                    formMov.tipo === "entrada"
+                    formMov.tipo === "Entrada"
                       ? "Registrar Entrada"
                       : "Registrar Saída"
                   }}
@@ -764,7 +786,7 @@ const abrirHistorico = (p: Produto) => {
               <UInput
                 v-model="formMov.motivo"
                 :placeholder="
-                  formMov.tipo === 'entrada'
+                  formMov.tipo === 'Entrada'
                     ? 'Ex: Compra fornecedor'
                     : 'Ex: Uso em atendimento'
                 "
@@ -782,11 +804,12 @@ const abrirHistorico = (p: Produto) => {
                 >Cancelar</UButton
               >
               <UButton
-                :color="formMov.tipo === 'entrada' ? 'success' : 'error'"
+                :color="formMov.tipo === 'Entrada' ? 'success' : 'error'"
+                :loading="savingMov"
                 @click="salvarMovimentacao"
               >
                 {{
-                  formMov.tipo === "entrada"
+                  formMov.tipo === "Entrada"
                     ? "Confirmar Entrada"
                     : "Confirmar Saída"
                 }}
@@ -835,20 +858,20 @@ const abrirHistorico = (p: Produto) => {
               <div
                 class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
                 :class="
-                  m.tipo === 'entrada'
+                  m.tipo === 'Entrada'
                     ? 'bg-green-100 dark:bg-green-900/40'
                     : 'bg-red-100 dark:bg-red-900/40'
                 "
               >
                 <UIcon
                   :name="
-                    m.tipo === 'entrada'
+                    m.tipo === 'Entrada'
                       ? 'i-lucide-arrow-down-to-line'
                       : 'i-lucide-arrow-up-from-line'
                   "
                   class="size-3.5"
                   :class="
-                    m.tipo === 'entrada'
+                    m.tipo === 'Entrada'
                       ? 'text-green-600 dark:text-green-400'
                       : 'text-red-600 dark:text-red-400'
                   "
@@ -868,18 +891,16 @@ const abrirHistorico = (p: Produto) => {
                 <p
                   class="font-bold text-sm"
                   :class="
-                    m.tipo === 'entrada'
+                    m.tipo === 'Entrada'
                       ? 'text-green-600 dark:text-green-400'
                       : 'text-red-600 dark:text-red-400'
                   "
                 >
-                  {{ m.tipo === "entrada" ? "+" : "-" }}{{ m.quantidade }}
+                  {{ m.tipo === "Entrada" ? "+" : "-" }}{{ m.quantidade }}
                   {{ produtoHistorico?.unidade }}
                 </p>
                 <p class="text-xs text-gray-400 mt-0.5">
-                  {{
-                    new Date(m.data + "T00:00:00").toLocaleDateString("pt-BR")
-                  }}
+                  {{ new Date(m.createdAt).toLocaleDateString("pt-BR") }}
                 </p>
               </div>
             </div>

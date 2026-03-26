@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 const { agendamentos, fetchByDate } = useAgenda();
 
 const today = new Date().toISOString().slice(0, 10);
@@ -18,15 +18,15 @@ const stats = computed(() => [
     lines: ["Clientes Ativos"],
     value: "120",
     icon: "i-lucide-users",
-    bgColor: "#FFF0E0",
-    iconColor: "#F5A523",
+    bgColor: "#EDE9FE",
+    iconColor: "#8B5CF6",
   },
   {
     lines: ["Próximos", "Agendamentos"],
     value: String(proximosAgendamentos.value),
     icon: "i-lucide-calendar",
-    bgColor: "#E0F0FF",
-    iconColor: "#4AADE8",
+    bgColor: "#E0F2FE",
+    iconColor: "#0EA5E9",
   },
   {
     lines: ["Pets Cadastrados"],
@@ -66,20 +66,22 @@ const cadastros = [
 ];
 
 const servicosPopulares = [
-  { label: "Banho", percent: 35, color: "#F5A523" },
+  { label: "Banho", percent: 35, color: "#8B5CF6" },
   { label: "Tosa", percent: 25, color: "#4ABDE8" },
-  { label: "Consulta", percent: 20, color: "#5CC86B" },
+  { label: "Consulta", percent: 20, color: "#10B981" },
   { label: "Hospedagem", percent: 20, color: "#9B6BB5" },
 ];
 
-const produtos = useMockProdutos();
+const { produtos, fetchProdutos } = useEstoque();
+onMounted(() => fetchProdutos());
 
 const iconeCategoria: Record<string, string> = {
-  racao: "i-lucide-beef",
-  higiene: "i-lucide-droplets",
-  medicamento: "i-lucide-pill",
-  acessorio: "i-lucide-toy-brick",
-  outros: "i-lucide-package",
+  Alimento: "i-lucide-beef",
+  Higiene: "i-lucide-droplets",
+  Medicamento: "i-lucide-pill",
+  Acessorio: "i-lucide-toy-brick",
+  Vacina: "i-lucide-syringe",
+  Outro: "i-lucide-package",
 };
 
 const estoqueResumo = computed(() =>
@@ -89,15 +91,15 @@ const estoqueResumo = computed(() =>
     .map((p) => ({
       icon: iconeCategoria[p.categoria] ?? "i-lucide-package",
       label: p.nome,
-      value: `${p.quantidadeAtual} ${p.unidade}`,
-      alerta: p.quantidadeAtual <= p.quantidadeMinima,
+      value: `${p.quantidadeAtual} ${p.unidade ?? ""}`,
+      alerta: p.quantidadeAtual <= p.estoqueMinimo,
     })),
 );
 
 const totalAlertasEstoque = computed(
   () =>
     produtos.value.filter(
-      (p) => p.ativo && p.quantidadeAtual <= p.quantidadeMinima,
+      (p) => p.ativo && p.quantidadeAtual <= p.estoqueMinimo,
     ).length,
 );
 
@@ -152,7 +154,7 @@ const lembretesVacinas = [
     <NuxtLink
       to="/cadastro-cliente"
       class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm transition-opacity hover:opacity-90"
-      style="background-color: #f5a523"
+      style="background-color: #8b5cf6"
     >
       <UIcon name="i-lucide-user-plus" class="size-4" />
       Novo Cliente
@@ -160,14 +162,14 @@ const lembretesVacinas = [
     <NuxtLink
       to="/agenda"
       class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm transition-opacity hover:opacity-90"
-      style="background-color: #4aade8"
+      style="background-color: #0ea5e9"
     >
       <UIcon name="i-lucide-calendar-plus" class="size-4" />
       Novo Agendamento
     </NuxtLink>
     <button
       class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm transition-opacity hover:opacity-90"
-      style="background-color: #5cc86b"
+      style="background-color: #10b981"
     >
       <UIcon name="i-lucide-syringe" class="size-4" />
       Registrar Vacina
@@ -182,7 +184,7 @@ const lembretesVacinas = [
     >
       <div
         class="flex items-center justify-between px-4 py-2.5"
-        style="background-color: #4aade8"
+        style="background-color: #0ea5e9"
       >
         <h3 class="text-white font-semibold text-sm">Agenda de Hoje</h3>
         <div class="flex gap-1">
@@ -207,7 +209,7 @@ const lembretesVacinas = [
                 ? 'font-semibold'
                 : 'text-gray-700 dark:text-gray-300'
             "
-            :style="item.highlight ? 'color:#4AADE8;' : ''"
+            :style="item.highlight ? 'color:#0EA5E9;' : ''"
           >
             {{ item.service }} - {{ item.pet }}
           </span>
@@ -216,7 +218,7 @@ const lembretesVacinas = [
           <NuxtLink
             to="/agenda"
             class="text-white text-xs rounded-full px-4 py-1.5 transition-opacity hover:opacity-90"
-            style="background-color: #4aade8"
+            style="background-color: #0ea5e9"
           >
             Ver Todas &rsaquo;
           </NuxtLink>
@@ -230,7 +232,7 @@ const lembretesVacinas = [
     >
       <div
         class="flex items-center justify-between px-4 py-2.5"
-        style="background-color: #f5a523"
+        style="background-color: #8b5cf6"
       >
         <h3 class="text-white font-semibold text-sm">
           Últimos Clientes Cadastrados
@@ -263,7 +265,7 @@ const lembretesVacinas = [
         <div class="flex justify-end mt-auto pt-2">
           <button
             class="text-sm font-medium hover:opacity-70 transition-opacity"
-            style="color: #f5a523"
+            style="color: #8b5cf6"
           >
             Ver Mais &rsaquo;
           </button>
@@ -286,9 +288,9 @@ const lembretesVacinas = [
             class="w-28 h-28 rounded-full"
             style="
               background: conic-gradient(
-                #f5a523 0% 35%,
+                #8b5cf6 0% 35%,
                 #4abde8 35% 60%,
-                #5cc86b 60% 80%,
+                #10b981 60% 80%,
                 #9b6bb5 80% 100%
               );
             "
@@ -341,7 +343,7 @@ const lembretesVacinas = [
     >
       <div
         class="flex items-center justify-between px-4 py-2.5"
-        style="background-color: #4aade8"
+        style="background-color: #0ea5e9"
       >
         <h3 class="text-white font-semibold text-sm">Controle de Estoque</h3>
         <div class="flex gap-1">
@@ -359,7 +361,7 @@ const lembretesVacinas = [
           <UIcon
             :name="item.icon"
             class="size-5 shrink-0"
-            :style="{ color: item.alerta ? '#E85A5A' : '#4AADE8' }"
+            :style="{ color: item.alerta ? '#E85A5A' : '#0EA5E9' }"
           />
           <span class="text-gray-600 dark:text-gray-300 flex-1"
             >{{ item.label }}:</span
@@ -387,7 +389,7 @@ const lembretesVacinas = [
           <NuxtLink
             to="/estoque"
             class="text-white text-xs rounded-full px-4 py-1.5 transition-opacity hover:opacity-90 ml-auto"
-            style="background-color: #4aade8"
+            style="background-color: #0ea5e9"
           >
             Ver Estoque &rsaquo;
           </NuxtLink>
@@ -402,7 +404,7 @@ const lembretesVacinas = [
   >
     <div
       class="flex items-center justify-between px-4 py-2.5"
-      style="background-color: #5cc86b"
+      style="background-color: #10b981"
     >
       <div class="flex items-center gap-2">
         <UIcon name="i-lucide-syringe" class="size-4 text-white" />
@@ -443,7 +445,7 @@ const lembretesVacinas = [
             <UIcon
               name="i-lucide-syringe"
               class="size-3.5 shrink-0"
-              style="color: #5cc86b"
+              style="color: #10b981"
             />
             <span
               class="text-xs font-medium text-gray-700 dark:text-gray-300"
@@ -465,7 +467,7 @@ const lembretesVacinas = [
         <NuxtLink
           to="/vacinas"
           class="text-xs font-medium hover:opacity-70 transition-opacity"
-          style="color: #5cc86b"
+          style="color: #10b981"
         >
           Ver Todas as Vacinas &rsaquo;
         </NuxtLink>
