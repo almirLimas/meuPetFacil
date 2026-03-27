@@ -1,6 +1,35 @@
 ﻿<script setup lang="ts">
+import { useAuthStore } from "~/stores/auth";
+
 const open = ref(true);
 const route = useRoute();
+const authStore = useAuthStore();
+
+const nomeUsuario = computed(
+  () => authStore.usuario?.nomeCompleto ?? "Usuário",
+);
+const iniciaisUsuario = computed(() => {
+  const partes = nomeUsuario.value.trim().split(" ").filter(Boolean);
+  if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
+  return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+});
+
+const menuUsuario = [
+  [
+    {
+      label: nomeUsuario,
+      slot: "account",
+      disabled: true,
+    },
+  ],
+  [
+    {
+      label: "Sair",
+      icon: "i-lucide-log-out",
+      onSelect: () => authStore.logout(),
+    },
+  ],
+];
 
 const menuItems = [
   { label: "Dashboard", icon: "i-lucide-layout-dashboard", to: "/dashboard" },
@@ -49,42 +78,28 @@ watch(
         />
       </template>
 
-      <!-- Search (center) -->
-      <UInput
-        placeholder="Buscar..."
-        leading-icon="i-lucide-search"
-        size="sm"
-        class="rounded-full max-w-xs w-full hidden md:block"
-      />
-
       <template #right>
         <!-- Notificações -->
         <NotificacoesSino />
 
-        <!-- Mensagens -->
-        <UButton
-          icon="i-lucide-mail"
-          color="neutral"
-          variant="ghost"
-          aria-label="Mensagens"
-        />
-
         <!-- Tema claro/escuro -->
         <UColorModeButton />
 
-        <!-- Avatar usuário -->
-        <div class="flex items-center gap-2 cursor-pointer">
-          <div
-            class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-            style="background-color: #e85a8a"
-          >
-            AV
+        <!-- Avatar usuário com dropdown -->
+        <UDropdownMenu :items="menuUsuario">
+          <div class="flex items-center gap-2 cursor-pointer">
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+              style="background-color: #e85a8a"
+            >
+              {{ iniciaisUsuario }}
+            </div>
+            <span class="text-sm font-medium hidden sm:inline">{{
+              nomeUsuario
+            }}</span>
+            <UIcon name="i-lucide-chevron-down" class="size-4" />
           </div>
-          <span class="text-sm font-medium hidden sm:inline"
-            >Ana Veterinária</span
-          >
-          <UIcon name="i-lucide-chevron-down" class="size-4" />
-        </div>
+        </UDropdownMenu>
       </template>
     </UHeader>
 
