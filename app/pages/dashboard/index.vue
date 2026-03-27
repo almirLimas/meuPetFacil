@@ -4,11 +4,16 @@ import { useClienteStore } from "~/stores/cliente";
 
 const { agendamentos, fetchByDate } = useAgenda();
 const clienteStore = useClienteStore();
+const { resumo, fetchResumoMes } = useFinanceiro();
 
 const today = new Date().toISOString().slice(0, 10);
 
-// Carrega agendamentos de hoje e clientes em paralelo
-await Promise.all([fetchByDate(today), clienteStore.listar()]);
+// Carrega agendamentos de hoje, clientes e resumo financeiro em paralelo
+await Promise.all([
+  fetchByDate(today),
+  clienteStore.listar(),
+  fetchResumoMes(),
+]);
 
 const proximosAgendamentos = computed(
   () =>
@@ -47,9 +52,12 @@ const stats = computed(() => [
     iconColor: "#E85A8A",
   },
   {
-    lines: ["Vendas do Mês"],
-    value: "R$ 7.520",
-    icon: "i-lucide-bar-chart-2",
+    lines: ["Receitas do Mês"],
+    value: resumo.value.receitas.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }),
+    icon: "i-lucide-wallet",
     bgColor: "#E0FBF4",
     iconColor: "#2CC0A0",
   },

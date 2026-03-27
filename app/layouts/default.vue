@@ -38,6 +38,7 @@ const menuItems = [
   { label: "Vacinas", icon: "i-lucide-syringe", to: "/vacinas" },
   { label: "Serviços", icon: "i-lucide-briefcase", to: "/servicos" },
   { label: "Estoque", icon: "i-lucide-package", to: "/estoque" },
+  { label: "Financeiro", icon: "i-lucide-wallet", to: "/financeiro" },
   { label: "Relatórios", icon: "i-lucide-bar-chart-2", to: "/relatorios" },
 ];
 
