@@ -324,8 +324,8 @@ const lembretesVacinas = [
         <div class="flex justify-end mt-auto pt-2">
           <NuxtLink
             to="/clientes"
-            class="text-sm font-medium hover:opacity-70 transition-opacity"
-            style="color: #8b5cf6"
+            class="text-white text-xs rounded-full px-4 py-1.5 transition-opacity hover:opacity-90"
+            style="background-color: #8b5cf6"
           >
             Ver Mais &rsaquo;
           </NuxtLink>
@@ -412,7 +412,7 @@ const lembretesVacinas = [
           <span class="w-2.5 h-2.5 rounded-full bg-white/50"></span>
         </div>
       </div>
-      <div class="p-4 flex flex-col gap-3">
+      <div class="p-4 flex flex-col gap-3 flex-1">
         <div
           v-for="item in estoqueResumo"
           :key="item.label"
