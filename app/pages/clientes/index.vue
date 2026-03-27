@@ -48,7 +48,7 @@ const columns: TableColumn<Cliente>[] = [
   },
   {
     id: "acoes",
-    header: "",
+    header: "Ações",
   },
 ];
 

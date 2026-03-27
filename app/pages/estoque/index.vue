@@ -458,7 +458,11 @@ const abrirHistorico = async (p: Produto) => {
             >
               Venda
             </th>
-            <th class="px-4 py-3"></th>
+            <th
+              class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+            >
+              Ações
+            </th>
           </tr>
         </thead>
         <tbody>

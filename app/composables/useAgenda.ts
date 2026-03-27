@@ -42,5 +42,24 @@ export const useAgenda = () => {
     return updated;
   };
 
-  return { agendamentos, loading, fetchByDate, create, updateStatus };
+  const update = async (
+    id: string,
+    payload: {
+      servicoId?: string;
+      status?: StatusAgendamento;
+      dataHora?: string;
+      modalidade?: string;
+      observacoes?: string;
+    },
+  ) => {
+    const updated = await apiFetch<Agendamento>(`/agenda/${id}`, {
+      method: "PATCH",
+      body: payload,
+    });
+    const idx = agendamentos.value.findIndex((a) => a.id === id);
+    if (idx !== -1) agendamentos.value[idx] = updated;
+    return updated;
+  };
+
+  return { agendamentos, loading, fetchByDate, create, update, updateStatus };
 };

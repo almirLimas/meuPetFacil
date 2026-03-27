@@ -7,7 +7,7 @@ import type { Cliente } from "~/types/cliente";
 import type { Pet } from "~/types/pet";
 
 const { apiFetch } = useApi();
-const { agendamentos, loading, fetchByDate, create, updateStatus } =
+const { agendamentos, loading, fetchByDate, create, update, updateStatus } =
   useAgenda();
 const toast = useToast();
 
@@ -261,6 +261,82 @@ watch(
     }
   },
 );
+
+// -- Modal edição agendamento -----------------------------------------------
+const isEditModalOpen = ref(false);
+const editandoId = ref<string | null>(null);
+const salvandoEdicao = ref(false);
+
+const editForm = reactive({
+  data: "",
+  hora: "",
+  servicoId: "",
+  status: "Agendado" as StatusAgendamento,
+  modalidade: "ClienteTraz" as ModalidadeAgendamento,
+  observacoes: "",
+});
+
+const abrirEditar = async (ag: (typeof agendamentos.value)[0]) => {
+  editandoId.value = ag.id;
+  const dt = new Date(ag.dataHora);
+  editForm.data = dt.toISOString().slice(0, 10);
+  editForm.hora = dt.toLocaleTimeString("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  editForm.servicoId = ag.servico.id;
+  editForm.status = ag.status;
+  editForm.modalidade = ag.modalidade;
+  editForm.observacoes = ag.observacoes ?? "";
+
+  // garante que lista de serviços está carregada
+  if (!servicos.value.length) {
+    servicosLoading.value = true;
+    const resp = await apiFetch<{ id: string; nome: string; ativo: boolean }[]>(
+      "/servicos?ativos=true",
+    ).catch(() => []);
+    servicos.value = (Array.isArray(resp) ? resp : [])
+      .filter((s) => s.ativo)
+      .map((s) => ({ label: s.nome, value: s.id }));
+    servicosLoading.value = false;
+  }
+
+  isEditModalOpen.value = true;
+};
+
+const salvarEdicao = async () => {
+  if (
+    !editandoId.value ||
+    !editForm.data ||
+    !editForm.hora ||
+    !editForm.servicoId
+  ) {
+    toast.add({
+      title: "Preencha todos os campos obrigatórios",
+      color: "error",
+    });
+    return;
+  }
+  salvandoEdicao.value = true;
+  try {
+    const dataHora = new Date(
+      `${editForm.data}T${editForm.hora}`,
+    ).toISOString();
+    await update(editandoId.value, {
+      servicoId: editForm.servicoId,
+      status: editForm.status,
+      dataHora,
+      modalidade: editForm.modalidade,
+      observacoes: editForm.observacoes || undefined,
+    });
+    isEditModalOpen.value = false;
+    toast.add({ title: "Agendamento atualizado!", color: "success" });
+  } catch {
+    toast.add({ title: "Erro ao atualizar agendamento", color: "error" });
+  } finally {
+    salvandoEdicao.value = false;
+  }
+};
 
 const salvarAgendamento = async () => {
   if (
@@ -575,11 +651,11 @@ const salvarAgendamento = async () => {
 
           <!-- Ações -->
           <div class="flex items-center gap-1 shrink-0">
-            <!-- Ação principal do fluxo (ícone ghost — só colore no hover) -->
+            <!-- Ação principal do fluxo -->
             <UButton
               v-if="item.status === 'Agendado'"
               icon="i-lucide-check"
-              color="primary"
+              color="neutral"
               variant="ghost"
               size="xs"
               title="Confirmar agendamento"
@@ -589,7 +665,7 @@ const salvarAgendamento = async () => {
             <UButton
               v-else-if="item.status === 'Confirmado'"
               icon="i-lucide-play"
-              color="warning"
+              color="neutral"
               variant="ghost"
               size="xs"
               title="Iniciar atendimento"
@@ -599,7 +675,7 @@ const salvarAgendamento = async () => {
             <UButton
               v-else-if="item.status === 'EmAtendimento'"
               icon="i-lucide-check-check"
-              color="success"
+              color="neutral"
               variant="ghost"
               size="xs"
               title="Concluir atendimento"
@@ -607,34 +683,35 @@ const salvarAgendamento = async () => {
               @click="alterarStatus(item.id, 'Concluido')"
             />
 
-            <!-- Menu de ações secundárias -->
-            <UDropdownMenu
+            <!-- Editar -->
+            <UButton
+              icon="i-lucide-pencil"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              title="Editar agendamento"
+              @click="abrirEditar(item)"
+            />
+
+            <!-- Ações secundárias -->
+            <UButton
               v-if="item.status === 'Agendado' || item.status === 'Confirmado'"
-              :items="[
-                [
-                  {
-                    label: 'Não Compareceu',
-                    icon: 'i-lucide-user-x',
-                    color: 'warning',
-                    onSelect: () => alterarStatus(item.id, 'NaoCompareceu'),
-                  },
-                  {
-                    label: 'Cancelar',
-                    icon: 'i-lucide-x-circle',
-                    color: 'error',
-                    onSelect: () => pedirCancelamento(item.id),
-                  },
-                ],
-              ]"
-            >
-              <UButton
-                icon="i-lucide-ellipsis"
-                color="neutral"
-                variant="ghost"
-                size="xs"
-                title="Mais ações"
-              />
-            </UDropdownMenu>
+              icon="i-lucide-user-x"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              title="Não Compareceu"
+              @click="alterarStatus(item.id, 'NaoCompareceu')"
+            />
+            <UButton
+              v-if="item.status === 'Agendado' || item.status === 'Confirmado'"
+              icon="i-lucide-x-circle"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              title="Cancelar"
+              @click="pedirCancelamento(item.id)"
+            />
           </div>
         </div>
       </div>
@@ -761,6 +838,124 @@ const salvarAgendamento = async () => {
                 color="secondary"
                 :loading="salvando"
                 @click="salvarAgendamento"
+              >
+                Salvar
+              </UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
+    </UModal>
+
+    <!-- Modal edição agendamento -->
+    <UModal v-model:open="isEditModalOpen">
+      <template #content>
+        <UCard class="ring-0">
+          <template #header>
+            <div class="flex items-center justify-between">
+              <h3 class="font-semibold text-gray-800 dark:text-gray-100">
+                Editar Agendamento
+              </h3>
+              <UButton
+                icon="i-lucide-x"
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                @click="isEditModalOpen = false"
+              />
+            </div>
+          </template>
+
+          <div class="flex flex-col gap-3">
+            <div class="grid grid-cols-2 gap-3">
+              <UFormField label="Data *">
+                <UInput v-model="editForm.data" type="date" class="w-full" />
+              </UFormField>
+              <UFormField label="Hora *">
+                <UInput v-model="editForm.hora" type="time" class="w-full" />
+              </UFormField>
+            </div>
+
+            <UFormField label="Status">
+              <USelect
+                v-model="editForm.status"
+                :items="[
+                  { label: 'Agendado', value: 'Agendado' },
+                  { label: 'Confirmado', value: 'Confirmado' },
+                  { label: 'Em Atendimento', value: 'EmAtendimento' },
+                  { label: 'Concluído', value: 'Concluido' },
+                  { label: 'Cancelado', value: 'Cancelado' },
+                  { label: 'Não Compareceu', value: 'NaoCompareceu' },
+                ]"
+                class="w-full"
+              />
+            </UFormField>
+
+            <UFormField label="Serviço *">
+              <USelect
+                v-model="editForm.servicoId"
+                :items="servicos"
+                :loading="servicosLoading"
+                placeholder="Selecione o serviço"
+                class="w-full"
+              />
+            </UFormField>
+
+            <UFormField label="Modalidade">
+              <div class="flex gap-2">
+                <button
+                  type="button"
+                  class="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all"
+                  :class="
+                    editForm.modalidade === 'ClienteTraz'
+                      ? 'border-[#0EA5E9] bg-sky-50 dark:bg-sky-900/20 text-[#0EA5E9]'
+                      : 'border-gray-200 dark:border-neutral-600 text-gray-500 dark:text-gray-400 hover:border-gray-300'
+                  "
+                  @click="editForm.modalidade = 'ClienteTraz'"
+                >
+                  <UIcon name="i-lucide-footprints" class="size-4" />
+                  Cliente traz
+                </button>
+                <button
+                  type="button"
+                  class="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all"
+                  :class="
+                    editForm.modalidade === 'PetshopBusca'
+                      ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20 text-amber-600'
+                      : 'border-gray-200 dark:border-neutral-600 text-gray-500 dark:text-gray-400 hover:border-gray-300'
+                  "
+                  @click="editForm.modalidade = 'PetshopBusca'"
+                >
+                  <UIcon name="i-lucide-car" class="size-4" />
+                  Petshop busca
+                </button>
+              </div>
+            </UFormField>
+
+            <UFormField label="Observações">
+              <UTextarea
+                v-model="editForm.observacoes"
+                placeholder="Observações opcionais..."
+                :rows="2"
+                class="w-full"
+              />
+            </UFormField>
+          </div>
+
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <UButton
+                color="neutral"
+                variant="ghost"
+                :disabled="salvandoEdicao"
+                @click="isEditModalOpen = false"
+              >
+                Cancelar
+              </UButton>
+              <UButton
+                color="secondary"
+                :loading="salvandoEdicao"
+                @click="salvarEdicao"
               >
                 Salvar
               </UButton>

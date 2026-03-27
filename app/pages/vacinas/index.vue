@@ -142,7 +142,7 @@ const resumoCards = computed(() => [
       <UButton
         icon="i-lucide-plus"
         label="Registrar Vacina"
-        style="background-color: #10B981"
+        style="background-color: #10b981"
         class="text-white"
       />
     </div>
@@ -231,7 +231,11 @@ const resumoCards = computed(() => [
             >
               Status
             </th>
-            <th class="px-4 py-3"></th>
+            <th
+              class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+            >
+              Ações
+            </th>
           </tr>
         </thead>
         <tbody>
