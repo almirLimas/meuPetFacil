@@ -82,6 +82,14 @@ export const useClienteStore = defineStore("cliente", () => {
     }
   };
 
+  const buscarUm = async (id: string): Promise<Cliente> => {
+    const cliente = await apiFetch<Cliente>(`/clientes/${id}`);
+    const idx = clientes.value.findIndex((c) => c.id === id);
+    if (idx !== -1) clientes.value[idx] = cliente;
+    else clientes.value.unshift(cliente);
+    return cliente;
+  };
+
   const atualizar = async (
     id: string,
     dados: Partial<Omit<ClienteFormState, "pets">>,
@@ -119,6 +127,7 @@ export const useClienteStore = defineStore("cliente", () => {
     buscarPorId,
     // actions
     listar,
+    buscarUm,
     salvar,
     atualizar,
     remover,

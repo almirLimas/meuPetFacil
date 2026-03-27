@@ -9,10 +9,8 @@ const toast = useToast();
 
 const clienteStore = useClienteStore();
 
-// Garante que o cliente está carregado
-await useAsyncData(`cliente-edit-${id}`, async () => {
-  if (!clienteStore.buscarPorId(id)) await clienteStore.listar();
-});
+// Busca o cliente diretamente pelo id para garantir que os pets estejam incluídos
+await useAsyncData(`cliente-edit-${id}`, () => clienteStore.buscarUm(id));
 
 const cliente = computed(() => clienteStore.buscarPorId(id));
 

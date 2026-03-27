@@ -1,12 +1,14 @@
 ﻿<script setup lang="ts">
 import type { StatusAgendamento } from "~/types/agendamento";
+import { useClienteStore } from "~/stores/cliente";
 
 const { agendamentos, fetchByDate } = useAgenda();
+const clienteStore = useClienteStore();
 
 const today = new Date().toISOString().slice(0, 10);
 
-// Carrega agendamentos de hoje para o resumo do dashboard
-await fetchByDate(today);
+// Carrega agendamentos de hoje e clientes em paralelo
+await Promise.all([fetchByDate(today), clienteStore.listar()]);
 
 const proximosAgendamentos = computed(
   () =>
@@ -15,10 +17,17 @@ const proximosAgendamentos = computed(
     ).length,
 );
 
+const totalPets = computed(() =>
+  clienteStore.clientes.reduce(
+    (acc, c) => acc + (c._count?.pets ?? c.pets?.length ?? 0),
+    0,
+  ),
+);
+
 const stats = computed(() => [
   {
     lines: ["Clientes Ativos"],
-    value: "120",
+    value: String(clienteStore.ativos.length),
     icon: "i-lucide-users",
     bgColor: "#EDE9FE",
     iconColor: "#8B5CF6",
@@ -32,7 +41,7 @@ const stats = computed(() => [
   },
   {
     lines: ["Pets Cadastrados"],
-    value: "5",
+    value: String(totalPets.value),
     icon: "i-lucide-paw-print",
     bgColor: "#FFE0EC",
     iconColor: "#E85A8A",
@@ -81,12 +90,33 @@ function resolverBadge(item: { status: StatusAgendamento; passado: boolean }) {
   return statusBadge[item.status];
 }
 
-const cadastros = [
-  { name: "Laura & Mia", initials: "L", bg: "#F9C5D1" },
-  { name: "Pedro & Thor", initials: "P", bg: "#B5E5C8" },
-  { name: "Mariana & Billy", initials: "M", bg: "#FFDAAA" },
-  { name: "Carlos & Mel", initials: "C", bg: "#AACFF5" },
+const AVATAR_COLORS = [
+  "#F9C5D1",
+  "#B5E5C8",
+  "#FFDAAA",
+  "#AACFF5",
+  "#D4C5F9",
+  "#FFC9A9",
 ];
+
+const ultimosClientes = computed(() =>
+  [...clienteStore.clientes]
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+    .slice(0, 5)
+    .map((c, i) => ({
+      id: c.id,
+      nome: c.nome,
+      petLabel:
+        c.pets && c.pets.length > 0
+          ? c.pets.map((p) => p.nome).join(", ")
+          : "Sem pets",
+      initials: c.nome.charAt(0).toUpperCase(),
+      bg: AVATAR_COLORS[i % AVATAR_COLORS.length],
+    })),
+);
 
 const servicosPopulares = [
   { label: "Banho", percent: 35, color: "#8B5CF6" },
@@ -270,9 +300,10 @@ const lembretesVacinas = [
       </div>
       <div class="p-4 flex flex-col gap-1 flex-1">
         <div
-          v-for="c in cadastros"
-          :key="c.name"
+          v-for="c in ultimosClientes"
+          :key="c.id"
           class="flex items-center justify-between py-2 border-b border-gray-50 dark:border-neutral-700 last:border-0 cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-700 rounded-lg px-1 transition-colors"
+          @click="navigateTo(`/clientes/${c.id}`)"
         >
           <div class="flex items-center gap-3">
             <div
@@ -281,19 +312,23 @@ const lembretesVacinas = [
             >
               {{ c.initials }}
             </div>
-            <span class="text-sm text-gray-700 dark:text-gray-200">{{
-              c.name
-            }}</span>
+            <div class="flex flex-col leading-tight">
+              <span class="text-sm text-gray-700 dark:text-gray-200">{{
+                c.nome
+              }}</span>
+              <span class="text-xs text-gray-400">{{ c.petLabel }}</span>
+            </div>
           </div>
           <UIcon name="i-lucide-chevron-right" class="size-4 text-gray-400" />
         </div>
         <div class="flex justify-end mt-auto pt-2">
-          <button
+          <NuxtLink
+            to="/clientes"
             class="text-sm font-medium hover:opacity-70 transition-opacity"
             style="color: #8b5cf6"
           >
             Ver Mais &rsaquo;
-          </button>
+          </NuxtLink>
         </div>
       </div>
     </div>
