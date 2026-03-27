@@ -1,4 +1,6 @@
 ﻿<script setup lang="ts">
+import type { StatusAgendamento } from "~/types/agendamento";
+
 const { agendamentos, fetchByDate } = useAgenda();
 
 const today = new Date().toISOString().slice(0, 10);
@@ -54,9 +56,30 @@ const agendaItems = computed(() =>
       }),
       service: a.servico.nome,
       pet: a.pet.nome,
-      highlight: a.status === "Agendado" || a.status === "Confirmado",
+      status: a.status as StatusAgendamento,
+      passado:
+        (a.status === "Agendado" || a.status === "Confirmado") &&
+        new Date(a.dataHora) < new Date(),
     })),
 );
+
+const statusBadge: Record<
+  StatusAgendamento | "AguardandoAcao",
+  { label: string; bg: string; text: string }
+> = {
+  Agendado: { label: "Agendado", bg: "#E0F2FE", text: "#0EA5E9" },
+  Confirmado: { label: "Confirmado", bg: "#EDE9FE", text: "#8B5CF6" },
+  EmAtendimento: { label: "Em Atendimento", bg: "#FEF3C7", text: "#D97706" },
+  Concluido: { label: "Concluído", bg: "#D1FAE5", text: "#10B981" },
+  Cancelado: { label: "Cancelado", bg: "#F3F4F6", text: "#9CA3AF" },
+  NaoCompareceu: { label: "Não Compareceu", bg: "#FEE2E2", text: "#EF4444" },
+  AguardandoAcao: { label: "Aguardando Ação", bg: "#FFEDD5", text: "#EA580C" },
+};
+
+function resolverBadge(item: { status: StatusAgendamento; passado: boolean }) {
+  if (item.passado) return statusBadge["AguardandoAcao"];
+  return statusBadge[item.status];
+}
 
 const cadastros = [
   { name: "Laura & Mia", initials: "L", bg: "#F9C5D1" },
@@ -203,15 +226,17 @@ const lembretesVacinas = [
             class="text-gray-500 dark:text-gray-400 font-medium w-12 shrink-0"
             >{{ item.time }}</span
           >
+          <span class="flex-1 text-gray-700 dark:text-gray-300 truncate">
+            {{ item.service }} — {{ item.pet }}
+          </span>
           <span
-            :class="
-              item.highlight
-                ? 'font-semibold'
-                : 'text-gray-700 dark:text-gray-300'
-            "
-            :style="item.highlight ? 'color:#0EA5E9;' : ''"
+            class="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0"
+            :style="{
+              backgroundColor: resolverBadge(item).bg,
+              color: resolverBadge(item).text,
+            }"
           >
-            {{ item.service }} - {{ item.pet }}
+            {{ resolverBadge(item).label }}
           </span>
         </div>
         <div class="flex justify-end mt-auto pt-2">

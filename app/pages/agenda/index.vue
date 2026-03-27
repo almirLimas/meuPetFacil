@@ -38,19 +38,33 @@ const nextDay = () => {
 
 watch(selectedDate, (date) => fetchByDate(date), { immediate: true });
 
-// -- Busca local -------------------------------------------------------------
+// -- Busca e filtro por status -----------------------------------------------
 const busca = ref("");
+const filtroStatus = ref<StatusAgendamento | "Todos">("Todos");
+
+const opcoesStatus: { label: string; value: StatusAgendamento | "Todos" }[] = [
+  { label: "Todos", value: "Todos" },
+  { label: "Agendado", value: "Agendado" },
+  { label: "Confirmado", value: "Confirmado" },
+  { label: "Em Atendimento", value: "EmAtendimento" },
+  { label: "Concluído", value: "Concluido" },
+  { label: "Cancelado", value: "Cancelado" },
+  { label: "Não Compareceu", value: "NaoCompareceu" },
+];
 
 const agendamentosDoDia = computed(() => {
   const q = busca.value.toLowerCase();
   return agendamentos.value
-    .filter(
-      (a) =>
+    .filter((a) => {
+      const matchBusca =
         !q ||
         a.pet.nome.toLowerCase().includes(q) ||
         a.cliente.nome.toLowerCase().includes(q) ||
-        a.servico.nome.toLowerCase().includes(q),
-    )
+        a.servico.nome.toLowerCase().includes(q);
+      const matchStatus =
+        filtroStatus.value === "Todos" || a.status === filtroStatus.value;
+      return matchBusca && matchStatus;
+    })
     .sort((a, b) => a.dataHora.localeCompare(b.dataHora));
 });
 
@@ -62,6 +76,8 @@ const resumoDia = computed(() => ({
   ).length,
   concluidos: agendamentos.value.filter((a) => a.status === "Concluido").length,
   cancelados: agendamentos.value.filter((a) => a.status === "Cancelado").length,
+  naoCompareceu: agendamentos.value.filter((a) => a.status === "NaoCompareceu")
+    .length,
 }));
 
 // -- Hora do agendamento ------------------------------------------------------
@@ -101,7 +117,31 @@ const statusConfig: Record<
     bg: "bg-gray-100 dark:bg-neutral-700",
     text: "text-gray-500 dark:text-gray-400",
   },
+  NaoCompareceu: {
+    label: "Não Compareceu",
+    bg: "bg-red-100 dark:bg-red-900/40",
+    text: "text-red-600 dark:text-red-400",
+  },
 };
+
+const aguardandoAcaoConfig = {
+  label: "Aguardando Ação",
+  bg: "bg-orange-100 dark:bg-orange-900/40",
+  text: "text-orange-600 dark:text-orange-400",
+};
+
+function resolverExibicaoStatus(ag: {
+  status: StatusAgendamento;
+  dataHora: string;
+}) {
+  if (
+    (ag.status === "Agendado" || ag.status === "Confirmado") &&
+    new Date(ag.dataHora) < new Date()
+  ) {
+    return aguardandoAcaoConfig;
+  }
+  return statusConfig[ag.status];
+}
 
 // -- Ações de status ----------------------------------------------------------
 const alterandoStatus = ref<string | null>(null);
@@ -316,7 +356,7 @@ const salvarAgendamento = async () => {
     </div>
 
     <!-- Cards de resumo -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
       <div
         v-for="card in [
           {
@@ -325,6 +365,7 @@ const salvarAgendamento = async () => {
             icon: 'i-lucide-calendar',
             bg: '#E0F2FE',
             color: '#0EA5E9',
+            status: 'Todos' as StatusAgendamento | 'Todos',
           },
           {
             label: 'Agendados',
@@ -332,6 +373,7 @@ const salvarAgendamento = async () => {
             icon: 'i-lucide-clock',
             bg: '#E0F2FE',
             color: '#0EA5E9',
+            status: 'Agendado' as StatusAgendamento | 'Todos',
           },
           {
             label: 'Concluídos',
@@ -339,6 +381,7 @@ const salvarAgendamento = async () => {
             icon: 'i-lucide-check-circle',
             bg: '#D1FAE5',
             color: '#10B981',
+            status: 'Concluido' as StatusAgendamento | 'Todos',
           },
           {
             label: 'Cancelados',
@@ -346,10 +389,25 @@ const salvarAgendamento = async () => {
             icon: 'i-lucide-x-circle',
             bg: '#F0F0F0',
             color: '#9ca3af',
+            status: 'Cancelado' as StatusAgendamento | 'Todos',
+          },
+          {
+            label: 'Não Compareceu',
+            value: resumoDia.naoCompareceu,
+            icon: 'i-lucide-user-x',
+            bg: '#FEE2E2',
+            color: '#EF4444',
+            status: 'NaoCompareceu' as StatusAgendamento | 'Todos',
           },
         ]"
         :key="card.label"
-        class="bg-white dark:bg-neutral-800 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3"
+        class="bg-white dark:bg-neutral-800 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3 cursor-pointer ring-2 transition-all"
+        :class="
+          filtroStatus === card.status
+            ? 'ring-secondary-400'
+            : 'ring-transparent hover:ring-gray-200'
+        "
+        @click="filtroStatus = card.status"
       >
         <div>
           <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -379,7 +437,7 @@ const salvarAgendamento = async () => {
       class="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm overflow-hidden"
     >
       <div
-        class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-neutral-700"
+        class="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-gray-100 dark:border-neutral-700"
       >
         <UInput
           v-model="busca"
@@ -388,6 +446,21 @@ const salvarAgendamento = async () => {
           size="sm"
           class="max-w-xs"
         />
+        <div class="flex flex-wrap gap-1 ml-auto">
+          <button
+            v-for="opt in opcoesStatus"
+            :key="opt.value"
+            class="px-3 py-1 rounded-full text-xs font-semibold transition-colors"
+            :class="
+              filtroStatus === opt.value
+                ? 'bg-[#0EA5E9] text-white'
+                : 'bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-neutral-600'
+            "
+            @click="filtroStatus = opt.value"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
       </div>
 
       <!-- Loading -->
@@ -432,12 +505,12 @@ const salvarAgendamento = async () => {
           <!-- Ícone -->
           <div
             class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-            style="background-color: #E0F2FE"
+            style="background-color: #e0f2fe"
           >
             <UIcon
               name="i-lucide-scissors"
               class="size-4"
-              style="color: #0EA5E9"
+              style="color: #0ea5e9"
             />
           </div>
 
@@ -493,55 +566,75 @@ const salvarAgendamento = async () => {
           <span
             class="text-xs font-semibold px-2.5 py-1 rounded-full shrink-0"
             :class="[
-              statusConfig[item.status].bg,
-              statusConfig[item.status].text,
+              resolverExibicaoStatus(item).bg,
+              resolverExibicaoStatus(item).text,
             ]"
           >
-            {{ statusConfig[item.status].label }}
+            {{ resolverExibicaoStatus(item).label }}
           </span>
 
           <!-- Ações -->
-          <div class="flex gap-1 shrink-0">
+          <div class="flex items-center gap-1 shrink-0">
+            <!-- Ação principal do fluxo (ícone ghost — só colore no hover) -->
             <UButton
               v-if="item.status === 'Agendado'"
               icon="i-lucide-check"
-              color="neutral"
+              color="primary"
               variant="ghost"
               size="xs"
-              title="Confirmar"
+              title="Confirmar agendamento"
               :loading="alterandoStatus === item.id"
               @click="alterarStatus(item.id, 'Confirmado')"
             />
             <UButton
-              v-if="item.status === 'Confirmado'"
+              v-else-if="item.status === 'Confirmado'"
               icon="i-lucide-play"
-              color="neutral"
+              color="warning"
               variant="ghost"
               size="xs"
-              title="Iniciar Atendimento"
+              title="Iniciar atendimento"
               :loading="alterandoStatus === item.id"
               @click="alterarStatus(item.id, 'EmAtendimento')"
             />
             <UButton
-              v-if="item.status === 'EmAtendimento'"
+              v-else-if="item.status === 'EmAtendimento'"
               icon="i-lucide-check-check"
-              color="neutral"
+              color="success"
               variant="ghost"
               size="xs"
-              title="Concluir"
+              title="Concluir atendimento"
               :loading="alterandoStatus === item.id"
               @click="alterarStatus(item.id, 'Concluido')"
             />
-            <UButton
+
+            <!-- Menu de ações secundárias -->
+            <UDropdownMenu
               v-if="item.status === 'Agendado' || item.status === 'Confirmado'"
-              icon="i-lucide-x"
-              color="neutral"
-              variant="ghost"
-              size="xs"
-              title="Cancelar"
-              :loading="alterandoStatus === item.id"
-              @click="pedirCancelamento(item.id)"
-            />
+              :items="[
+                [
+                  {
+                    label: 'Não Compareceu',
+                    icon: 'i-lucide-user-x',
+                    color: 'warning',
+                    onSelect: () => alterarStatus(item.id, 'NaoCompareceu'),
+                  },
+                  {
+                    label: 'Cancelar',
+                    icon: 'i-lucide-x-circle',
+                    color: 'error',
+                    onSelect: () => pedirCancelamento(item.id),
+                  },
+                ],
+              ]"
+            >
+              <UButton
+                icon="i-lucide-ellipsis"
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                title="Mais ações"
+              />
+            </UDropdownMenu>
           </div>
         </div>
       </div>

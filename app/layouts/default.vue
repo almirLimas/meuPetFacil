@@ -64,19 +64,7 @@ watch(
 
       <template #right>
         <!-- Notificações -->
-        <div class="relative">
-          <UButton
-            icon="i-lucide-bell"
-            color="neutral"
-            variant="ghost"
-            aria-label="Notificações"
-          />
-          <span
-            class="absolute -top-0.5 -right-0.5 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center pointer-events-none"
-            style="background-color: #8B5CF6"
-            >3</span
-          >
-        </div>
+        <NotificacoesSino />
 
         <!-- Mensagens -->
         <UButton

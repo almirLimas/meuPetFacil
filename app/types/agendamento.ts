@@ -3,7 +3,8 @@ export type StatusAgendamento =
   | "Confirmado"
   | "EmAtendimento"
   | "Concluido"
-  | "Cancelado";
+  | "Cancelado"
+  | "NaoCompareceu";
 
 export type ModalidadeAgendamento = "ClienteTraz" | "PetshopBusca";
 
