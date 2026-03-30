@@ -21,7 +21,7 @@ const {
 
 const mesAtual = new Date().toISOString().substring(0, 7);
 const mesFiltro = ref(mesAtual);
-const diasFiltro = ref(30);
+const diasFiltro = ref("30");
 
 const mesesOpcoes = computed(() => {
   const opcoes = [];
@@ -42,10 +42,12 @@ const mesesOpcoes = computed(() => {
 });
 
 const diasOpcoes = [
-  { label: "15 dias", value: 15 },
-  { label: "30 dias", value: 30 },
-  { label: "60 dias", value: 60 },
-  { label: "90 dias", value: 90 },
+  { label: "7d", value: "7", full: "7 dias" },
+  { label: "15d", value: "15", full: "15 dias" },
+  { label: "30d", value: "30", full: "30 dias" },
+  { label: "45d", value: "45", full: "45 dias" },
+  { label: "60d", value: "60", full: "60 dias" },
+  { label: "90d", value: "90", full: "90 dias" },
 ];
 
 // ── Carregamento ─────────────────────────────────────────────────────────────
@@ -58,7 +60,7 @@ const carregar = async () => {
 };
 
 const carregarClientesNaoVoltaram = async () => {
-  await fetchClientesNaoVoltaram(diasFiltro.value);
+  await fetchClientesNaoVoltaram(Number(diasFiltro.value));
 };
 
 onMounted(async () => {
@@ -224,16 +226,14 @@ const enviarAvulso = async () => {
 </script>
 
 <template>
-  <div class="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto">
+  <div class="flex flex-col gap-4">
     <!-- ═══ Cabeçalho ═══════════════════════════════════════════════════════ -->
-    <div
-      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-    >
+    <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">
-          📈 Relatórios & Oportunidades
+        <h1 class="text-xl font-bold text-gray-800 dark:text-gray-100">
+          Relatórios & Oportunidades
         </h1>
-        <p class="text-sm text-neutral-500 mt-0.5">
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
           Transforme dados em ações para crescer seu negócio
         </p>
       </div>
@@ -429,15 +429,27 @@ const enviarAvulso = async () => {
             </UBadge>
           </div>
 
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
             <span class="text-sm text-neutral-500">Sem visita há mais de:</span>
-            <USelect
-              v-model="diasFiltro"
-              :options="diasOpcoes"
-              value-key="value"
-              label-key="label"
-              class="w-32"
-            />
+            <div
+              class="flex rounded-lg border border-neutral-200 dark:border-neutral-700 overflow-hidden"
+            >
+              <button
+                v-for="opt in diasOpcoes"
+                :key="opt.value"
+                type="button"
+                class="px-2.5 py-1 text-xs font-medium border-r border-neutral-200 dark:border-neutral-700 last:border-r-0 transition-colors"
+                :class="
+                  diasFiltro === opt.value
+                    ? 'bg-orange-500 text-white'
+                    : 'bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-orange-50 dark:hover:bg-orange-950'
+                "
+                :title="opt.full"
+                @click="diasFiltro = opt.value"
+              >
+                {{ opt.label }}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -726,35 +738,60 @@ const enviarAvulso = async () => {
   <!-- ═══ Modal resultado WhatsApp ══════════════════════════════════════════ -->
   <UModal v-model:open="modalWhatsapp.aberto" :ui="{ width: 'max-w-xs' }">
     <template #body>
-      <div class="flex items-start gap-3 p-1">
-        <UIcon
-          :name="
-            modalWhatsapp.sucesso
-              ? 'i-lucide-check-circle-2'
-              : 'i-lucide-x-circle'
-          "
-          class="size-5 shrink-0 mt-0.5"
-          :class="modalWhatsapp.sucesso ? 'text-green-500' : 'text-red-500'"
-        />
-        <div class="flex-1 min-w-0">
-          <p class="font-semibold text-sm text-neutral-900 dark:text-white">
-            {{ modalWhatsapp.titulo }}
-          </p>
-          <p class="text-xs text-neutral-500 mt-0.5">
-            {{ modalWhatsapp.descricao }}
-          </p>
+      <div class="flex flex-col items-center text-center px-4 pt-6 pb-2">
+        <!-- Ícone com brilhos decorativos -->
+        <div class="relative mb-5">
+          <span
+            class="absolute -top-3 left-1 text-sm"
+            :class="modalWhatsapp.sucesso ? 'text-green-400' : 'text-red-300'"
+            >✦</span
+          >
+          <span
+            class="absolute -top-1 -right-3 text-xs"
+            :class="modalWhatsapp.sucesso ? 'text-green-300' : 'text-red-200'"
+            >✦</span
+          >
+          <span
+            class="absolute -bottom-2 -left-3 text-xs"
+            :class="modalWhatsapp.sucesso ? 'text-green-300' : 'text-red-200'"
+            >✦</span
+          >
+          <span
+            class="absolute bottom-0 -right-2 text-sm"
+            :class="modalWhatsapp.sucesso ? 'text-green-400' : 'text-red-300'"
+            >✦</span
+          >
+
+          <div
+            class="w-20 h-20 rounded-full flex items-center justify-center shadow-md"
+            :class="modalWhatsapp.sucesso ? 'bg-green-500' : 'bg-red-500'"
+          >
+            <UIcon
+              :name="modalWhatsapp.sucesso ? 'i-lucide-check' : 'i-lucide-x'"
+              class="size-10 text-white"
+            />
+          </div>
         </div>
+
+        <p
+          class="text-xl font-bold text-neutral-900 dark:text-white leading-tight"
+        >
+          {{ modalWhatsapp.titulo }}
+        </p>
+        <p class="text-sm text-neutral-500 mt-1.5 leading-snug">
+          {{ modalWhatsapp.descricao }}
+        </p>
       </div>
     </template>
     <template #footer>
-      <div class="flex justify-end">
+      <div class="px-4 pb-4 pt-1 w-full">
         <UButton
-          size="sm"
-          color="neutral"
-          variant="soft"
+          block
+          :color="modalWhatsapp.sucesso ? 'success' : 'error'"
+          class="font-semibold"
           @click="modalWhatsapp.aberto = false"
         >
-          Fechar
+          OK
         </UButton>
       </div>
     </template>
