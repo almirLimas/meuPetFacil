@@ -1,0 +1,762 @@
+<script setup lang="ts">
+import type { ClienteNaoVoltou } from "~/composables/useRelatorios";
+
+definePageMeta({ layout: "default" });
+
+const {
+  resumo,
+  clientesNaoVoltaram,
+  servicosPopulares,
+  loading,
+  loadingClientes,
+  enviandoWhatsApp,
+  fetchResumo,
+  fetchClientesNaoVoltaram,
+  fetchServicosPopulares,
+  gerarLinkWhatsApp,
+  enviarWhatsAppApi,
+} = useRelatorios();
+
+// ── Filtros ──────────────────────────────────────────────────────────────────
+
+const mesAtual = new Date().toISOString().substring(0, 7);
+const mesFiltro = ref(mesAtual);
+const diasFiltro = ref(30);
+
+const mesesOpcoes = computed(() => {
+  const opcoes = [];
+  const hoje = new Date();
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+    const valor = d.toISOString().substring(0, 7);
+    const label = d.toLocaleDateString("pt-BR", {
+      month: "long",
+      year: "numeric",
+    });
+    opcoes.push({
+      label: label.charAt(0).toUpperCase() + label.slice(1),
+      value: valor,
+    });
+  }
+  return opcoes;
+});
+
+const diasOpcoes = [
+  { label: "15 dias", value: 15 },
+  { label: "30 dias", value: 30 },
+  { label: "60 dias", value: 60 },
+  { label: "90 dias", value: 90 },
+];
+
+// ── Carregamento ─────────────────────────────────────────────────────────────
+
+const carregar = async () => {
+  await Promise.all([
+    fetchResumo(mesFiltro.value),
+    fetchServicosPopulares(mesFiltro.value),
+  ]);
+};
+
+const carregarClientesNaoVoltaram = async () => {
+  await fetchClientesNaoVoltaram(diasFiltro.value);
+};
+
+onMounted(async () => {
+  await carregar();
+  await carregarClientesNaoVoltaram();
+});
+
+watch(mesFiltro, carregar);
+watch(diasFiltro, carregarClientesNaoVoltaram);
+
+// ── Painel "Recuperar Clientes" ───────────────────────────────────────────────
+
+const mostrarPainelRecuperacao = ref(false);
+
+// ── Modal resultado WhatsApp ─────────────────────────────────────────────────
+const modalWhatsapp = reactive({
+  aberto: false,
+  sucesso: false,
+  titulo: "",
+  descricao: "",
+});
+
+function mostrarResultado(sucesso: boolean, titulo: string, descricao: string) {
+  modalWhatsapp.sucesso = sucesso;
+  modalWhatsapp.titulo = titulo;
+  modalWhatsapp.descricao = descricao;
+  modalWhatsapp.aberto = true;
+}
+
+const abrirWhatsApp = (cliente: ClienteNaoVoltou) => {
+  const url = gerarLinkWhatsApp(
+    cliente.telefonePrincipal,
+    cliente.nome,
+    cliente.diasSemVoltar,
+  );
+  window.open(url, "_blank", "noopener,noreferrer");
+};
+
+const enviarMensagem = async (cliente: ClienteNaoVoltou) => {
+  try {
+    const resultado = await enviarWhatsAppApi(cliente);
+    if (resultado.sucesso) {
+      mostrarResultado(
+        true,
+        resultado.simulado ? "Mensagem simulada" : "✅ Mensagem enviada!",
+        resultado.simulado
+          ? `Mensagem para ${resultado.telefone} registrada no log do servidor. Defina WHATSAPP_MODE=baileys no .env para enviar de verdade.`
+          : `Mensagem entregue com sucesso para ${resultado.telefone}.`,
+      );
+    } else {
+      mostrarResultado(
+        false,
+        "Falha ao enviar mensagem",
+        resultado.detalhes ?? "Tente novamente.",
+      );
+    }
+  } catch {
+    mostrarResultado(
+      false,
+      "Erro ao chamar a API",
+      "Verifique se o servidor backend está rodando.",
+    );
+  }
+};
+
+const recuperarTodos = () => {
+  mostrarPainelRecuperacao.value = true;
+};
+
+// ── Formatadores ─────────────────────────────────────────────────────────────
+
+const formatarMoeda = (v: number) =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+const formatarData = (d: string) =>
+  new Date(d).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+const corUrgencia = (dias: number) => {
+  if (dias > 60) return "text-red-500";
+  if (dias > 30) return "text-orange-500";
+  return "text-yellow-500";
+};
+
+const badgeUrgencia = (dias: number): "error" | "warning" | "neutral" => {
+  if (dias > 60) return "error";
+  if (dias > 30) return "warning";
+  return "neutral";
+};
+
+const taxaCorLabel = computed(() => {
+  const t = resumo.value?.taxaRetorno ?? 0;
+  if (t >= 70) return "text-green-600 dark:text-green-400";
+  if (t >= 40) return "text-yellow-600 dark:text-yellow-400";
+  return "text-red-600 dark:text-red-400";
+});
+
+const totalReceitaEstimada = computed(() =>
+  servicosPopulares.value.reduce((acc, s) => acc + s.receitaEstimada, 0),
+);
+
+// ── Envio avulso (teste) ─────────────────────────────────────────────────────
+
+const { maskTelefone } = useMask();
+
+const envioAvulso = reactive({
+  telefone: "",
+  mensagem:
+    "Olá! 👋 Aqui é do nosso petshop. Que tal agendarmos um banho ou tosa essa semana? Temos horários disponíveis! 🐾",
+  erro: "",
+});
+const enviandoAvulso = ref(false);
+
+const enviarAvulso = async () => {
+  envioAvulso.erro = "";
+  if (!envioAvulso.telefone || !envioAvulso.mensagem) {
+    envioAvulso.erro = "Preencha o telefone e a mensagem.";
+    return;
+  }
+  enviandoAvulso.value = true;
+  try {
+    const { apiFetch } = useApi();
+    const resultado = await apiFetch<{
+      sucesso: boolean;
+      simulado: boolean;
+      telefone: string;
+      detalhes?: string;
+    }>("/whatsapp/enviar", {
+      method: "POST",
+      body: {
+        telefone: envioAvulso.telefone,
+        mensagem: envioAvulso.mensagem,
+      },
+    });
+    if (resultado.sucesso) {
+      mostrarResultado(
+        true,
+        resultado.simulado ? "Mensagem simulada" : "✅ Mensagem enviada!",
+        resultado.simulado
+          ? `Mensagem para ${resultado.telefone} registrada no log do servidor. Defina WHATSAPP_MODE=baileys no .env para enviar de verdade.`
+          : `Mensagem entregue com sucesso para ${resultado.telefone}.`,
+      );
+    } else {
+      mostrarResultado(
+        false,
+        "Falha ao enviar",
+        resultado.detalhes ?? "Verifique o servidor.",
+      );
+    }
+  } catch {
+    mostrarResultado(
+      false,
+      "Erro ao chamar a API",
+      "Verifique se o backend está rodando.",
+    );
+  } finally {
+    enviandoAvulso.value = false;
+  }
+};
+</script>
+
+<template>
+  <div class="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto">
+    <!-- ═══ Cabeçalho ═══════════════════════════════════════════════════════ -->
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+    >
+      <div>
+        <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">
+          📈 Relatórios & Oportunidades
+        </h1>
+        <p class="text-sm text-neutral-500 mt-0.5">
+          Transforme dados em ações para crescer seu negócio
+        </p>
+      </div>
+
+      <USelect
+        v-model="mesFiltro"
+        :options="mesesOpcoes"
+        value-key="value"
+        label-key="label"
+        class="w-52"
+      />
+    </div>
+
+    <!-- ═══ Cards de Insight ═══════════════════════════════════════════════ -->
+    <div
+      v-if="loading"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+    >
+      <USkeleton v-for="i in 4" :key="i" class="h-32 rounded-xl" />
+    </div>
+
+    <div
+      v-else-if="resumo"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+    >
+      <!-- Clientes ativos -->
+      <UCard class="border border-neutral-200 dark:border-neutral-700">
+        <div class="flex items-start justify-between">
+          <div>
+            <p
+              class="text-xs font-medium text-neutral-500 uppercase tracking-wide"
+            >
+              Clientes ativos
+            </p>
+            <p class="text-3xl font-bold text-neutral-900 dark:text-white mt-1">
+              {{ resumo.totalClientesAtivos }}
+            </p>
+            <p class="text-sm text-green-600 mt-1 font-medium">
+              +{{ resumo.novosClientes }} novos esse mês
+            </p>
+          </div>
+          <div class="p-2.5 bg-blue-50 dark:bg-blue-950 rounded-lg">
+            <UIcon name="i-lucide-users" class="size-5 text-blue-500" />
+          </div>
+        </div>
+      </UCard>
+
+      <!-- Clientes que não voltaram (card de oportunidade) -->
+      <UCard
+        class="border-2 border-orange-300 dark:border-orange-700 bg-orange-50 dark:bg-orange-950 cursor-pointer hover:shadow-md transition-shadow"
+        @click="mostrarPainelRecuperacao = true"
+      >
+        <div class="flex items-start justify-between">
+          <div>
+            <p
+              class="text-xs font-medium text-orange-600 uppercase tracking-wide"
+            >
+              🚨 Não voltaram (30d)
+            </p>
+            <p
+              class="text-3xl font-bold text-orange-700 dark:text-orange-300 mt-1"
+            >
+              {{ resumo.clientesNaoVoltaram }}
+            </p>
+            <UButton
+              size="xs"
+              color="warning"
+              variant="soft"
+              icon="i-lucide-message-circle"
+              class="mt-2"
+              @click.stop="recuperarTodos"
+            >
+              Recuperar clientes
+            </UButton>
+          </div>
+          <div class="p-2.5 bg-orange-100 dark:bg-orange-900 rounded-lg">
+            <UIcon name="i-lucide-user-x" class="size-5 text-orange-500" />
+          </div>
+        </div>
+      </UCard>
+
+      <!-- Taxa de retorno -->
+      <UCard class="border border-neutral-200 dark:border-neutral-700">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <p
+              class="text-xs font-medium text-neutral-500 uppercase tracking-wide"
+            >
+              Taxa de retorno
+            </p>
+            <p class="text-3xl font-bold mt-1" :class="taxaCorLabel">
+              {{ resumo.taxaRetorno }}%
+            </p>
+            <div
+              class="mt-2 h-2 bg-neutral-200 dark:bg-neutral-700 rounded-full"
+            >
+              <div
+                class="h-2 rounded-full transition-all"
+                :class="
+                  resumo.taxaRetorno >= 70
+                    ? 'bg-green-500'
+                    : resumo.taxaRetorno >= 40
+                      ? 'bg-yellow-500'
+                      : 'bg-red-500'
+                "
+                :style="{ width: `${Math.min(resumo.taxaRetorno, 100)}%` }"
+              />
+            </div>
+            <p class="text-xs text-neutral-400 mt-1">
+              {{ resumo.clientesRetornaram }} de
+              {{ resumo.totalClientesAtivos }} voltaram
+            </p>
+          </div>
+          <div class="p-2.5 bg-green-50 dark:bg-green-950 rounded-lg ml-3">
+            <UIcon name="i-lucide-repeat" class="size-5 text-green-500" />
+          </div>
+        </div>
+      </UCard>
+
+      <!-- Faturamento -->
+      <UCard class="border border-neutral-200 dark:border-neutral-700">
+        <div class="flex items-start justify-between">
+          <div>
+            <p
+              class="text-xs font-medium text-neutral-500 uppercase tracking-wide"
+            >
+              Faturamento
+            </p>
+            <p class="text-2xl font-bold text-neutral-900 dark:text-white mt-1">
+              {{ formatarMoeda(resumo.faturamento) }}
+            </p>
+            <p class="text-sm text-neutral-500 mt-1">
+              {{ resumo.agendamentos.concluidos }} atendimentos concluídos
+            </p>
+          </div>
+          <div class="p-2.5 bg-emerald-50 dark:bg-emerald-950 rounded-lg">
+            <UIcon name="i-lucide-banknote" class="size-5 text-emerald-500" />
+          </div>
+        </div>
+      </UCard>
+    </div>
+
+    <!-- Cards de agendamentos (linha secundária) -->
+    <div
+      v-if="resumo && !loading"
+      class="grid grid-cols-2 sm:grid-cols-4 gap-3"
+    >
+      <div
+        class="bg-white dark:bg-neutral-800 rounded-lg p-3 border border-neutral-200 dark:border-neutral-700 text-center"
+      >
+        <p class="text-2xl font-bold text-neutral-800 dark:text-white">
+          {{ resumo.agendamentos.total }}
+        </p>
+        <p class="text-xs text-neutral-500 mt-0.5">Agendamentos</p>
+      </div>
+      <div
+        class="bg-white dark:bg-neutral-800 rounded-lg p-3 border border-green-200 dark:border-green-800 text-center"
+      >
+        <p class="text-2xl font-bold text-green-600">
+          {{ resumo.agendamentos.concluidos }}
+        </p>
+        <p class="text-xs text-neutral-500 mt-0.5">Concluídos</p>
+      </div>
+      <div
+        class="bg-white dark:bg-neutral-800 rounded-lg p-3 border border-red-200 dark:border-red-800 text-center"
+      >
+        <p class="text-2xl font-bold text-red-500">
+          {{ resumo.agendamentos.cancelados }}
+        </p>
+        <p class="text-xs text-neutral-500 mt-0.5">Cancelados</p>
+      </div>
+      <div
+        class="bg-white dark:bg-neutral-800 rounded-lg p-3 border border-orange-200 dark:border-orange-800 text-center"
+      >
+        <p class="text-2xl font-bold text-orange-500">
+          {{ resumo.agendamentos.naoCompareceu }}
+        </p>
+        <p class="text-xs text-neutral-500 mt-0.5">Não compareceu</p>
+      </div>
+    </div>
+
+    <!-- ═══ Painel: Clientes para recuperar ════════════════════════════════ -->
+    <UCard>
+      <template #header>
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div class="flex items-center gap-2">
+            <UIcon name="i-lucide-user-x" class="size-5 text-orange-500" />
+            <h2 class="font-semibold text-neutral-900 dark:text-white">
+              Clientes para recuperar
+            </h2>
+            <UBadge v-if="clientesNaoVoltaram" color="warning" variant="soft">
+              {{ clientesNaoVoltaram.total }}
+            </UBadge>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-neutral-500">Sem visita há mais de:</span>
+            <USelect
+              v-model="diasFiltro"
+              :options="diasOpcoes"
+              value-key="value"
+              label-key="label"
+              class="w-32"
+            />
+          </div>
+        </div>
+
+        <p class="text-sm text-neutral-500 mt-1">
+          💡 <strong>Dica:</strong> Um único cliente recuperado pode valer R$
+          150–300/mês em atendimentos recorrentes. Clique em
+          <span class="text-green-600 font-medium">WhatsApp</span> para enviar
+          uma mensagem personalizada.
+        </p>
+      </template>
+
+      <div v-if="loadingClientes" class="space-y-3">
+        <USkeleton v-for="i in 5" :key="i" class="h-14 rounded-lg" />
+      </div>
+
+      <div
+        v-else-if="clientesNaoVoltaram && clientesNaoVoltaram.clientes.length"
+        class="divide-y divide-neutral-100 dark:divide-neutral-700"
+      >
+        <div
+          v-for="cliente in clientesNaoVoltaram.clientes"
+          :key="cliente.id"
+          class="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+        >
+          <!-- Info do cliente -->
+          <div class="flex items-center gap-3">
+            <div
+              class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+              style="background-color: #e85a8a"
+            >
+              {{ cliente.nome.slice(0, 2).toUpperCase() }}
+            </div>
+            <div>
+              <p class="font-medium text-neutral-900 dark:text-white text-sm">
+                {{ cliente.nome }}
+              </p>
+              <p class="text-xs text-neutral-500">
+                {{ cliente.servicos }} ·
+                <span
+                  class="font-medium"
+                  :class="corUrgencia(cliente.diasSemVoltar)"
+                >
+                  {{ cliente.diasSemVoltar }} dias sem voltar
+                </span>
+              </p>
+              <p class="text-xs text-neutral-400">
+                Última visita: {{ formatarData(cliente.ultimoAgendamento) }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Ações -->
+          <div class="flex items-center gap-2 ml-12 sm:ml-0">
+            <UBadge
+              :color="badgeUrgencia(cliente.diasSemVoltar)"
+              variant="soft"
+              size="sm"
+            >
+              {{
+                cliente.diasSemVoltar > 60
+                  ? "Urgente"
+                  : cliente.diasSemVoltar > 30
+                    ? "Atenção"
+                    : "Monitorar"
+              }}
+            </UBadge>
+            <UButton
+              size="sm"
+              color="success"
+              variant="soft"
+              icon="i-lucide-send"
+              :loading="enviandoWhatsApp[cliente.id]"
+              @click="enviarMensagem(cliente)"
+            >
+              Enviar msg
+            </UButton>
+            <UTooltip text="Abrir no WhatsApp Web">
+              <UButton
+                size="sm"
+                color="neutral"
+                variant="ghost"
+                icon="i-lucide-external-link"
+                @click="abrirWhatsApp(cliente)"
+              />
+            </UTooltip>
+          </div>
+        </div>
+      </div>
+
+      <div v-else class="py-8 text-center text-neutral-400">
+        <UIcon name="i-lucide-party-popper" class="size-10 mb-2" />
+        <p class="text-sm">
+          Todos os clientes voltaram nos últimos {{ diasFiltro }} dias! 🎉
+        </p>
+      </div>
+    </UCard>
+
+    <!-- ═══ Envio avulso (teste de WhatsApp) ═══════════════════════════════ -->
+    <UCard class="border border-green-200 dark:border-green-800">
+      <template #header>
+        <div class="flex items-center gap-2">
+          <UIcon name="i-lucide-send" class="size-5 text-green-500" />
+          <h2 class="font-semibold text-neutral-900 dark:text-white">
+            Enviar mensagem avulsa
+          </h2>
+          <UBadge color="success" variant="soft" size="sm">teste</UBadge>
+        </div>
+        <p class="text-xs text-neutral-500 mt-1">
+          Teste o envio de WhatsApp para qualquer número. Em modo simulação, a
+          mensagem aparece no log do servidor.
+        </p>
+      </template>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <UFormField label="Telefone (com DDD)">
+          <UInput
+            :model-value="envioAvulso.telefone"
+            placeholder="(11) 99999-9999"
+            class="w-full"
+            @input="
+              (e: Event) =>
+                (envioAvulso.telefone = maskTelefone(
+                  (e.target as HTMLInputElement).value,
+                ))
+            "
+          />
+        </UFormField>
+
+        <div class="sm:col-span-1">
+          <UFormField label="Mensagem">
+            <UTextarea
+              v-model="envioAvulso.mensagem"
+              :rows="3"
+              class="w-full"
+            />
+          </UFormField>
+        </div>
+      </div>
+
+      <p v-if="envioAvulso.erro" class="mt-2 text-sm text-red-500">
+        {{ envioAvulso.erro }}
+      </p>
+
+      <div class="mt-4 flex justify-end">
+        <UButton
+          color="success"
+          icon="i-lucide-send"
+          :loading="enviandoAvulso"
+          @click="enviarAvulso"
+        >
+          Enviar mensagem
+        </UButton>
+      </div>
+    </UCard>
+
+    <!-- ═══ Serviços mais populares ═════════════════════════════════════════ -->
+    <UCard>
+      <template #header>
+        <div class="flex items-center gap-2">
+          <UIcon name="i-lucide-bar-chart-2" class="size-5 text-blue-500" />
+          <h2 class="font-semibold text-neutral-900 dark:text-white">
+            Serviços mais populares
+          </h2>
+          <UBadge color="neutral" variant="soft" size="sm">
+            {{ mesFiltro }}
+          </UBadge>
+        </div>
+      </template>
+
+      <div
+        v-if="servicosPopulares.length === 0"
+        class="py-8 text-center text-neutral-400"
+      >
+        <UIcon name="i-lucide-inbox" class="size-8 mb-2" />
+        <p class="text-sm">Nenhum serviço concluído nesse mês ainda.</p>
+      </div>
+
+      <div v-else class="space-y-3">
+        <!-- Barra de progresso por serviço -->
+        <div
+          v-for="(s, index) in servicosPopulares"
+          :key="s.servicoId"
+          class="flex items-center gap-3"
+        >
+          <span
+            class="w-5 text-xs font-bold text-neutral-400 text-center shrink-0"
+          >
+            {{ index + 1 }}
+          </span>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-center mb-1">
+              <span
+                class="text-sm font-medium text-neutral-800 dark:text-white truncate"
+              >
+                {{ s.nome }}
+              </span>
+              <div class="flex items-center gap-3 shrink-0 ml-2">
+                <span class="text-xs text-neutral-500"
+                  >{{ s.quantidade }}x</span
+                >
+                <span class="text-xs font-semibold text-emerald-600">
+                  {{ formatarMoeda(s.receitaEstimada) }}
+                </span>
+              </div>
+            </div>
+            <div class="h-2 bg-neutral-100 dark:bg-neutral-700 rounded-full">
+              <div
+                class="h-2 rounded-full bg-blue-500"
+                :style="{
+                  width: `${servicosPopulares[0] ? Math.round((s.quantidade / servicosPopulares[0].quantidade) * 100) : 0}%`,
+                  opacity: 1 - index * 0.1,
+                }"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="pt-2 border-t border-neutral-100 dark:border-neutral-700 flex justify-between text-sm"
+        >
+          <span class="text-neutral-500">Receita estimada total</span>
+          <span class="font-bold text-emerald-600">{{
+            formatarMoeda(totalReceitaEstimada)
+          }}</span>
+        </div>
+      </div>
+    </UCard>
+
+    <!-- ═══ Dicas de crescimento ════════════════════════════════════════════ -->
+    <UCard
+      class="border border-blue-100 dark:border-blue-900 bg-blue-50 dark:bg-blue-950"
+    >
+      <template #header>
+        <div class="flex items-center gap-2">
+          <UIcon name="i-lucide-lightbulb" class="size-5 text-yellow-500" />
+          <h2 class="font-semibold text-neutral-900 dark:text-white">
+            Dicas para aumentar seu faturamento
+          </h2>
+        </div>
+      </template>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div
+          class="bg-white dark:bg-neutral-800 rounded-lg p-4 border border-blue-100 dark:border-neutral-700"
+        >
+          <p
+            class="font-semibold text-sm text-neutral-800 dark:text-white mb-1"
+          >
+            📱 Mensagem pós-atendimento
+          </p>
+          <p class="text-xs text-neutral-500">
+            Envie um WhatsApp 7 dias após cada atendimento perguntando como o
+            pet está. Isso aumenta em 40% a chance de retorno.
+          </p>
+        </div>
+        <div
+          class="bg-white dark:bg-neutral-800 rounded-lg p-4 border border-blue-100 dark:border-neutral-700"
+        >
+          <p
+            class="font-semibold text-sm text-neutral-800 dark:text-white mb-1"
+          >
+            🔁 Pacote de fidelidade
+          </p>
+          <p class="text-xs text-neutral-500">
+            Ofereça um pacote mensal (ex: 4 banhos por R$ 160 em vez de R$ 200).
+            Clientes fidelizados trazem previsibilidade.
+          </p>
+        </div>
+        <div
+          class="bg-white dark:bg-neutral-800 rounded-lg p-4 border border-blue-100 dark:border-neutral-700"
+        >
+          <p
+            class="font-semibold text-sm text-neutral-800 dark:text-white mb-1"
+          >
+            🎂 Aniversário do pet
+          </p>
+          <p class="text-xs text-neutral-500">
+            Envie um lembrete no aniversário do pet com desconto especial. É uma
+            das ações com maior taxa de conversão.
+          </p>
+        </div>
+      </div>
+    </UCard>
+  </div>
+
+  <!-- ═══ Modal resultado WhatsApp ══════════════════════════════════════════ -->
+  <UModal v-model:open="modalWhatsapp.aberto" :ui="{ width: 'max-w-xs' }">
+    <template #body>
+      <div class="flex items-start gap-3 p-1">
+        <UIcon
+          :name="
+            modalWhatsapp.sucesso
+              ? 'i-lucide-check-circle-2'
+              : 'i-lucide-x-circle'
+          "
+          class="size-5 shrink-0 mt-0.5"
+          :class="modalWhatsapp.sucesso ? 'text-green-500' : 'text-red-500'"
+        />
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-sm text-neutral-900 dark:text-white">
+            {{ modalWhatsapp.titulo }}
+          </p>
+          <p class="text-xs text-neutral-500 mt-0.5">
+            {{ modalWhatsapp.descricao }}
+          </p>
+        </div>
+      </div>
+    </template>
+    <template #footer>
+      <div class="flex justify-end">
+        <UButton
+          size="sm"
+          color="neutral"
+          variant="soft"
+          @click="modalWhatsapp.aberto = false"
+        >
+          Fechar
+        </UButton>
+      </div>
+    </template>
+  </UModal>
+</template>
