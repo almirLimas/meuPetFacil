@@ -13,6 +13,7 @@ const toast = useToast();
 // -- Estado compartilhado entre os steps -------------------------------------
 const state = reactive<CriarContaFormState>({
   // Step 1
+  nomePetshop: "",
   nomeCompleto: "",
   email: "",
   telefone: "",
@@ -92,6 +93,7 @@ const handlePrev = () => {
 const submitForm = async () => {
   try {
     await auth.registrar({
+      nomePetshop: state.nomePetshop,
       nomeCompleto: state.nomeCompleto,
       email: state.email,
       telefone: state.telefone || undefined,

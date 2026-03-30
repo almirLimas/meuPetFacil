@@ -70,6 +70,7 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const registrar = async (dados: {
+    nomePetshop: string;
     nomeCompleto: string;
     email: string;
     telefone?: string;

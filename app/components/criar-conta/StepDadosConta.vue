@@ -4,6 +4,7 @@ import type { CriarContaFormState } from "~/types/usuario";
 
 const schema = z
   .object({
+    nomePetshop: z.string().min(2, "Informe o nome do petshop"),
     nomeCompleto: z.string().min(3, "Informe o nome completo"),
     email: z.string().email("E-mail inválido"),
     telefone: z.string().optional(),
@@ -36,6 +37,21 @@ defineExpose({
 <template>
   <UForm ref="formRef" :schema="schema" :state="state" @submit="() => {}">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Nome do petshop -->
+      <UFormField
+        label="Nome do petshop"
+        name="nomePetshop"
+        required
+        class="md:col-span-2"
+      >
+        <UInput
+          v-model="state.nomePetshop"
+          leading-icon="i-lucide-store"
+          placeholder="Ex: Pet & Cia, MegaPet"
+          class="w-full"
+        />
+      </UFormField>
+
       <!-- Nome completo -->
       <UFormField
         label="Nome completo"

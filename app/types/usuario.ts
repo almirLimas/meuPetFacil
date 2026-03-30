@@ -78,6 +78,8 @@ export interface Usuario {
   telefone?: string;
   perfil: UsuarioPerfil;
   status: UsuarioStatus;
+  tenantId?: string;
+  nomePetshop?: string;
   plano?: PlanoSistema;
   createdAt: string;
   lastAccess?: string;
@@ -111,6 +113,7 @@ export const PERMISSOES: Record<UsuarioPerfil, string[]> = {
 /** Estado do formulário de criação de conta (landing page → dono do negócio) */
 export interface CriarContaFormState {
   // Step 1 – Dados da conta
+  nomePetshop: string;
   nomeCompleto: string;
   email: string;
   telefone: string;
