@@ -80,11 +80,32 @@ export const useAuthStore = defineStore("auth", () => {
     loading.value = true;
     try {
       const config = useRuntimeConfig();
-      await $fetch(`${config.public.apiUrl}/auth/registrar`, {
+      const res = await $fetch<{
+        access_token: string;
+        id: string;
+        nomeCompleto: string;
+        email: string;
+        perfil: UsuarioPerfil;
+        tenantId: string;
+        nomePetshop: string;
+        plano: PlanoSistema;
+      }>(`${config.public.apiUrl}/auth/registrar`, {
         method: "POST",
         body: { ...dados, perfil: "admin" },
       });
-      navigateTo("/login");
+      token.value = res.access_token;
+      usuario.value = {
+        id: res.id,
+        nomeCompleto: res.nomeCompleto,
+        email: res.email,
+        perfil: res.perfil,
+        status: "ativo",
+        tenantId: res.tenantId,
+        nomePetshop: res.nomePetshop,
+        plano: res.plano,
+        createdAt: new Date().toISOString(),
+      };
+      return res;
     } catch (err: unknown) {
       const { show } = useApiError();
       const data = (err as { data?: { message?: string | string[] } })?.data;
@@ -92,6 +113,7 @@ export const useAuthStore = defineStore("auth", () => {
         ? data.message.join(", ")
         : (data?.message ?? "Falha ao criar conta. Tente novamente.");
       show(msg);
+      return null;
     } finally {
       loading.value = false;
     }

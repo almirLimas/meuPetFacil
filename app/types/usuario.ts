@@ -2,6 +2,12 @@ export type UsuarioPerfil = "admin" | "staff";
 export type UsuarioStatus = "ativo" | "inativo";
 export type PlanoSistema = "basico" | "profissional" | "completo";
 export type FormaPagamento = "cartao" | "boleto" | "pix";
+export type AssinaturaStatus =
+  | "trial"
+  | "pendente"
+  | "ativa"
+  | "suspensa"
+  | "cancelada";
 
 // ── Planos SaaS ──────────────────────────────────────────────────────────────
 
@@ -123,7 +129,7 @@ export interface CriarContaFormState {
   plano: PlanoSistema;
   // Step 3 – Pagamento
   formaPagamento: FormaPagamento;
-  dadosCartao: DadosCartao;
+  cpf?: string;
   // Mantido para compatibilidade com StepTipoAcesso (gerenciamento de usuários internos)
   perfil: UsuarioPerfil;
   status: UsuarioStatus;

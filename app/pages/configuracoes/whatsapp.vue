@@ -24,15 +24,17 @@ const statusLabel = computed(() => {
   return map[status.value] ?? status.value;
 });
 
-const statusColor = computed(() => {
-  const map: Record<string, string> = {
-    desconectado: "error",
-    conectando: "warning",
-    aguardando_scan: "warning",
-    conectado: "success",
-  };
-  return map[status.value] ?? "neutral";
-});
+const statusColor = computed(
+  (): "error" | "warning" | "success" | "neutral" => {
+    const map: Record<string, "error" | "warning" | "success" | "neutral"> = {
+      desconectado: "error",
+      conectando: "warning",
+      aguardando_scan: "warning",
+      conectado: "success",
+    };
+    return map[status.value] ?? "neutral";
+  },
+);
 </script>
 
 <template>

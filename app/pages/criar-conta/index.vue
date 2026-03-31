@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { StepperItem } from "@nuxt/ui";
 import type { CriarContaFormState } from "~/types/usuario";
+import type { ResultadoPagamento } from "~/composables/usePagamento";
 import { useAuthStore } from "~/stores/auth";
 
 definePageMeta({
@@ -23,8 +24,8 @@ const state = reactive<CriarContaFormState>({
   plano: "profissional",
   // Step 3
   formaPagamento: "cartao",
-  dadosCartao: { numero: "", nome: "", validade: "", cvv: "" },
-  // Legacy (mantido para compatibilidade)
+  cpf: "",
+  // Legacy
   perfil: "admin",
   status: "ativo",
 });
@@ -90,9 +91,14 @@ const handlePrev = () => {
 };
 
 // -- Submit ------------------------------------------------------------------
+const pixCheckout = useState<ResultadoPagamento | null>(
+  "pix-checkout",
+  () => null,
+);
+
 const submitForm = async () => {
   try {
-    await auth.registrar({
+    const res = await auth.registrar({
       nomePetshop: state.nomePetshop,
       nomeCompleto: state.nomeCompleto,
       email: state.email,
@@ -100,12 +106,22 @@ const submitForm = async () => {
       senha: state.senha,
       plano: state.plano,
     });
-    toast.add({
-      title: "Conta criada com sucesso!",
-      description:
-        "Seus 14 dias gratuitos começam agora. Faça login para acessar o sistema.",
-      color: "success",
+
+    if (!res) return; // erro já exibido pelo store
+
+    const { iniciarPagamento } = usePagamento();
+    const resultado = await iniciarPagamento({
+      plano: state.plano,
+      formaPagamento: state.formaPagamento as "cartao" | "pix",
+      cpf: state.cpf || undefined,
     });
+
+    if (resultado.tipo === "checkout") {
+      globalThis.location.href = resultado.url;
+    } else {
+      pixCheckout.value = resultado;
+      await navigateTo("/criar-conta/pagamento-pix");
+    }
   } catch {
     toast.add({
       title: "Erro ao criar conta",

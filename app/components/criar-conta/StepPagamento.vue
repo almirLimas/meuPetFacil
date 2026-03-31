@@ -1,88 +1,69 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { CriarContaFormState, FormaPagamento } from "~/types/usuario";
 import { PLANOS } from "~/types/usuario";
 
 const state = defineModel<CriarContaFormState>({ required: true });
 
-// ── Forma de pagamento ────────────────────────────────────────────────────────
-
-const formas: { value: FormaPagamento; label: string; icon: string }[] = [
-  { value: "cartao", label: "Cartão de Crédito", icon: "i-lucide-credit-card" },
-  { value: "boleto", label: "Boleto Bancário", icon: "i-lucide-file-text" },
-  { value: "pix", label: "PIX", icon: "i-lucide-qr-code" },
+const formas: {
+  value: FormaPagamento;
+  label: string;
+  icon: string;
+  em_breve?: boolean;
+}[] = [
+  {
+    value: "cartao",
+    label: "Cartão de Crédito",
+    icon: "i-lucide-credit-card",
+  },
+  {
+    value: "pix",
+    label: "PIX Anual",
+    icon: "i-lucide-qr-code",
+  },
+  {
+    value: "boleto",
+    label: "Boleto",
+    icon: "i-lucide-file-text",
+    em_breve: true,
+  },
 ];
 
-// ── Masks ─────────────────────────────────────────────────────────────────────
+const planoInfo = computed(() => PLANOS[state.value.plano]);
+const precoMensal = computed(() => planoInfo.value.preco);
+const valorAnual = computed(() =>
+  Number((precoMensal.value * 12 * 0.8).toFixed(2)),
+);
+const economia = computed(() =>
+  Number((precoMensal.value * 12 - valorAnual.value).toFixed(2)),
+);
 
-function maskCardNumber(v: string): string {
-  const d = v.replace(/\D/g, "").slice(0, 16);
-  return d.replace(/(\d{4})(?=\d)/g, "$1 ");
-}
-
-function maskExpiry(v: string): string {
-  const d = v.replace(/\D/g, "").slice(0, 4);
-  if (d.length > 2) return `${d.slice(0, 2)}/${d.slice(2)}`;
+function maskCpf(v: string): string {
+  const d = v.replaceAll(/\D/g, "").slice(0, 11);
+  if (d.length > 9)
+    return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
+  if (d.length > 6) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`;
+  if (d.length > 3) return `${d.slice(0, 3)}.${d.slice(3)}`;
   return d;
 }
 
-function maskCvv(v: string): string {
-  return v.replace(/\D/g, "").slice(0, 4);
-}
-
-const onNumeroInput = (e: Event) => {
+const onCpfInput = (e: Event) => {
   const el = e.target as HTMLInputElement;
-  state.value.dadosCartao.numero = maskCardNumber(el.value);
-  el.value = state.value.dadosCartao.numero;
+  state.value.cpf = maskCpf(el.value);
+  el.value = state.value.cpf;
 };
 
-const onValidadeInput = (e: Event) => {
-  const el = e.target as HTMLInputElement;
-  state.value.dadosCartao.validade = maskExpiry(el.value);
-  el.value = state.value.dadosCartao.validade;
-};
-
-const onCvvInput = (e: Event) => {
-  const el = e.target as HTMLInputElement;
-  state.value.dadosCartao.cvv = maskCvv(el.value);
-  el.value = state.value.dadosCartao.cvv;
-};
-
-// ── Plano selecionado ─────────────────────────────────────────────────────────
-
-const planoInfo = computed(() => PLANOS[state.value.plano]);
-
-// ── Validação ─────────────────────────────────────────────────────────────────
-
-const erros = ref<Record<string, string>>({});
-
-function validarCartao(): boolean {
-  const e: Record<string, string> = {};
-  const c = state.value.dadosCartao;
-  const digitos = c.numero.replace(/\D/g, "");
-
-  if (digitos.length < 13) e.numero = "Número do cartão inválido";
-  if (!c.nome.trim()) e.nome = "Informe o nome impresso no cartão";
-  const [mm, aa] = c.validade.split("/");
-  if (
-    !mm ||
-    !aa ||
-    mm.length !== 2 ||
-    aa.length !== 2 ||
-    Number(mm) > 12 ||
-    Number(mm) < 1
-  )
-    e.validade = "Validade inválida (MM/AA)";
-  if (c.cvv.length < 3) e.cvv = "CVV inválido";
-
-  erros.value = e;
-  return Object.keys(e).length === 0;
-}
+const erroCpf = ref("");
 
 defineExpose({
   validate(): boolean {
-    if (state.value.formaPagamento === "cartao") {
-      return validarCartao();
+    if (state.value.formaPagamento === "pix") {
+      const digitos = (state.value.cpf ?? "").replaceAll(/\D/g, "");
+      if (digitos.length !== 11) {
+        erroCpf.value = "CPF inválido";
+        return false;
+      }
     }
+    erroCpf.value = "";
     return true;
   },
 });
@@ -116,7 +97,7 @@ defineExpose({
       </div>
     </div>
 
-    <!-- Seleção forma de pagamento -->
+    <!-- Selecao forma de pagamento -->
     <div>
       <p class="text-sm font-medium text-gray-700 mb-2">Forma de pagamento</p>
       <div class="grid grid-cols-3 gap-2">
@@ -124,19 +105,22 @@ defineExpose({
           v-for="forma in formas"
           :key="forma.value"
           type="button"
-          class="flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all cursor-pointer text-center"
-          :class="
-            state.formaPagamento === forma.value
-              ? 'border-secondary-400 bg-secondary-50 shadow-sm'
-              : 'border-gray-200 hover:border-gray-300 bg-white'
-          "
-          @click="state.formaPagamento = forma.value"
+          :disabled="forma.em_breve"
+          class="relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all text-center"
+          :class="[
+            forma.em_breve
+              ? 'opacity-40 cursor-not-allowed border-gray-200 bg-gray-50'
+              : state.formaPagamento === forma.value
+                ? 'border-secondary-400 bg-secondary-50 shadow-sm cursor-pointer'
+                : 'border-gray-200 hover:border-gray-300 bg-white cursor-pointer',
+          ]"
+          @click="!forma.em_breve && (state.formaPagamento = forma.value)"
         >
           <UIcon
             :name="forma.icon"
             class="text-xl"
             :class="
-              state.formaPagamento === forma.value
+              state.formaPagamento === forma.value && !forma.em_breve
                 ? 'text-secondary-500'
                 : 'text-gray-400'
             "
@@ -144,181 +128,131 @@ defineExpose({
           <span
             class="text-xs font-medium leading-tight"
             :class="
-              state.formaPagamento === forma.value
+              state.formaPagamento === forma.value && !forma.em_breve
                 ? 'text-secondary-700'
                 : 'text-gray-600'
             "
           >
             {{ forma.label }}
           </span>
+          <span
+            v-if="forma.em_breve"
+            class="absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-gray-300 text-gray-600 whitespace-nowrap"
+          >
+            Em breve
+          </span>
         </button>
       </div>
     </div>
 
-    <!-- ── Cartão ────────────────────────────────────────────────────────── -->
+    <!-- Cartao -->
     <div v-if="state.formaPagamento === 'cartao'" class="flex flex-col gap-4">
-      <!-- Preview visual do cartão -->
       <div
-        class="relative w-full h-36 rounded-2xl p-5 flex flex-col justify-between overflow-hidden text-white"
-        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+        class="flex flex-col items-center gap-4 p-6 rounded-xl border-2 border-secondary-200 bg-secondary-50 text-center"
       >
-        <div class="flex items-center justify-between">
-          <UIcon name="i-lucide-wifi" class="rotate-90 text-xl opacity-70" />
-          <UIcon name="i-lucide-credit-card" class="text-2xl opacity-80" />
+        <div
+          class="p-3 rounded-xl bg-white border border-secondary-100 shadow-sm"
+        >
+          <UIcon
+            name="i-lucide-shield-check"
+            class="text-4xl text-secondary-500"
+          />
         </div>
         <div>
-          <p class="font-mono text-sm tracking-widest opacity-90">
-            {{ state.dadosCartao.numero || "•••• •••• •••• ••••" }}
+          <p class="font-semibold text-gray-800">
+            Pagamento seguro via Mercado Pago
           </p>
-          <div class="flex items-end justify-between mt-1">
-            <p class="text-xs opacity-70 uppercase tracking-wide">
-              {{ state.dadosCartao.nome || "Nome no Cartão" }}
-            </p>
-            <p class="text-xs opacity-70 font-mono">
-              {{ state.dadosCartao.validade || "MM/AA" }}
-            </p>
+          <p class="text-sm text-gray-500 mt-1">
+            Ao confirmar, você será redirecionado ao ambiente seguro do
+            <strong>Mercado Pago</strong> para cadastrar seu cartão de crédito.
+          </p>
+        </div>
+        <div class="flex flex-col gap-1.5 w-full text-left">
+          <div class="flex items-center gap-2 text-xs text-gray-500">
+            <UIcon
+              name="i-lucide-check-circle-2"
+              class="text-green-500 shrink-0"
+            />
+            Cobrança mensal de <strong>R$ {{ precoMensal }}</strong>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-gray-500">
+            <UIcon
+              name="i-lucide-check-circle-2"
+              class="text-green-500 shrink-0"
+            />
+            Cancele a qualquer momento sem multa
+          </div>
+          <div class="flex items-center gap-2 text-xs text-gray-500">
+            <UIcon
+              name="i-lucide-check-circle-2"
+              class="text-green-500 shrink-0"
+            />
+            Nenhuma cobrança durante os 14 dias de teste
           </div>
         </div>
       </div>
+      <div class="flex items-center gap-2 text-xs text-gray-400">
+        <UIcon name="i-lucide-lock" class="text-green-500" />
+        Seus dados são processados com criptografia SSL pelo Mercado Pago.
+      </div>
+    </div>
 
-      <!-- Campos -->
-      <div class="grid grid-cols-1 gap-3">
+    <!-- PIX Anual -->
+    <div v-else-if="state.formaPagamento === 'pix'" class="flex flex-col gap-4">
+      <div
+        class="flex items-center justify-between p-4 rounded-xl border-2 border-green-200 bg-green-50"
+      >
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Número do cartão</label
-          >
-          <input
-            :value="state.dadosCartao.numero"
-            type="text"
-            inputmode="numeric"
-            placeholder="0000 0000 0000 0000"
-            maxlength="19"
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-secondary-400"
-            :class="erros.numero ? 'border-red-400' : ''"
-            @input="onNumeroInput"
-          />
-          <p v-if="erros.numero" class="text-xs text-red-500 mt-1">
-            {{ erros.numero }}
+          <p class="text-sm font-semibold text-green-800">Plano Anual (PIX)</p>
+          <p class="text-xs text-green-600 mt-0.5">
+            Economia de <strong>R$ {{ economia.toFixed(2) }}</strong> vs
+            mensalidade
           </p>
         </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Nome impresso no cartão</label
-          >
-          <input
-            v-model="state.dadosCartao.nome"
-            type="text"
-            placeholder="NOME SOBRENOME"
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-secondary-400"
-            :class="erros.nome ? 'border-red-400' : ''"
-            @input="
-              state.dadosCartao.nome = (
-                state.dadosCartao.nome || ''
-              ).toUpperCase()
-            "
-          />
-          <p v-if="erros.nome" class="text-xs text-red-500 mt-1">
-            {{ erros.nome }}
+        <div class="text-right">
+          <p class="text-2xl font-extrabold text-green-700">
+            R$ {{ valorAnual.toFixed(2) }}
+          </p>
+          <p class="text-xs text-green-500 line-through">
+            R$ {{ (precoMensal * 12).toFixed(2) }}/ano
           </p>
         </div>
+      </div>
 
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >Validade</label
-            >
-            <input
-              :value="state.dadosCartao.validade"
-              type="text"
-              inputmode="numeric"
-              placeholder="MM/AA"
-              maxlength="5"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-secondary-400"
-              :class="erros.validade ? 'border-red-400' : ''"
-              @input="onValidadeInput"
-            />
-            <p v-if="erros.validade" class="text-xs text-red-500 mt-1">
-              {{ erros.validade }}
-            </p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >CVV</label
-            >
-            <input
-              :value="state.dadosCartao.cvv"
-              type="text"
-              inputmode="numeric"
-              placeholder="•••"
-              maxlength="4"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-secondary-400"
-              :class="erros.cvv ? 'border-red-400' : ''"
-              @input="onCvvInput"
-            />
-            <p v-if="erros.cvv" class="text-xs text-red-500 mt-1">
-              {{ erros.cvv }}
-            </p>
-          </div>
-        </div>
+      <div class="flex justify-center">
+        <span
+          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold"
+        >
+          <UIcon name="i-lucide-tag" class="text-base" />
+          20% de desconto no plano anual
+        </span>
+      </div>
+
+      <div>
+        <label for="cpf" class="block text-sm font-medium text-gray-700 mb-1">
+          CPF do responsável
+          <span aria-hidden="true" class="text-red-500">*</span>
+        </label>
+        <input
+          id="cpf"
+          :value="state.cpf"
+          type="text"
+          inputmode="numeric"
+          placeholder="000.000.000-00"
+          maxlength="14"
+          class="w-full rounded-lg border px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-secondary-400"
+          :class="erroCpf ? 'border-red-400' : 'border-gray-300'"
+          @input="onCpfInput"
+        />
+        <p v-if="erroCpf" class="text-xs text-red-500 mt-1">{{ erroCpf }}</p>
+        <p class="text-xs text-gray-400 mt-1">
+          Necessário para emissão do recibo fiscal do PIX.
+        </p>
       </div>
 
       <div class="flex items-center gap-2 text-xs text-gray-400">
-        <UIcon name="i-lucide-lock" class="text-green-500" />
-        Seus dados são criptografados e protegidos. Nenhuma cobrança será feita
-        durante o período de teste.
-      </div>
-    </div>
-
-    <!-- ── Boleto ────────────────────────────────────────────────────────── -->
-    <div
-      v-else-if="state.formaPagamento === 'boleto'"
-      class="flex flex-col gap-3"
-    >
-      <div
-        class="flex flex-col items-center gap-3 p-6 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 text-center"
-      >
-        <UIcon name="i-lucide-file-text" class="text-4xl text-gray-400" />
-        <div>
-          <p class="font-semibold text-gray-700">Boleto Bancário</p>
-          <p class="text-sm text-gray-500 mt-1">
-            Após a criação da conta, você receberá o boleto por e-mail com
-            vencimento em <strong>3 dias úteis</strong>.
-          </p>
-        </div>
-        <div class="flex items-center gap-2 text-xs text-gray-400 mt-2">
-          <UIcon name="i-lucide-clock" class="text-amber-400" />
-          A confirmação pode levar até 3 dias úteis após o pagamento.
-        </div>
-      </div>
-    </div>
-
-    <!-- ── PIX ───────────────────────────────────────────────────────────── -->
-    <div v-else-if="state.formaPagamento === 'pix'" class="flex flex-col gap-3">
-      <div
-        class="flex flex-col items-center gap-3 p-6 rounded-xl border-2 border-dashed border-green-200 bg-green-50 text-center"
-      >
-        <div class="p-3 rounded-xl bg-white border border-green-200">
-          <!-- QR code placeholder -->
-          <div
-            class="w-28 h-28 rounded-lg bg-gray-100 flex items-center justify-center"
-          >
-            <UIcon name="i-lucide-qr-code" class="text-5xl text-gray-300" />
-          </div>
-        </div>
-        <div>
-          <p class="font-semibold text-gray-700">PIX</p>
-          <p class="text-sm text-gray-500 mt-1">
-            Um QR Code será gerado após a criação da conta. O pagamento é
-            confirmado <strong>na hora</strong>.
-          </p>
-        </div>
-        <div
-          class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-100 text-xs text-green-700 font-medium"
-        >
-          <UIcon name="i-lucide-zap" class="text-green-500" />
-          Confirmação instantânea
-        </div>
+        <UIcon name="i-lucide-zap" class="text-green-500" />
+        O QR Code PIX será gerado após criar a conta. Confirmação instantânea.
       </div>
     </div>
   </div>
