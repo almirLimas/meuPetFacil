@@ -35,14 +35,13 @@ const menuItems = [
   { label: "Dashboard", icon: "i-lucide-layout-dashboard", to: "/dashboard" },
   { label: "Clientes", icon: "i-lucide-users", to: "/clientes" },
   { label: "Agenda", icon: "i-lucide-calendar", to: "/agenda" },
-  { label: "Vacinas", icon: "i-lucide-syringe", to: "/vacinas" },
   { label: "Serviços", icon: "i-lucide-briefcase", to: "/servicos" },
   { label: "Estoque", icon: "i-lucide-package", to: "/estoque" },
   { label: "Financeiro", icon: "i-lucide-wallet", to: "/financeiro" },
   { label: "Relatórios", icon: "i-lucide-bar-chart-2", to: "/relatorios" },
   {
     label: "WhatsApp",
-    icon: "i-lucide-message-circle",
+    icon: "i-logos-whatsapp-icon",
     to: "/configuracoes/whatsapp",
   },
 ];
@@ -72,7 +71,7 @@ watch(
       <template #left>
         <!-- Logo -->
         <div class="flex items-center gap-2 ml-2">
-          <AppMascot />
+          <AppLogo :size="100" />
         </div>
         <!-- Sidebar toggle -->
         <UButton
@@ -96,7 +95,7 @@ watch(
           <div class="flex items-center gap-2 cursor-pointer">
             <div
               class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-              style="background-color: #e85a8a"
+              style="background-color: #1d9fb6"
             >
               {{ iniciaisUsuario }}
             </div>
@@ -134,10 +133,10 @@ watch(
             :class="
               route.path === item.to
                 ? 'text-white'
-                : 'text-gray-500 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-neutral-700'
+                : 'text-gray-500 dark:text-gray-400 hover:bg-sky-50 dark:hover:bg-neutral-700'
             "
             :style="
-              route.path === item.to ? { backgroundColor: '#0EA5E9' } : {}
+              route.path === item.to ? { backgroundColor: '#1d9fb6' } : {}
             "
           >
             <UIcon :name="item.icon" class="size-4.5 shrink-0" />

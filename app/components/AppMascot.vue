@@ -1,7 +1,7 @@
 <template>
   <img
-    :src="'/anninLogo.png'"
-    alt="Mascote Pet-Fácil"
+    src="/logo_aninpet.png"
+    alt="Anim Pet"
     :width="size"
     :height="size"
     class="object-contain block mx-auto"

@@ -1,6 +1,62 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+/* Sobrescreve as paletas sky e orange do Tailwind com as cores exatas do logo */
+@theme {
+  /* Teal-cyan do texto "Anim" — #1d9fb6 */
+  --color-sky-50: #f0fafc;
+  --color-sky-100: #d5f3f8;
+  --color-sky-200: #a9e6f0;
+  --color-sky-300: #69d2e4;
+  --color-sky-400: #30bbd1;
+  --color-sky-500: #1d9fb6;
+  --color-sky-600: #177f96;
+  --color-sky-700: #17677a;
+  --color-sky-800: #185565;
+  --color-sky-900: #194755;
+  --color-sky-950: #0c2e38;
+
+  /* Laranja do texto "Pet" — #f07030 */
+  --color-orange-50: #fff7ed;
+  --color-orange-100: #ffecd0;
+  --color-orange-200: #ffd5a1;
+  --color-orange-300: #ffb761;
+  --color-orange-400: #ff9130;
+  --color-orange-500: #f07030;
+  --color-orange-600: #e05220;
+  --color-orange-700: #bb3b17;
+  --color-orange-800: #962f18;
+  --color-orange-900: #7a2918;
+  --color-orange-950: #420f08;
+}
+
+/* Sobrescreve as variáveis reais do Nuxt UI (componentes UButton, etc.) */
+:root {
+  --ui-color-primary-50: #f0fafc;
+  --ui-color-primary-100: #d5f3f8;
+  --ui-color-primary-200: #a9e6f0;
+  --ui-color-primary-300: #69d2e4;
+  --ui-color-primary-400: #30bbd1;
+  --ui-color-primary-500: #1d9fb6;
+  --ui-color-primary-600: #177f96;
+  --ui-color-primary-700: #17677a;
+  --ui-color-primary-800: #185565;
+  --ui-color-primary-900: #194755;
+  --ui-color-primary-950: #0c2e38;
+
+  --ui-color-secondary-50: #fff7ed;
+  --ui-color-secondary-100: #ffecd0;
+  --ui-color-secondary-200: #ffd5a1;
+  --ui-color-secondary-300: #ffb761;
+  --ui-color-secondary-400: #ff9130;
+  --ui-color-secondary-500: #f07030;
+  --ui-color-secondary-600: #e05220;
+  --ui-color-secondary-700: #bb3b17;
+  --ui-color-secondary-800: #962f18;
+  --ui-color-secondary-900: #7a2918;
+  --ui-color-secondary-950: #420f08;
+}
+
 html,
 body {
   background-color: #f5f5f0;

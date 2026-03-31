@@ -1,6 +1,7 @@
 export type UsuarioPerfil = "admin" | "staff";
 export type UsuarioStatus = "ativo" | "inativo";
 export type PlanoSistema = "basico" | "profissional" | "completo";
+export type PlanoExibido = "basico" | "plus";
 export type FormaPagamento = "cartao" | "boleto" | "pix";
 export type AssinaturaStatus =
   | "trial"
@@ -21,39 +22,54 @@ export interface PlanoInfo {
 
 export const PLANOS: Record<PlanoSistema, PlanoInfo> = {
   basico: {
-    nome: "Petshop Básico",
-    preco: 89,
-    descricao: "Ideal para petshops focados em serviços e atendimento.",
-    modulos: ["dashboard", "clientes", "pets", "agendamentos", "vacinas"],
-  },
-  profissional: {
-    nome: "Petshop + Estoque",
-    preco: 139,
-    descricao: "Para petshops com venda de produtos e controle de estoque.",
+    nome: "Básico",
+    preco: 79,
+    descricao: "Tudo que você precisa para organizar seu petshop.",
     modulos: [
       "dashboard",
       "clientes",
       "pets",
       "agendamentos",
-      "vacinas",
+      "servicos",
+      "financeiro",
+      "relatorios",
+    ],
+  },
+  profissional: {
+    nome: "Plus",
+    preco: 129,
+    descricao:
+      "Básico + WhatsApp automático para vender mais e fidelizar clientes.",
+    modulos: [
+      "dashboard",
+      "clientes",
+      "pets",
+      "agendamentos",
+      "servicos",
+      "financeiro",
+      "relatorios",
+      "whatsapp",
       "estoque",
     ],
     destaque: true,
   },
   completo: {
-    nome: "Completo",
-    preco: 199,
-    descricao: "Solução completa com financeiro e relatórios avançados.",
+    nome: "Plus",
+    preco: 129,
+    descricao:
+      "Básico + WhatsApp automático para vender mais e fidelizar clientes.",
     modulos: [
       "dashboard",
       "clientes",
       "pets",
       "agendamentos",
-      "vacinas",
-      "estoque",
+      "servicos",
       "financeiro",
       "relatorios",
+      "whatsapp",
+      "estoque",
     ],
+    destaque: true,
   },
 };
 

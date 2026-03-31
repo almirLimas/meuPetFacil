@@ -34,15 +34,15 @@ const stats = computed(() => [
     lines: ["Clientes Ativos"],
     value: String(clienteStore.ativos.length),
     icon: "i-lucide-users",
-    bgColor: "#EDE9FE",
-    iconColor: "#8B5CF6",
+    bgColor: "#d5f3f8",
+    iconColor: "#1d9fb6",
   },
   {
     lines: ["Próximos", "Agendamentos"],
     value: String(proximosAgendamentos.value),
     icon: "i-lucide-calendar",
-    bgColor: "#E0F2FE",
-    iconColor: "#0EA5E9",
+    bgColor: "#d5f3f8",
+    iconColor: "#1d9fb6",
   },
   {
     lines: ["Pets Cadastrados"],
@@ -59,7 +59,7 @@ const stats = computed(() => [
     }),
     icon: "i-lucide-wallet",
     bgColor: "#E0FBF4",
-    iconColor: "#2CC0A0",
+    iconColor: "#1d9fb6",
   },
 ]);
 
@@ -84,8 +84,8 @@ const statusBadge: Record<
   StatusAgendamento | "AguardandoAcao",
   { label: string; bg: string; text: string }
 > = {
-  Agendado: { label: "Agendado", bg: "#E0F2FE", text: "#0EA5E9" },
-  Confirmado: { label: "Confirmado", bg: "#EDE9FE", text: "#8B5CF6" },
+  Agendado: { label: "Agendado", bg: "#d5f3f8", text: "#1d9fb6" },
+  Confirmado: { label: "Confirmado", bg: "#d5f3f8", text: "#1d9fb6" },
   EmAtendimento: { label: "Em Atendimento", bg: "#FEF3C7", text: "#D97706" },
   Concluido: { label: "Concluído", bg: "#D1FAE5", text: "#10B981" },
   Cancelado: { label: "Cancelado", bg: "#F3F4F6", text: "#9CA3AF" },
@@ -127,8 +127,8 @@ const ultimosClientes = computed(() =>
 );
 
 const servicosPopulares = [
-  { label: "Banho", percent: 35, color: "#8B5CF6" },
-  { label: "Tosa", percent: 25, color: "#4ABDE8" },
+  { label: "Banho", percent: 35, color: "#1d9fb6" },
+  { label: "Tosa", percent: 25, color: "#f07030" },
   { label: "Consulta", percent: 20, color: "#10B981" },
   { label: "Hospedagem", percent: 20, color: "#9B6BB5" },
 ];
@@ -164,36 +164,11 @@ const totalAlertasEstoque = computed(
     ).length,
 );
 
-const lembretesVacinas = [
-  {
-    pet: "Rex",
-    dono: "João Silva",
-    vacina: "V10",
-    vence: "20/03/2026",
-    urgente: true,
-  },
-  {
-    pet: "Luna",
-    dono: "Maria Souza",
-    vacina: "Antirrábica",
-    vence: "22/03/2026",
-    urgente: true,
-  },
-  {
-    pet: "Nina",
-    dono: "Carlos Lima",
-    vacina: "Giárdia",
-    vence: "28/03/2026",
-    urgente: false,
-  },
-  {
-    pet: "Thor",
-    dono: "Pedro Alves",
-    vacina: "V8",
-    vence: "02/04/2026",
-    urgente: false,
-  },
-];
+const lucroMes = computed(() => resumo.value.receitas - resumo.value.despesas);
+const metaReceita = 8000;
+const percentReceita = computed(() =>
+  Math.min(100, Math.round((resumo.value.receitas / metaReceita) * 100)),
+);
 </script>
 
 <template>
@@ -215,7 +190,7 @@ const lembretesVacinas = [
     <NuxtLink
       to="/cadastro-cliente"
       class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm transition-opacity hover:opacity-90"
-      style="background-color: #8b5cf6"
+      style="background-color: #1d9fb6"
     >
       <UIcon name="i-lucide-user-plus" class="size-4" />
       Novo Cliente
@@ -223,18 +198,11 @@ const lembretesVacinas = [
     <NuxtLink
       to="/agenda"
       class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm transition-opacity hover:opacity-90"
-      style="background-color: #0ea5e9"
+      style="background-color: #1d9fb6"
     >
       <UIcon name="i-lucide-calendar-plus" class="size-4" />
       Novo Agendamento
     </NuxtLink>
-    <button
-      class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm transition-opacity hover:opacity-90"
-      style="background-color: #10b981"
-    >
-      <UIcon name="i-lucide-syringe" class="size-4" />
-      Registrar Vacina
-    </button>
   </div>
 
   <!-- ── Row 2: Agenda | Últimos Clientes ── -->
@@ -245,7 +213,7 @@ const lembretesVacinas = [
     >
       <div
         class="flex items-center justify-between px-4 py-2.5"
-        style="background-color: #0ea5e9"
+        style="background-color: #1d9fb6"
       >
         <h3 class="text-white font-semibold text-sm">Agenda de Hoje</h3>
         <div class="flex gap-1">
@@ -281,7 +249,7 @@ const lembretesVacinas = [
           <NuxtLink
             to="/agenda"
             class="text-white text-xs rounded-full px-4 py-1.5 transition-opacity hover:opacity-90"
-            style="background-color: #0ea5e9"
+            style="background-color: #1d9fb6"
           >
             Ver Todas &rsaquo;
           </NuxtLink>
@@ -295,7 +263,7 @@ const lembretesVacinas = [
     >
       <div
         class="flex items-center justify-between px-4 py-2.5"
-        style="background-color: #8b5cf6"
+        style="background-color: #1d9fb6"
       >
         <h3 class="text-white font-semibold text-sm">
           Últimos Clientes Cadastrados
@@ -333,7 +301,7 @@ const lembretesVacinas = [
           <NuxtLink
             to="/clientes"
             class="text-white text-xs rounded-full px-4 py-1.5 transition-opacity hover:opacity-90"
-            style="background-color: #8b5cf6"
+            style="background-color: #1d9fb6"
           >
             Ver Mais &rsaquo;
           </NuxtLink>
@@ -356,7 +324,7 @@ const lembretesVacinas = [
             class="w-28 h-28 rounded-full"
             style="
               background: conic-gradient(
-                #8b5cf6 0% 35%,
+                #1d9fb6 0% 35%,
                 #4abde8 35% 60%,
                 #10b981 60% 80%,
                 #9b6bb5 80% 100%
@@ -411,7 +379,7 @@ const lembretesVacinas = [
     >
       <div
         class="flex items-center justify-between px-4 py-2.5"
-        style="background-color: #0ea5e9"
+        style="background-color: #1d9fb6"
       >
         <h3 class="text-white font-semibold text-sm">Controle de Estoque</h3>
         <div class="flex gap-1">
@@ -429,7 +397,7 @@ const lembretesVacinas = [
           <UIcon
             :name="item.icon"
             class="size-5 shrink-0"
-            :style="{ color: item.alerta ? '#E85A5A' : '#0EA5E9' }"
+            :style="{ color: item.alerta ? '#E85A5A' : '#1d9fb6' }"
           />
           <span class="text-gray-600 dark:text-gray-300 flex-1"
             >{{ item.label }}:</span
@@ -457,7 +425,7 @@ const lembretesVacinas = [
           <NuxtLink
             to="/estoque"
             class="text-white text-xs rounded-full px-4 py-1.5 transition-opacity hover:opacity-90 ml-auto"
-            style="background-color: #0ea5e9"
+            style="background-color: #1d9fb6"
           >
             Ver Estoque &rsaquo;
           </NuxtLink>
@@ -466,79 +434,119 @@ const lembretesVacinas = [
     </div>
   </div>
 
-  <!-- ── Row 4: Lembretes de Vacinas ── -->
+  <!-- ── Row 4: Performance do Mês ── -->
   <div
     class="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm overflow-hidden"
   >
     <div
       class="flex items-center justify-between px-4 py-2.5"
-      style="background-color: #10b981"
+      style="background-color: #1d9fb6"
     >
       <div class="flex items-center gap-2">
-        <UIcon name="i-lucide-syringe" class="size-4 text-white" />
-        <h3 class="text-white font-semibold text-sm">Lembretes de Vacinas</h3>
+        <UIcon name="i-lucide-trending-up" class="size-4 text-white" />
+        <h3 class="text-white font-semibold text-sm">Performance do Mês</h3>
       </div>
       <span
-        class="text-white text-xs font-semibold bg-white/20 rounded-full px-2 py-0.5"
-        >{{ lembretesVacinas.filter((v) => v.urgente).length }} urgentes</span
+        class="text-white text-xs bg-white/20 rounded-full px-2 py-0.5 font-semibold"
       >
+        {{
+          new Date().toLocaleDateString("pt-BR", {
+            month: "long",
+            year: "numeric",
+          })
+        }}
+      </span>
     </div>
-    <div class="p-4">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <div
-          v-for="v in lembretesVacinas"
-          :key="v.pet + v.vacina"
-          class="rounded-xl p-3 flex flex-col gap-1.5 border transition-colors"
-          :class="
-            v.urgente
-              ? 'border-red-200 bg-red-50 dark:bg-red-950/30 dark:border-red-800'
-              : 'border-gray-100 dark:border-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-700'
-          "
-        >
-          <div class="flex items-center justify-between">
-            <span
-              class="font-semibold text-sm text-gray-800 dark:text-gray-100"
-              >{{ v.pet }}</span
-            >
-            <span
-              v-if="v.urgente"
-              class="text-[10px] font-bold text-red-500 bg-red-100 dark:bg-red-900/50 rounded-full px-1.5 py-0.5"
-              >Urgente</span
-            >
-          </div>
-          <span class="text-xs text-gray-500 dark:text-gray-400">{{
-            v.dono
-          }}</span>
-          <div class="flex items-center gap-1 mt-0.5">
-            <UIcon
-              name="i-lucide-syringe"
-              class="size-3.5 shrink-0"
-              style="color: #10b981"
-            />
-            <span
-              class="text-xs font-medium text-gray-700 dark:text-gray-300"
-              >{{ v.vacina }}</span
-            >
-          </div>
-          <div class="flex items-center gap-1">
-            <UIcon
-              name="i-lucide-calendar"
-              class="size-3.5 text-gray-400 shrink-0"
-            />
-            <span class="text-xs text-gray-500 dark:text-gray-400">{{
-              v.vence
-            }}</span>
-          </div>
+    <div class="p-4 grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <!-- Receitas -->
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-gray-500 dark:text-gray-400 font-medium"
+            >Receitas</span
+          >
+          <span class="text-sm font-bold text-gray-800 dark:text-gray-100">
+            {{
+              resumo.receitas.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })
+            }}
+          </span>
         </div>
-      </div>
-      <div class="flex justify-end mt-3">
-        <NuxtLink
-          to="/vacinas"
-          class="text-xs font-medium hover:opacity-70 transition-opacity"
-          style="color: #10b981"
+        <div
+          class="w-full h-2 bg-gray-100 dark:bg-neutral-700 rounded-full overflow-hidden"
         >
-          Ver Todas as Vacinas &rsaquo;
-        </NuxtLink>
+          <div
+            class="h-full rounded-full transition-all"
+            style="background-color: #1d9fb6"
+            :style="{ width: percentReceita + '%' }"
+          />
+        </div>
+        <span class="text-[11px] text-gray-400"
+          >{{ percentReceita }}% da meta (R$ 8.000)</span
+        >
+      </div>
+      <!-- Despesas -->
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-gray-500 dark:text-gray-400 font-medium"
+            >Despesas</span
+          >
+          <span class="text-sm font-bold text-red-500">
+            {{
+              resumo.despesas.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })
+            }}
+          </span>
+        </div>
+        <div
+          class="w-full h-2 bg-gray-100 dark:bg-neutral-700 rounded-full overflow-hidden"
+        >
+          <div
+            class="h-full bg-red-400 rounded-full transition-all"
+            :style="{
+              width:
+                Math.min(100, Math.round((resumo.despesas / 8000) * 100)) + '%',
+            }"
+          />
+        </div>
+        <span class="text-[11px] text-gray-400">Registradas no mês</span>
+      </div>
+      <!-- Lucro + ações -->
+      <div
+        class="flex flex-col gap-2 sm:border-l sm:pl-6 border-gray-100 dark:border-neutral-700"
+      >
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-gray-500 dark:text-gray-400 font-medium"
+            >Lucro Líquido</span
+          >
+          <span
+            class="text-sm font-bold"
+            :class="lucroMes >= 0 ? 'text-emerald-500' : 'text-red-500'"
+          >
+            {{
+              lucroMes.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })
+            }}
+          </span>
+        </div>
+        <div class="mt-auto flex flex-col gap-2 pt-2">
+          <NuxtLink
+            to="/financeiro"
+            class="block text-center text-xs font-semibold py-2 rounded-xl text-white transition-opacity hover:opacity-90"
+            style="background-color: #1d9fb6"
+            >Ver Financeiro Completo</NuxtLink
+          >
+          <NuxtLink
+            to="/configuracoes/whatsapp"
+            class="block text-center text-xs font-semibold py-2 rounded-xl border-2 border-gray-200 dark:border-neutral-600 text-gray-600 dark:text-gray-300 hover:border-orange-400 hover:text-orange-500 transition-colors"
+            >Enviar Promoção via WhatsApp</NuxtLink
+          >
+        </div>
       </div>
     </div>
   </div>
