@@ -190,7 +190,7 @@ const percentReceita = computed(() =>
     <NuxtLink
       to="/cadastro-cliente"
       class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm transition-opacity hover:opacity-90"
-      style="background-color: #1d9fb6"
+      style="background-color: #f07030"
     >
       <UIcon name="i-lucide-user-plus" class="size-4" />
       Novo Cliente
@@ -198,7 +198,7 @@ const percentReceita = computed(() =>
     <NuxtLink
       to="/agenda"
       class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold shadow-sm transition-opacity hover:opacity-90"
-      style="background-color: #1d9fb6"
+      style="background-color: #f07030"
     >
       <UIcon name="i-lucide-calendar-plus" class="size-4" />
       Novo Agendamento
@@ -249,7 +249,7 @@ const percentReceita = computed(() =>
           <NuxtLink
             to="/agenda"
             class="text-white text-xs rounded-full px-4 py-1.5 transition-opacity hover:opacity-90"
-            style="background-color: #1d9fb6"
+            style="background-color: #f07030"
           >
             Ver Todas &rsaquo;
           </NuxtLink>
@@ -301,7 +301,7 @@ const percentReceita = computed(() =>
           <NuxtLink
             to="/clientes"
             class="text-white text-xs rounded-full px-4 py-1.5 transition-opacity hover:opacity-90"
-            style="background-color: #1d9fb6"
+            style="background-color: #f07030"
           >
             Ver Mais &rsaquo;
           </NuxtLink>
@@ -425,7 +425,7 @@ const percentReceita = computed(() =>
           <NuxtLink
             to="/estoque"
             class="text-white text-xs rounded-full px-4 py-1.5 transition-opacity hover:opacity-90 ml-auto"
-            style="background-color: #1d9fb6"
+            style="background-color: #f07030"
           >
             Ver Estoque &rsaquo;
           </NuxtLink>
@@ -538,7 +538,7 @@ const percentReceita = computed(() =>
           <NuxtLink
             to="/financeiro"
             class="block text-center text-xs font-semibold py-2 rounded-xl text-white transition-opacity hover:opacity-90"
-            style="background-color: #1d9fb6"
+            style="background-color: #f07030"
             >Ver Financeiro Completo</NuxtLink
           >
           <NuxtLink

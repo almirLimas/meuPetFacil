@@ -103,6 +103,8 @@ export interface Usuario {
   tenantId?: string;
   nomePetshop?: string;
   plano?: PlanoSistema;
+  assinaturaStatus?: AssinaturaStatus;
+  trialExpiraEm?: string;
   createdAt: string;
   lastAccess?: string;
   avatar?: string;

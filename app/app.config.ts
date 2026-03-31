@@ -4,5 +4,10 @@ export default defineAppConfig({
       primary: "sky",
       secondary: "orange",
     },
+    button: {
+      defaultVariants: {
+        color: "secondary",
+      },
+    },
   },
 });

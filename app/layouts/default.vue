@@ -24,6 +24,11 @@ const menuUsuario = [
   ],
   [
     {
+      label: "Meu Perfil",
+      icon: "i-lucide-user-circle",
+      onSelect: () => navigateTo("/configuracoes/perfil"),
+    },
+    {
       label: "Sair",
       icon: "i-lucide-log-out",
       onSelect: () => authStore.logout(),

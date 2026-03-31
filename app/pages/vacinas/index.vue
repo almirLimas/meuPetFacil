@@ -142,7 +142,7 @@ const resumoCards = computed(() => [
       <UButton
         icon="i-lucide-plus"
         label="Registrar Vacina"
-        style="background-color: #10b981"
+        style="background-color: #f07030"
         class="text-white"
       />
     </div>
