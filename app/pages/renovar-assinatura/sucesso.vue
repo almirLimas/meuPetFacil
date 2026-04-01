@@ -1,5 +1,9 @@
 <script setup lang="ts">
 definePageMeta({ layout: false });
+
+onMounted(() => {
+  setTimeout(() => navigateTo("/dashboard"), 4000);
+});
 </script>
 
 <template>
@@ -10,17 +14,18 @@ definePageMeta({ layout: false });
       >
         <UIcon name="i-lucide-check-circle-2" class="text-5xl text-green-500" />
       </div>
-
       <div>
-        <h1 class="text-2xl font-bold text-gray-800">Conta criada!</h1>
+        <h1 class="text-2xl font-bold text-gray-800">Assinatura ativada!</h1>
         <p class="text-gray-500 text-sm mt-2">
-          Você tem <strong>14 dias grátis</strong> para explorar o sistema. Não
-          precisa de cartão agora.
+          Obrigado! Seu acesso foi reativado. Redirecionando para o dashboard…
         </p>
       </div>
-
-      <UButton to="/login" color="primary" size="lg">
-        Fazer login e começar
+      <UIcon
+        name="i-lucide-loader-circle"
+        class="animate-spin text-secondary-400 text-2xl"
+      />
+      <UButton to="/dashboard" color="primary" variant="soft">
+        Ir para o dashboard agora
       </UButton>
     </div>
   </div>

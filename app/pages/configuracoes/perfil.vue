@@ -176,8 +176,9 @@ const assinaturaLabel = computed(() => {
   const plano = auth.usuario?.plano ?? "basico";
   const nomes: Record<string, string> = {
     basico: "Básico",
+    plus: "Plus",
     profissional: "Plus",
-    completo: "Completo",
+    completo: "Plus",
   };
   if (s === "trial") return `Período de teste — Plano ${nomes[plano]}`;
   if (s === "ativa") return `Assinatura ativa — Plano ${nomes[plano]}`;

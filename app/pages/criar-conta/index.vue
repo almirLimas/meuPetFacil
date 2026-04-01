@@ -21,7 +21,7 @@ const state = reactive<CriarContaFormState>({
   senha: "",
   confirmarSenha: "",
   // Step 2
-  plano: "profissional",
+  plano: "plus",
   // Step 3
   formaPagamento: "cartao",
   cpf: "",
@@ -118,6 +118,8 @@ const submitForm = async () => {
 
     if (resultado.tipo === "checkout") {
       globalThis.location.href = resultado.url;
+    } else if (resultado.tipo === "trial") {
+      await navigateTo("/criar-conta/sucesso");
     } else {
       pixCheckout.value = resultado;
       await navigateTo("/criar-conta/pagamento-pix");

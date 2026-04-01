@@ -49,6 +49,11 @@ const menuItems = [
     icon: "i-logos-whatsapp-icon",
     to: "/configuracoes/whatsapp",
   },
+  {
+    label: "Primeiros passos",
+    icon: "i-lucide-rocket",
+    to: "/primeiros-passos",
+  },
 ];
 
 const breadcrumb = useBreadcrumb();
@@ -74,6 +79,19 @@ router.beforeEach(() => {
 });
 router.afterEach(() => {
   pageLoading.value = false;
+});
+
+const assinaturaStatus = computed(() => authStore.usuario?.assinaturaStatus);
+const assinaturaSuspensa = computed(
+  () => assinaturaStatus.value === "suspensa",
+);
+
+const diasRestantesTrial = computed(() => {
+  if (assinaturaStatus.value !== "trial") return null;
+  const expira = authStore.usuario?.trialExpiraEm;
+  if (!expira) return null;
+  const diff = new Date(expira).getTime() - Date.now();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
 });
 </script>
 
@@ -163,10 +181,72 @@ router.afterEach(() => {
             <UIcon :name="item.icon" class="size-4.5 shrink-0" />
             {{ item.label }}
           </NuxtLink>
+
+          <!-- Separador + Suporte -->
+          <div
+            class="mx-2 my-1 border-t border-gray-100 dark:border-neutral-700"
+          />
+          <a
+            href="https://wa.me/5511966389057?text=Olá!%20Preciso%20de%20ajuda%20com%20o%20sistema%20Anin%20Pet."
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-3 mx-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-gray-500 dark:text-gray-400 hover:bg-green-50 dark:hover:bg-neutral-700 hover:text-green-600 dark:hover:text-green-400"
+          >
+            <UIcon name="i-lucide-headset" class="size-4.5 shrink-0" />
+            Suporte
+          </a>
         </aside>
       </transition>
 
       <main class="flex-1 p-4 overflow-auto flex flex-col gap-4">
+        <!-- Banner: assinatura suspensa -->
+        <div
+          v-if="assinaturaSuspensa"
+          class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-sm"
+        >
+          <div class="flex items-center gap-2 text-red-700">
+            <UIcon name="i-lucide-alert-triangle" class="text-base shrink-0" />
+            <span
+              >Seu período de teste encerrou. Ative sua assinatura para
+              continuar usando o sistema.</span
+            >
+          </div>
+          <UButton
+            to="/renovar-assinatura"
+            color="error"
+            size="xs"
+            class="shrink-0"
+          >
+            Ativar agora
+          </UButton>
+        </div>
+
+        <!-- Banner: trial expirando em breve (≤ 3 dias) -->
+        <div
+          v-else-if="diasRestantesTrial !== null && diasRestantesTrial <= 3"
+          class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-sm"
+        >
+          <div class="flex items-center gap-2 text-amber-700">
+            <UIcon name="i-lucide-clock" class="text-base shrink-0" />
+            <span>
+              Seu período de teste termina
+              <strong>{{
+                diasRestantesTrial === 0
+                  ? "hoje"
+                  : `em ${diasRestantesTrial} dia${diasRestantesTrial > 1 ? "s" : ""}`
+              }}</strong
+              >.
+            </span>
+          </div>
+          <UButton
+            to="/renovar-assinatura"
+            color="warning"
+            size="xs"
+            class="shrink-0"
+          >
+            Assinar agora
+          </UButton>
+        </div>
         <UBreadcrumb
           v-if="breadcrumb.items.value.length > 1"
           :items="breadcrumb.items.value"

@@ -1,0 +1,237 @@
+<script setup lang="ts">
+definePageMeta({ layout: "default" });
+useBreadcrumb().set([{ label: "Primeiros passos" }]);
+</script>
+
+<template>
+  <div class="flex flex-col gap-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-xl font-bold text-gray-800 dark:text-gray-100">
+          Primeiros passos
+        </h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          Siga essa sequência para configurar seu sistema e começar a usar.
+        </p>
+      </div>
+    </div>
+
+    <!-- Steps -->
+    <div class="flex flex-col gap-3">
+      <!-- 1 -->
+      <UCard class="ring-0 shadow-sm">
+        <div class="flex gap-4">
+          <div
+            class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
+          >
+            1
+          </div>
+          <div class="flex flex-col gap-1 flex-1">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <p class="font-semibold text-gray-800 dark:text-gray-100">
+                Cadastre seus serviços
+              </p>
+              <UButton
+                size="xs"
+                color="secondary"
+                variant="soft"
+                to="/servicos"
+                trailing-icon="i-lucide-arrow-right"
+              >
+                Ir para Serviços
+              </UButton>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Antes de criar agendamentos, você precisa ter pelo menos um
+              serviço cadastrado (ex: Banho, Tosa, Consulta). Defina o nome,
+              preço e duração.
+            </p>
+          </div>
+        </div>
+      </UCard>
+
+      <!-- 2 -->
+      <UCard class="ring-0 shadow-sm">
+        <div class="flex gap-4">
+          <div
+            class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
+          >
+            2
+          </div>
+          <div class="flex flex-col gap-1 flex-1">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <p class="font-semibold text-gray-800 dark:text-gray-100">
+                Cadastre seus clientes
+              </p>
+              <UButton
+                size="xs"
+                color="secondary"
+                variant="soft"
+                to="/clientes"
+                trailing-icon="i-lucide-arrow-right"
+              >
+                Ir para Clientes
+              </UButton>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Adicione os dados dos seus clientes: nome, telefone, e-mail e
+              endereço. Você também pode cadastrar os pets de cada cliente
+              diretamente no cadastro.
+            </p>
+          </div>
+        </div>
+      </UCard>
+
+      <!-- 3 -->
+      <UCard class="ring-0 shadow-sm">
+        <div class="flex gap-4">
+          <div
+            class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
+          >
+            3
+          </div>
+          <div class="flex flex-col gap-1 flex-1">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <p class="font-semibold text-gray-800 dark:text-gray-100">
+                Crie seu primeiro agendamento
+              </p>
+              <UButton
+                size="xs"
+                color="secondary"
+                variant="soft"
+                to="/agenda"
+                trailing-icon="i-lucide-arrow-right"
+              >
+                Ir para Agenda
+              </UButton>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Na agenda, clique em "Novo Agendamento", escolha o cliente, o pet,
+              o serviço e o horário. O sistema valida automaticamente conflitos
+              de horário.
+            </p>
+          </div>
+        </div>
+      </UCard>
+
+      <!-- 4 -->
+      <UCard class="ring-0 shadow-sm">
+        <div class="flex gap-4">
+          <div
+            class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
+          >
+            4
+          </div>
+          <div class="flex flex-col gap-1 flex-1">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <p class="font-semibold text-gray-800 dark:text-gray-100">
+                Controle seu estoque
+              </p>
+              <UButton
+                size="xs"
+                color="secondary"
+                variant="soft"
+                to="/estoque"
+                trailing-icon="i-lucide-arrow-right"
+              >
+                Ir para Estoque
+              </UButton>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Cadastre os produtos que você usa ou vende (shampoos, rações,
+              acessórios). O estoque avisa quando o estoque estiver baixo.
+            </p>
+          </div>
+        </div>
+      </UCard>
+
+      <!-- 5 -->
+      <UCard class="ring-0 shadow-sm">
+        <div class="flex gap-4">
+          <div
+            class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
+          >
+            5
+          </div>
+          <div class="flex flex-col gap-1 flex-1">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <p class="font-semibold text-gray-800 dark:text-gray-100">
+                Acompanhe o financeiro
+              </p>
+              <UButton
+                size="xs"
+                color="secondary"
+                variant="soft"
+                to="/financeiro"
+                trailing-icon="i-lucide-arrow-right"
+              >
+                Ir para Financeiro
+              </UButton>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Registre receitas e despesas para controlar o fluxo de caixa da
+              sua petshop. Veja o resumo do mês no Dashboard.
+            </p>
+          </div>
+        </div>
+      </UCard>
+
+      <!-- 6 -->
+      <UCard class="ring-0 shadow-sm">
+        <div class="flex gap-4">
+          <div
+            class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
+          >
+            6
+          </div>
+          <div class="flex flex-col gap-1 flex-1">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <p class="font-semibold text-gray-800 dark:text-gray-100">
+                Conecte o WhatsApp
+              </p>
+              <UButton
+                size="xs"
+                color="secondary"
+                variant="soft"
+                to="/configuracoes/whatsapp"
+                trailing-icon="i-lucide-arrow-right"
+              >
+                Ir para WhatsApp
+              </UButton>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Vincule o número da sua petshop para enviar lembretes automáticos
+              e mensagens de recuperação para clientes que não voltam há algum
+              tempo.
+            </p>
+          </div>
+        </div>
+      </UCard>
+    </div>
+
+    <!-- Dica final -->
+    <UCard
+      class="bg-blue-50 dark:bg-blue-950/30 ring-0 border border-blue-100 dark:border-blue-900"
+    >
+      <div class="flex gap-3">
+        <UIcon
+          name="i-lucide-lightbulb"
+          class="size-5 text-blue-500 shrink-0 mt-0.5"
+        />
+        <div>
+          <p class="text-sm font-semibold text-blue-700 dark:text-blue-300">
+            Dica
+          </p>
+          <p class="text-sm text-blue-600 dark:text-blue-400 mt-0.5">
+            Você pode acompanhar um resumo geral de tudo no
+            <NuxtLink to="/dashboard" class="underline font-medium"
+              >Dashboard</NuxtLink
+            >. Ele exibe agendamentos do dia, receita do mês e alertas de
+            estoque baixo.
+          </p>
+        </div>
+      </div>
+    </UCard>
+  </div>
+</template>

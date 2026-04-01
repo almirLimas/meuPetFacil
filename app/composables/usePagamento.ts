@@ -1,13 +1,17 @@
 import type { PlanoSistema } from "~/types/usuario";
 
 export type ResultadoCheckout = { tipo: "checkout"; url: string };
+export type ResultadoTrial = { tipo: "trial"; trialExpiraEm: string };
 export type ResultadoPix = {
   tipo: "pix";
   qrCode: string;
   qrCodeBase64: string;
   valor: number;
 };
-export type ResultadoPagamento = ResultadoCheckout | ResultadoPix;
+export type ResultadoPagamento =
+  | ResultadoCheckout
+  | ResultadoTrial
+  | ResultadoPix;
 
 export const usePagamento = () => {
   const { apiFetch } = useApi();
@@ -22,6 +26,9 @@ export const usePagamento = () => {
       body: dados,
     });
 
+  const renovarAssinatura = () =>
+    apiFetch<ResultadoCheckout>("/pagamento/renovar", { method: "POST" });
+
   const obterStatus = () =>
     apiFetch<{
       assinaturaStatus: string;
@@ -29,5 +36,5 @@ export const usePagamento = () => {
       plano: PlanoSistema;
     }>("/pagamento/status");
 
-  return { iniciarPagamento, obterStatus };
+  return { iniciarPagamento, renovarAssinatura, obterStatus };
 };

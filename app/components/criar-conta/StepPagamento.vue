@@ -19,11 +19,6 @@ const formas: {
     value: "pix",
     label: "PIX Anual",
     icon: "i-lucide-qr-code",
-  },
-  {
-    value: "boleto",
-    label: "Boleto",
-    icon: "i-lucide-file-text",
     em_breve: true,
   },
 ];
@@ -100,7 +95,7 @@ defineExpose({
     <!-- Selecao forma de pagamento -->
     <div>
       <p class="text-sm font-medium text-gray-700 mb-2">Forma de pagamento</p>
-      <div class="grid grid-cols-3 gap-2">
+      <div class="grid grid-cols-2 gap-2">
         <button
           v-for="forma in formas"
           :key="forma.value"

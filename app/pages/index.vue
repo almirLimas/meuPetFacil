@@ -54,7 +54,7 @@ const planos = [
   {
     id: "profissional",
     nome: "Plus",
-    preco: 129,
+    preco: 109,
     destaque: true,
     badge: "Mais popular",
     descricao: "Para petshops que querem vender mais com automação.",

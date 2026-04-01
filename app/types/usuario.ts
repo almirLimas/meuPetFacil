@@ -1,6 +1,6 @@
 export type UsuarioPerfil = "admin" | "staff";
 export type UsuarioStatus = "ativo" | "inativo";
-export type PlanoSistema = "basico" | "profissional" | "completo";
+export type PlanoSistema = "basico" | "plus";
 export type PlanoExibido = "basico" | "plus";
 export type FormaPagamento = "cartao" | "boleto" | "pix";
 export type AssinaturaStatus =
@@ -31,13 +31,14 @@ export const PLANOS: Record<PlanoSistema, PlanoInfo> = {
       "pets",
       "agendamentos",
       "servicos",
+      "estoque",
       "financeiro",
       "relatorios",
     ],
   },
-  profissional: {
+  plus: {
     nome: "Plus",
-    preco: 129,
+    preco: 109,
     descricao:
       "Básico + WhatsApp automático para vender mais e fidelizar clientes.",
     modulos: [
@@ -46,28 +47,10 @@ export const PLANOS: Record<PlanoSistema, PlanoInfo> = {
       "pets",
       "agendamentos",
       "servicos",
+      "estoque",
       "financeiro",
       "relatorios",
       "whatsapp",
-      "estoque",
-    ],
-    destaque: true,
-  },
-  completo: {
-    nome: "Plus",
-    preco: 129,
-    descricao:
-      "Básico + WhatsApp automático para vender mais e fidelizar clientes.",
-    modulos: [
-      "dashboard",
-      "clientes",
-      "pets",
-      "agendamentos",
-      "servicos",
-      "financeiro",
-      "relatorios",
-      "whatsapp",
-      "estoque",
     ],
     destaque: true,
   },
@@ -82,6 +65,7 @@ export const MODULO_LABELS: Record<string, string> = {
   estoque: "Estoque",
   financeiro: "Financeiro",
   relatorios: "Relatórios",
+  whatsapp: "WhatsApp",
 };
 
 export interface DadosCartao {

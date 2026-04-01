@@ -8,6 +8,12 @@ const publicRoutes = new Set([
   "/redefinir-senha",
 ]);
 
+const renovacaoRoutes = new Set([
+  "/renovar-assinatura",
+  "/renovar-assinatura/sucesso",
+  "/renovar-assinatura/falhou",
+]);
+
 export default defineNuxtRouteMiddleware(async (to) => {
   const auth = useAuthStore();
 
@@ -18,5 +24,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   if (!auth.isAutenticado) {
     return navigateTo("/login");
+  }
+
+  // Usuário com assinatura suspensa só pode acessar páginas de renovação
+  if (
+    auth.usuario?.assinaturaStatus === "suspensa" &&
+    !renovacaoRoutes.has(to.path)
+  ) {
+    return navigateTo("/renovar-assinatura");
   }
 });
