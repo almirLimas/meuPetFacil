@@ -3,7 +3,13 @@ import * as z from "zod";
 import type { ClienteFormState } from "~/types/cliente";
 
 const schema = z.object({
-  nome: z.string().min(3, "Informe o nome completo"),
+  nome: z
+    .string()
+    .min(3, "Informe o nome completo")
+    .regex(
+      /^[A-Za-zÀ-ÖØ-öø-ÿ\s''-]+$/,
+      "Nome não pode conter números ou caracteres especiais",
+    ),
   cpf: z
     .string()
     .optional()
@@ -23,6 +29,16 @@ const schema = z.object({
 });
 
 const state = defineModel<ClienteFormState>({ required: true });
+
+function filtrarNome(e: Event) {
+  const input = e.target as HTMLInputElement;
+  const filtrado = input.value.replace(
+    /[^A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s''\-]/g,
+    "",
+  );
+  input.value = filtrado;
+  state.value.nome = filtrado;
+}
 
 const formRef = ref();
 
@@ -48,25 +64,32 @@ defineExpose({
           v-model="state.nome"
           placeholder="João da Silva"
           class="w-full"
+          @input="filtrarNome"
         />
       </UFormField>
 
-      <UFormField label="CPF" name="cpf" hint="Opcional">
+      <UFormField label="CPF" name="cpf" hint="(Opcional)">
         <InputCpfInput v-model="state.cpf" class="w-full" />
       </UFormField>
 
-      <UFormField label="Telefone principal" name="telefonePrincipal" required>
+      <UFormField label="WhatsApp" name="telefonePrincipal" required>
         <InputTelefoneInput v-model="state.telefonePrincipal" class="w-full" />
       </UFormField>
 
       <UFormField
-        label="Telefone secundário / WhatsApp"
+        label="Telefone secundário"
         name="telefoneSecundario"
+        hint="(Opcional)"
       >
         <InputTelefoneInput v-model="state.telefoneSecundario" class="w-full" />
       </UFormField>
 
-      <UFormField label="E-mail" name="email" class="md:col-span-2">
+      <UFormField
+        label="E-mail"
+        name="email"
+        hint="(Opcional)"
+        class="md:col-span-2"
+      >
         <UInput
           v-model="state.email"
           type="email"

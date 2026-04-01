@@ -1,4 +1,9 @@
 <script setup lang="ts">
+useBreadcrumb().set([
+  { label: "Clientes", to: "/clientes" },
+  { label: "Novo cliente" },
+]);
+
 import type { StepperItem } from "@nuxt/ui";
 import type { ClienteFormState } from "~/types/cliente";
 import type { PetFormState } from "~/types/pet";

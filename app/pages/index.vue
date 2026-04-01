@@ -75,10 +75,10 @@ const planos = [
     <!-- NAV -->
     <header class="sticky top-0 z-50 bg-white shadow-sm">
       <div
-        class="max-w-6xl mx-auto px-6 py-2 flex items-center justify-between"
+        class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between overflow-visible"
       >
-        <div class="shrink-0 w-40 sm:w-52 md:w-60">
-          <AppLogo :size="240" />
+        <div class="shrink-0 h-24">
+          <AppLogo :size="260" />
         </div>
         <nav
           class="hidden md:flex items-center gap-8 text-sm text-gray-600 font-medium"
@@ -135,7 +135,7 @@ const planos = [
               <div
                 class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
               >
-                <UIcon name="i-lucide-check" class="size-3.5 text-white" />
+                <UIcon name="i-lucide-calendar" class="size-3.5 text-white" />
               </div>
               Agendas e Clientes Organizados
             </li>
@@ -143,7 +143,7 @@ const planos = [
               <div
                 class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
               >
-                <UIcon name="i-lucide-check" class="size-3.5 text-white" />
+                <UIcon name="i-lucide-package" class="size-3.5 text-white" />
               </div>
               Controle de Vendas e Estoque
             </li>
@@ -151,9 +151,23 @@ const planos = [
               <div
                 class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
               >
-                <UIcon name="i-lucide-check" class="size-3.5 text-white" />
+                <UIcon
+                  name="i-logos-whatsapp-icon"
+                  class="size-3.5 text-white"
+                />
               </div>
-              Tudo na Nuvem, Simples e Rápido
+              Lembretes e Retornos via WhatsApp
+            </li>
+            <li class="flex items-center gap-3 text-lg">
+              <div
+                class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
+              >
+                <UIcon
+                  name="i-lucide-trending-up"
+                  class="size-3.5 text-white"
+                />
+              </div>
+              Fidelize Clientes e Aumente a Receita
             </li>
           </ul>
           <div class="flex flex-col sm:flex-row gap-3 mt-2">
@@ -168,37 +182,144 @@ const planos = [
         </div>
         <div class="relative flex justify-center lg:justify-end items-end">
           <div class="relative">
+            <!-- Desktop mockup -->
             <div class="w-80 sm:w-96 bg-gray-800 rounded-t-xl p-2 shadow-2xl">
               <div class="flex items-center gap-1.5 mb-2 px-1">
                 <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
                 <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
                 <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
               </div>
-              <div class="bg-[#f5f5f0] rounded-lg overflow-hidden h-44">
-                <div class="bg-sky-500 h-8 flex items-center px-3 gap-2">
-                  <UIcon name="i-lucide-paw-print" class="size-4 text-white" />
-                  <span class="text-white text-xs font-bold">Anim Pet</span>
+              <!-- App shell -->
+              <div class="bg-[#f8f8f5] rounded-lg overflow-hidden h-52">
+                <!-- Header -->
+                <div
+                  class="bg-white h-7 border-b border-gray-100 flex items-center justify-between px-2 shrink-0"
+                >
+                  <div
+                    class="h-3 w-16 rounded-sm"
+                    style="background-color: #1d9fb6"
+                  ></div>
+                  <div
+                    class="w-4 h-4 rounded-full flex items-center justify-center text-white text-[5px] font-bold shrink-0"
+                    style="background-color: #1d9fb6"
+                  >
+                    AL
+                  </div>
                 </div>
-                <div class="p-3 flex gap-2">
-                  <div class="w-20 bg-white rounded-lg p-1.5 shadow-sm">
-                    <div class="text-[8px] text-gray-400 mb-1">Agenda hoje</div>
-                    <div class="space-y-1">
-                      <div class="h-1.5 bg-teal-200 rounded w-full"></div>
-                      <div class="h-1.5 bg-orange-200 rounded w-3/4"></div>
-                      <div class="h-1.5 bg-teal-200 rounded w-full"></div>
-                      <div class="h-1.5 bg-gray-100 rounded w-1/2"></div>
+                <!-- Body -->
+                <div class="flex" style="height: calc(100% - 28px)">
+                  <!-- Sidebar -->
+                  <div
+                    class="w-16 bg-white m-1 mr-0 rounded-xl shadow-sm flex flex-col py-1.5 gap-0.5 shrink-0"
+                  >
+                    <div
+                      class="mx-1 px-1.5 py-1 rounded-lg flex items-center gap-1"
+                      style="background-color: #1d9fb6"
+                    >
+                      <div
+                        class="w-2.5 h-2.5 rounded-sm shrink-0"
+                        style="background-color: rgba(255, 255, 255, 0.4)"
+                      ></div>
+                      <div
+                        class="h-1.5 rounded flex-1"
+                        style="background-color: rgba(255, 255, 255, 0.6)"
+                      ></div>
+                    </div>
+                    <div
+                      v-for="i in 5"
+                      :key="i"
+                      class="mx-1 px-1.5 py-1 rounded-lg flex items-center gap-1"
+                    >
+                      <div
+                        class="w-2.5 h-2.5 rounded-sm bg-gray-200 shrink-0"
+                      ></div>
+                      <div class="h-1.5 bg-gray-200 rounded flex-1"></div>
                     </div>
                   </div>
-                  <div class="flex-1 space-y-2">
-                    <div class="bg-white rounded-lg p-1.5 shadow-sm">
-                      <div class="text-[8px] text-gray-400">Receita do mês</div>
-                      <div class="text-xs font-bold text-sky-500">R$ 4.820</div>
-                    </div>
-                    <div class="bg-white rounded-lg p-1.5 shadow-sm">
-                      <div class="text-[8px] text-gray-400">
-                        Clientes ativos
+                  <!-- Dashboard content -->
+                  <div
+                    class="flex-1 p-1.5 grid grid-cols-2 gap-1.5 content-start"
+                  >
+                    <!-- Card Clientes -->
+                    <div
+                      class="bg-white rounded-xl p-1.5 shadow-sm flex items-center gap-1.5"
+                    >
+                      <div
+                        class="w-6 h-6 rounded-lg shrink-0 flex items-center justify-center"
+                        style="background-color: #d5f3f8"
+                      >
+                        <UIcon
+                          name="i-lucide-users"
+                          class="size-3"
+                          style="color: #1d9fb6"
+                        />
                       </div>
-                      <div class="text-xs font-bold text-gray-700">127</div>
+                      <div>
+                        <div class="text-[6px] text-gray-400">Clientes</div>
+                        <div class="text-[9px] font-bold text-gray-700">
+                          127
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Card Receita -->
+                    <div
+                      class="bg-white rounded-xl p-1.5 shadow-sm flex items-center gap-1.5"
+                    >
+                      <div
+                        class="w-6 h-6 rounded-lg shrink-0 flex items-center justify-center"
+                        style="background-color: #e0fbf4"
+                      >
+                        <UIcon
+                          name="i-lucide-wallet"
+                          class="size-3"
+                          style="color: #1d9fb6"
+                        />
+                      </div>
+                      <div>
+                        <div class="text-[6px] text-gray-400">Receita</div>
+                        <div
+                          class="text-[9px] font-bold"
+                          style="color: #1d9fb6"
+                        >
+                          R$4.820
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Card Pets -->
+                    <div
+                      class="bg-white rounded-xl p-1.5 shadow-sm flex items-center gap-1.5"
+                    >
+                      <div
+                        class="w-6 h-6 rounded-lg shrink-0 flex items-center justify-center"
+                        style="background-color: #ffe0ec"
+                      >
+                        <UIcon
+                          name="i-lucide-paw-print"
+                          class="size-3"
+                          style="color: #e85a8a"
+                        />
+                      </div>
+                      <div>
+                        <div class="text-[6px] text-gray-400">Pets</div>
+                        <div class="text-[9px] font-bold text-gray-700">89</div>
+                      </div>
+                    </div>
+                    <!-- Card Agenda -->
+                    <div class="bg-white rounded-xl p-1.5 shadow-sm">
+                      <div class="text-[6px] text-gray-400 mb-1">
+                        Agenda hoje
+                      </div>
+                      <div class="space-y-0.5">
+                        <div
+                          class="h-1.5 rounded w-full"
+                          style="background-color: #d5f3f8"
+                        ></div>
+                        <div class="h-1.5 bg-orange-200 rounded w-3/4"></div>
+                        <div
+                          class="h-1.5 rounded w-full"
+                          style="background-color: #d5f3f8"
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -206,31 +327,71 @@ const planos = [
             </div>
             <div class="bg-gray-700 h-3 w-full rounded-b-xl"></div>
             <div class="bg-gray-600 h-2 w-40 mx-auto rounded-b-lg"></div>
+            <!-- Mobile mockup -->
             <div
               class="absolute -right-8 bottom-4 w-24 bg-gray-800 rounded-2xl p-1.5 shadow-2xl border-2 border-gray-700"
             >
-              <div class="bg-[#f5f5f0] rounded-xl overflow-hidden h-40">
-                <div class="bg-sky-500 h-6 flex items-center justify-center">
-                  <span class="text-white text-[8px] font-bold">Anim Pet</span>
+              <div class="bg-[#f8f8f5] rounded-xl overflow-hidden h-40">
+                <!-- Header mobile -->
+                <div
+                  class="bg-white h-6 border-b border-gray-100 flex items-center justify-between px-1.5"
+                >
+                  <div
+                    class="h-2.5 w-10 rounded-sm"
+                    style="background-color: #1d9fb6"
+                  ></div>
+                  <div
+                    class="w-3.5 h-3.5 rounded-full flex items-center justify-center text-white text-[4px] font-bold shrink-0"
+                    style="background-color: #1d9fb6"
+                  >
+                    AL
+                  </div>
                 </div>
+                <!-- Mobile content -->
                 <div class="p-1.5 space-y-1.5">
-                  <div class="bg-white rounded p-1 shadow-sm">
-                    <div class="flex items-center gap-1 mb-0.5">
+                  <div class="grid grid-cols-2 gap-1">
+                    <div class="bg-white rounded-lg p-1 shadow-sm">
                       <div
-                        class="w-4 h-4 rounded-full bg-sky-100 flex items-center justify-center"
+                        class="w-4 h-4 rounded-md mb-0.5 flex items-center justify-center"
+                        style="background-color: #d5f3f8"
                       >
                         <UIcon
-                          name="i-lucide-dog"
-                          class="size-2.5 text-sky-500"
+                          name="i-lucide-users"
+                          class="size-2.5"
+                          style="color: #1d9fb6"
                         />
                       </div>
-                      <span class="text-[7px] font-medium text-gray-700"
-                        >Thor</span
-                      >
+                      <div class="text-[5px] text-gray-400">Clientes</div>
+                      <div class="text-[8px] font-bold text-gray-700">127</div>
                     </div>
-                    <div class="text-[6px] text-gray-400">Labrador • 12kg</div>
+                    <div class="bg-white rounded-lg p-1 shadow-sm">
+                      <div
+                        class="w-4 h-4 rounded-md mb-0.5 flex items-center justify-center"
+                        style="background-color: #ffe0ec"
+                      >
+                        <UIcon
+                          name="i-lucide-paw-print"
+                          class="size-2.5"
+                          style="color: #e85a8a"
+                        />
+                      </div>
+                      <div class="text-[5px] text-gray-400">Pets</div>
+                      <div class="text-[8px] font-bold text-gray-700">89</div>
+                    </div>
                   </div>
-                  <div class="bg-orange-500 rounded p-1 text-center">
+                  <div class="bg-white rounded-lg p-1 shadow-sm">
+                    <div class="text-[5px] text-gray-400 mb-0.5">
+                      Agenda hoje
+                    </div>
+                    <div class="space-y-0.5">
+                      <div
+                        class="h-1.5 rounded w-full"
+                        style="background-color: #d5f3f8"
+                      ></div>
+                      <div class="h-1.5 bg-orange-200 rounded w-3/4"></div>
+                    </div>
+                  </div>
+                  <div class="bg-orange-500 rounded-lg p-1 text-center">
                     <span class="text-[7px] text-white font-bold">Agendar</span>
                   </div>
                 </div>
@@ -329,11 +490,87 @@ const planos = [
           </div>
         </div>
         <div class="flex justify-center lg:justify-end">
-          <img
-            src="/mascot.png"
-            alt="Mascote Anin Pet"
-            class="h-64 sm:h-80 object-contain drop-shadow-2xl"
-          />
+          <div
+            class="bg-white rounded-3xl shadow-xl p-8 flex flex-col gap-5 border border-gray-100 max-w-xs w-full"
+          >
+            <AppLogo :size="160" />
+            <div class="w-full h-px bg-gray-100"></div>
+            <ul class="flex flex-col gap-4">
+              <li class="flex items-start gap-3">
+                <div
+                  class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                  style="background-color: #d5f3f8"
+                >
+                  <UIcon
+                    name="i-lucide-calendar-check"
+                    class="size-4"
+                    style="color: #1d9fb6"
+                  />
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-gray-800">
+                    14 dias grátis
+                  </p>
+                  <p class="text-xs text-gray-400">Teste sem compromisso</p>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <div
+                  class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                  style="background-color: #e0fbf4"
+                >
+                  <UIcon
+                    name="i-lucide-credit-card"
+                    class="size-4"
+                    style="color: #1d9fb6"
+                  />
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-gray-800">
+                    Sem cartão de crédito
+                  </p>
+                  <p class="text-xs text-gray-400">
+                    Só paga se quiser continuar
+                  </p>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <div
+                  class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                  style="background-color: #ffe0ec"
+                >
+                  <UIcon
+                    name="i-lucide-headset"
+                    class="size-4"
+                    style="color: #e85a8a"
+                  />
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-gray-800">
+                    Suporte incluso
+                  </p>
+                  <p class="text-xs text-gray-400">Atendimento via WhatsApp</p>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <div
+                  class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                  style="background-color: #fef3c7"
+                >
+                  <UIcon
+                    name="i-lucide-x-circle"
+                    class="size-4 text-amber-500"
+                  />
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-gray-800">
+                    Cancele quando quiser
+                  </p>
+                  <p class="text-xs text-gray-400">Sem multa, sem burocracia</p>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
@@ -445,7 +682,7 @@ const planos = [
       >
         <AppLogo :size="100" />
         <p>
-          © {{ new Date().getFullYear() }} Anim Pet. Todos os direitos
+          © {{ new Date().getFullYear() }} Anin Pet. Todos os direitos
           reservados.
         </p>
         <div class="flex gap-4">

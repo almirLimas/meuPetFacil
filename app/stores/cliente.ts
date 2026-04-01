@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import type { Cliente, ClienteFormState } from "~/types/cliente";
-import type { Pet } from "~/types/pet";
 
 interface PaginatedResponse<T> {
   data: T[];
@@ -46,37 +45,26 @@ export const useClienteStore = defineStore("cliente", () => {
     try {
       const { pets: petsData, ...clienteData } = dados;
 
-      // 1. Criar o cliente
       const novoCliente = await apiFetch<Cliente>("/clientes", {
         method: "POST",
         body: {
           ...clienteData,
           cpf: clienteData.cpf.replaceAll(/\D/g, ""),
+          pets: petsData.map((pet) => ({
+            nome: pet.nome,
+            especie: pet.especie ?? "Outro",
+            raca: pet.raca || undefined,
+            sexo: pet.sexo || undefined,
+            porte: pet.tamanho,
+            dataNascimento: pet.dataNascimento || undefined,
+            peso: pet.peso || undefined,
+            observacoes: pet.observacoes || undefined,
+          })),
         },
       });
 
-      // 2. Criar cada pet vinculado ao cliente recém-criado
-      const pets = await Promise.all(
-        petsData.map((pet) =>
-          apiFetch<Pet>("/pets", {
-            method: "POST",
-            body: {
-              clienteId: novoCliente.id,
-              nome: pet.nome,
-              especie: pet.especie ?? "Outro",
-              raca: pet.raca || undefined,
-              sexo: pet.sexo || undefined,
-              porte: pet.tamanho,
-              peso: pet.peso || undefined,
-              observacoes: pet.observacoes || undefined,
-            },
-          }),
-        ),
-      );
-
-      const clienteCompleto: Cliente = { ...novoCliente, pets };
-      clientes.value.unshift(clienteCompleto);
-      return clienteCompleto;
+      clientes.value.unshift(novoCliente);
+      return novoCliente;
     } finally {
       loading.value = false;
     }

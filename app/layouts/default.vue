@@ -51,6 +51,8 @@ const menuItems = [
   },
 ];
 
+const breadcrumb = useBreadcrumb();
+
 // Começa fechado no mobile
 onMounted(() => {
   if (window.innerWidth < 768) open.value = false;
@@ -63,6 +65,16 @@ watch(
     if (import.meta.client && window.innerWidth < 768) open.value = false;
   },
 );
+
+// Skeleton global de navegação
+const pageLoading = ref(false);
+const router = useRouter();
+router.beforeEach(() => {
+  pageLoading.value = true;
+});
+router.afterEach(() => {
+  pageLoading.value = false;
+});
 </script>
 
 <template>
@@ -136,12 +148,16 @@ watch(
             :to="item.to"
             class="flex items-center gap-3 mx-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors"
             :class="
-              route.path === item.to
+              route.path === item.to ||
+              (item.to !== '/dashboard' && route.path.startsWith(item.to))
                 ? 'text-white'
                 : 'text-gray-500 dark:text-gray-400 hover:bg-sky-50 dark:hover:bg-neutral-700'
             "
             :style="
-              route.path === item.to ? { backgroundColor: '#1d9fb6' } : {}
+              route.path === item.to ||
+              (item.to !== '/dashboard' && route.path.startsWith(item.to))
+                ? { backgroundColor: '#1d9fb6' }
+                : {}
             "
           >
             <UIcon :name="item.icon" class="size-4.5 shrink-0" />
@@ -151,7 +167,26 @@ watch(
       </transition>
 
       <main class="flex-1 p-4 overflow-auto flex flex-col gap-4">
-        <slot />
+        <UBreadcrumb
+          v-if="breadcrumb.items.value.length > 1"
+          :items="breadcrumb.items.value"
+          class="-mb-2"
+        />
+        <!-- Skeleton global durante navegação -->
+        <template v-if="pageLoading">
+          <div class="flex items-center justify-between">
+            <div class="flex flex-col gap-1.5">
+              <USkeleton class="h-6 w-40" />
+              <USkeleton class="h-4 w-28" />
+            </div>
+            <USkeleton class="h-9 w-32 rounded-md" />
+          </div>
+          <USkeleton class="h-10 w-full rounded-xl" />
+          <div class="flex flex-col gap-3">
+            <USkeleton v-for="i in 5" :key="i" class="h-16 w-full rounded-xl" />
+          </div>
+        </template>
+        <slot v-else />
       </main>
     </div>
   </div>

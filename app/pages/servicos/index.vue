@@ -1,4 +1,6 @@
 ﻿<script setup lang="ts">
+useBreadcrumb().set([{ label: "Serviços" }]);
+
 import type { Servico, CategoriaServico, PorteServico } from "~/types/servico";
 
 const {

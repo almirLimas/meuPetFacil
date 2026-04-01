@@ -1,4 +1,6 @@
 ﻿<script setup lang="ts">
+useBreadcrumb().set([{ label: "Estoque" }]);
+
 import type {
   Produto,
   CategoriaEstoque,

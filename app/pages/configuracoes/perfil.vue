@@ -144,6 +144,7 @@
 </template>
 
 <script setup lang="ts">
+useBreadcrumb().set([{ label: "Configurações" }, { label: "Perfil" }]);
 import { useAuthStore } from "~/stores/auth";
 const auth = useAuthStore();
 const { show: showError } = useApiError();

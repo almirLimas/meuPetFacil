@@ -10,8 +10,16 @@ import {
 
 const pets = defineModel<PetFormState[]>({ required: true });
 
+type PetWithId = PetFormState & { id?: string };
+const props = defineProps<{
+  onSavePet?: (pet: PetWithId) => Promise<void>;
+}>();
+
+const savingPet = ref(false);
+
 const showForm = ref(false);
 const semPetErro = ref(false);
+const editandoIdx = ref<number | null>(null);
 
 const emptyPet = (): PetFormState => ({
   nome: "",
@@ -19,7 +27,7 @@ const emptyPet = (): PetFormState => ({
   especie: "Cão",
   sexo: undefined,
   tamanho: undefined,
-  idade: "",
+  dataNascimento: "",
   peso: "",
   observacoes: "",
 });
@@ -31,11 +39,12 @@ const racasDisponiveis = computed(
   () => RACAS_POR_ESPECIE[(formPet.especie as PetEspecie) ?? "Cão"],
 );
 
-// Ao trocar espécie, limpa raça
+// Ao trocar espécie, limpa raça (exceto quando carregando pet para edição)
+const carregandoEdicao = ref(false);
 watch(
   () => formPet.especie,
   () => {
-    formPet.raca = "";
+    if (!carregandoEdicao.value) formPet.raca = "";
   },
 );
 
@@ -44,12 +53,15 @@ const schema = z.object({
   raca: z.string().min(1, "Selecione a raça"),
 });
 
-const fieldErrors = reactive({ nome: "", raca: "" });
+const fieldErrors = reactive<{
+  nome: string | undefined;
+  raca: string | undefined;
+}>({ nome: undefined, raca: undefined });
 
 const validateForm = (): boolean => {
   const result = schema.safeParse(formPet);
-  fieldErrors.nome = "";
-  fieldErrors.raca = "";
+  fieldErrors.nome = undefined;
+  fieldErrors.raca = undefined;
   if (!result.success) {
     result.error.issues.forEach((e) => {
       const field = e.path[0] as keyof typeof fieldErrors;
@@ -60,12 +72,45 @@ const validateForm = (): boolean => {
   return true;
 };
 
-const addPet = () => {
+const addPet = async () => {
   if (!validateForm()) return;
-  pets.value.push({ ...formPet });
+  if (editandoIdx.value !== null) {
+    const petAtualizado = { ...formPet } as PetWithId;
+    pets.value[editandoIdx.value] = petAtualizado;
+    // Se há callback de save imediato (ex: tela de edição) e o pet já existe no banco
+    if (props.onSavePet && petAtualizado.id) {
+      savingPet.value = true;
+      try {
+        await props.onSavePet(petAtualizado);
+      } finally {
+        savingPet.value = false;
+      }
+    }
+    editandoIdx.value = null;
+  } else {
+    pets.value.push({ ...formPet });
+  }
   Object.assign(formPet, emptyPet());
   showForm.value = false;
   semPetErro.value = false;
+};
+
+const editarPet = (index: number) => {
+  carregandoEdicao.value = true;
+  const pet = pets.value[index] as PetFormState & {
+    porte?: string;
+    dataNascimento?: string;
+  };
+  Object.assign(formPet, {
+    ...pet,
+    tamanho: pet.tamanho ?? pet.porte ?? undefined,
+    dataNascimento: pet.dataNascimento || "",
+  });
+  nextTick(() => {
+    carregandoEdicao.value = false;
+  });
+  editandoIdx.value = index;
+  showForm.value = true;
 };
 
 const removePet = (index: number) => {
@@ -74,8 +119,9 @@ const removePet = (index: number) => {
 
 const cancelForm = () => {
   Object.assign(formPet, emptyPet());
-  fieldErrors.nome = "";
-  fieldErrors.raca = "";
+  fieldErrors.nome = undefined;
+  fieldErrors.raca = undefined;
+  editandoIdx.value = null;
   showForm.value = false;
 };
 
@@ -88,6 +134,7 @@ defineExpose({
     }
     return true;
   },
+  editarPet,
 });
 </script>
 
@@ -115,18 +162,27 @@ defineExpose({
               <span>{{ pet.raca }}</span>
               <span v-if="pet.especie">· {{ pet.especie }}</span>
               <span v-if="pet.tamanho">· {{ pet.tamanho }}</span>
-              <span v-if="pet.idade">· {{ pet.idade }}</span>
+              <span v-if="pet.dataNascimento">· {{ pet.dataNascimento }}</span>
               <span v-if="pet.peso">· {{ pet.peso }} kg</span>
             </div>
           </div>
         </div>
-        <UButton
-          icon="i-lucide-trash-2"
-          color="error"
-          variant="ghost"
-          size="xs"
-          @click="removePet(idx)"
-        />
+        <div class="flex items-center gap-1">
+          <UButton
+            icon="i-lucide-pencil"
+            color="neutral"
+            variant="ghost"
+            size="xs"
+            @click="editarPet(idx)"
+          />
+          <UButton
+            icon="i-lucide-trash-2"
+            color="error"
+            variant="ghost"
+            size="xs"
+            @click="removePet(idx)"
+          />
+        </div>
       </div>
     </div>
 
@@ -168,7 +224,9 @@ defineExpose({
       v-if="showForm"
       class="rounded-xl border border-gray-200 p-4 flex flex-col gap-4 bg-white"
     >
-      <p class="text-sm font-semibold text-gray-700">Novo pet</p>
+      <p class="text-sm font-semibold text-gray-700">
+        {{ editandoIdx !== null ? "Editar pet" : "Novo pet" }}
+      </p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Espécie -->
         <UFormField label="Espécie" name="especie">
@@ -222,17 +280,38 @@ defineExpose({
         </UFormField>
 
         <!-- Idade -->
-        <UFormField label="Idade" name="idade">
-          <UInput v-model="formPet.idade" placeholder="2 anos" class="w-full" />
+        <UFormField label="Idade (anos)" name="dataNascimento">
+          <UInput
+            v-model="formPet.dataNascimento"
+            placeholder="Ex: 3"
+            inputmode="numeric"
+            maxlength="2"
+            class="w-full"
+            @input="
+              (e: Event) => {
+                formPet.dataNascimento = (e.target as HTMLInputElement).value
+                  .replace(/\D/g, '')
+                  .slice(0, 2);
+              }
+            "
+          />
         </UFormField>
 
         <!-- Peso -->
         <UFormField label="Peso (kg)" name="peso">
           <UInput
             v-model="formPet.peso"
-            type="number"
-            placeholder="5.5"
+            placeholder="Ex: 12"
+            inputmode="numeric"
+            maxlength="3"
             class="w-full"
+            @input="
+              (e: Event) => {
+                formPet.peso = (e.target as HTMLInputElement).value
+                  .replace(/\D/g, '')
+                  .slice(0, 3);
+              }
+            "
           />
         </UFormField>
       </div>
@@ -241,8 +320,15 @@ defineExpose({
         <UButton color="neutral" variant="ghost" @click="cancelForm"
           >Cancelar</UButton
         >
-        <UButton color="secondary" leading-icon="i-lucide-plus" @click="addPet">
-          Adicionar
+        <UButton
+          color="secondary"
+          :loading="savingPet"
+          :leading-icon="
+            editandoIdx !== null ? 'i-lucide-check' : 'i-lucide-plus'
+          "
+          @click="addPet"
+        >
+          {{ editandoIdx !== null ? "Salvar alterações" : "Adicionar" }}
         </UButton>
       </div>
     </div>

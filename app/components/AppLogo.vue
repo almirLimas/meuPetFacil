@@ -1,5 +1,10 @@
 ﻿<template>
-  <img src="/logo_aninpet.png" alt="Anim Pet" :style="{ maxWidth: size + 'px' }" class="w-full h-auto object-contain" />
+  <img
+    src="/logo_aninpet.png"
+    alt="Anim Pet"
+    :style="{ maxWidth: size + 'px' }"
+    class="h-full w-auto object-contain"
+  />
 </template>
 
 <script setup lang="ts">

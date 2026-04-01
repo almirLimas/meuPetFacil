@@ -1,4 +1,6 @@
 <script setup lang="ts">
+useBreadcrumb().set([{ label: "Financeiro" }]);
+
 import type { CategoriaLancamento, TipoLancamento } from "~/types/lancamento";
 
 const {
@@ -143,54 +145,69 @@ const fmtData = (d: string) =>
 
     <!-- Cards de resumo do mês -->
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-      <div
-        v-for="card in [
-          {
-            label: 'Receitas do Mês',
-            value: fmt(resumo.receitas),
-            icon: 'i-lucide-trending-up',
-            bg: '#D1FAE5',
-            color: '#10B981',
-          },
-          {
-            label: 'Despesas do Mês',
-            value: fmt(resumo.despesas),
-            icon: 'i-lucide-trending-down',
-            bg: '#FFE0E0',
-            color: '#E85A5A',
-          },
-          {
-            label: 'Saldo do Mês',
-            value: fmt(resumo.saldo),
-            icon: 'i-lucide-wallet',
-            bg: resumo.saldo >= 0 ? '#E0F2FE' : '#FFF3E0',
-            color: resumo.saldo >= 0 ? '#0EA5E9' : '#F59E0B',
-          },
-        ]"
-        :key="card.label"
-        class="bg-white dark:bg-neutral-800 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3"
-      >
-        <div>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
-            {{ card.label }}
-          </p>
-          <p
-            class="text-xl font-extrabold text-gray-800 dark:text-gray-100 mt-1 leading-none"
-          >
-            {{ card.value }}
-          </p>
-        </div>
+      <template v-if="loading">
         <div
-          class="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-          :style="{ backgroundColor: card.bg }"
+          v-for="i in 3"
+          :key="i"
+          class="bg-white dark:bg-neutral-800 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3"
         >
-          <UIcon
-            :name="card.icon"
-            class="size-6"
-            :style="{ color: card.color }"
-          />
+          <div class="flex flex-col gap-2">
+            <USkeleton class="h-3 w-24" />
+            <USkeleton class="h-7 w-20" />
+          </div>
+          <USkeleton class="w-12 h-12 rounded-full shrink-0" />
         </div>
-      </div>
+      </template>
+      <template v-else>
+        <div
+          v-for="card in [
+            {
+              label: 'Receitas do Mês',
+              value: fmt(resumo.receitas),
+              icon: 'i-lucide-trending-up',
+              bg: '#D1FAE5',
+              color: '#10B981',
+            },
+            {
+              label: 'Despesas do Mês',
+              value: fmt(resumo.despesas),
+              icon: 'i-lucide-trending-down',
+              bg: '#FFE0E0',
+              color: '#E85A5A',
+            },
+            {
+              label: 'Saldo do Mês',
+              value: fmt(resumo.saldo),
+              icon: 'i-lucide-wallet',
+              bg: resumo.saldo >= 0 ? '#E0F2FE' : '#FFF3E0',
+              color: resumo.saldo >= 0 ? '#0EA5E9' : '#F59E0B',
+            },
+          ]"
+          :key="card.label"
+          class="bg-white dark:bg-neutral-800 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3"
+        >
+          <div>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              {{ card.label }}
+            </p>
+            <p
+              class="text-xl font-extrabold text-gray-800 dark:text-gray-100 mt-1 leading-none"
+            >
+              {{ card.value }}
+            </p>
+          </div>
+          <div
+            class="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+            :style="{ backgroundColor: card.bg }"
+          >
+            <UIcon
+              :name="card.icon"
+              class="size-6"
+              :style="{ color: card.color }"
+            />
+          </div>
+        </div>
+      </template>
     </div>
 
     <!-- Filtros + tabela -->

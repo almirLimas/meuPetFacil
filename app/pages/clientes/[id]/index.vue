@@ -6,12 +6,18 @@ const id = route.params.id as string;
 
 const clienteStore = useClienteStore();
 
-// Garante que o cliente está carregado
-await useAsyncData(`cliente-${id}`, async () => {
-  if (!clienteStore.buscarPorId(id)) await clienteStore.listar();
-});
+// Garante que o cliente está carregado com pets
+await useAsyncData(`cliente-${id}`, () => clienteStore.buscarUm(id));
 
 const cliente = computed(() => clienteStore.buscarPorId(id));
+
+const { set: setBreadcrumb } = useBreadcrumb();
+watchEffect(() => {
+  setBreadcrumb([
+    { label: "Clientes", to: "/clientes" },
+    { label: cliente.value?.nome ?? "..." },
+  ]);
+});
 
 watchEffect(() => {
   if (!cliente.value) navigateTo("/clientes");
@@ -69,7 +75,7 @@ const dadosFields = computed(() => {
     { label: "CEP", value: c.cep },
     {
       label: "Endereço",
-      value: `${c.rua}, ${c.numero}${c.complemento ? " — " + c.complemento : ""}`,
+      value: [c.rua, c.numero, c.complemento].filter(Boolean).join(", ") || "",
     },
     { label: "Bairro", value: c.bairro },
     { label: "Cidade / UF", value: `${c.cidade} / ${c.estado}` },
@@ -169,16 +175,9 @@ const dadosFields = computed(() => {
       <!-- Aba Pets -->
       <template #pets>
         <div class="mt-2 flex flex-col gap-4">
-          <!-- Botão novo pet -->
-          <div class="flex justify-end">
-            <UButton color="secondary" leading-icon="i-lucide-plus" size="sm">
-              Novo pet
-            </UButton>
-          </div>
-
           <!-- Empty state -->
           <div
-            v-if="cliente.pets.length === 0"
+            v-if="(cliente.pets ?? []).length === 0"
             class="flex flex-col items-center justify-center gap-2 py-12 text-center text-gray-400 bg-white rounded-xl border border-gray-100"
           >
             <UIcon name="i-lucide-paw-print" class="text-5xl" />
@@ -189,7 +188,7 @@ const dadosFields = computed(() => {
           <!-- Pet cards -->
           <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UCard
-              v-for="pet in cliente.pets"
+              v-for="pet in cliente.pets ?? []"
               :key="pet.id"
               class="bg-white! ring-0 shadow-sm"
             >
@@ -221,12 +220,12 @@ const dadosFields = computed(() => {
                       {{ pet.tamanho }}
                     </UBadge>
                     <UBadge
-                      v-if="pet.idade"
+                      v-if="pet.dataNascimento"
                       color="neutral"
                       variant="soft"
                       size="sm"
                     >
-                      {{ pet.idade }}
+                      {{ pet.dataNascimento }}
                     </UBadge>
                     <UBadge
                       v-if="pet.peso"
@@ -250,16 +249,11 @@ const dadosFields = computed(() => {
                   <UButton
                     size="xs"
                     color="neutral"
-                    variant="outline"
-                    leading-icon="i-lucide-syringe"
-                  >
-                    Vacinas
-                  </UButton>
-                  <UButton
-                    size="xs"
-                    color="neutral"
                     variant="ghost"
                     leading-icon="i-lucide-pencil"
+                    @click="
+                      navigateTo(`/clientes/${id}/editar?petId=${pet.id}`)
+                    "
                   >
                     Editar
                   </UButton>

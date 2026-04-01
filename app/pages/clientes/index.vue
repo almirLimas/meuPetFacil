@@ -1,4 +1,6 @@
 <script setup lang="ts">
+useBreadcrumb().set([{ label: "Clientes" }]);
+
 import { getPaginationRowModel } from "@tanstack/vue-table";
 import type { TableColumn } from "@nuxt/ui";
 import type { Cliente } from "~/types/cliente";

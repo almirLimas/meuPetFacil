@@ -1,4 +1,6 @@
 ﻿<script setup lang="ts">
+useBreadcrumb().set([{ label: "Vacinas" }]);
+
 type StatusVacina = "urgente" | "proximo" | "vencida" | "ok";
 
 const vacinas = ref([

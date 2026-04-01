@@ -1,5 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ layout: "default" });
+useBreadcrumb().set([{ label: "Configurações" }, { label: "WhatsApp" }]);
 
 const {
   status,

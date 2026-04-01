@@ -1,4 +1,6 @@
 ﻿<script setup lang="ts">
+useBreadcrumb().set([{ label: "Agenda" }]);
+
 import type {
   StatusAgendamento,
   ModalidadeAgendamento,
@@ -235,6 +237,32 @@ const carregarDadosModal = async () => {
   servicosLoading.value = false;
 };
 
+const abrirModal = async () => {
+  // Verifica rapidamente se há serviços cadastrados antes de abrir
+  try {
+    const resp = await apiFetch<{ id: string }[]>("/servicos?ativos=true");
+    const lista = Array.isArray(resp) ? resp : [];
+    if (lista.length === 0) {
+      toast.add({
+        title: "Nenhum serviço cadastrado",
+        description:
+          "Cadastre pelo menos um serviço antes de criar um agendamento.",
+        color: "warning",
+        actions: [
+          {
+            label: "Cadastrar serviço",
+            onClick: () => navigateTo("/servicos"),
+          },
+        ],
+      });
+      return;
+    }
+  } catch {
+    // Se falhar a checagem, abre o modal mesmo assim
+  }
+  isModalOpen.value = true;
+};
+
 watch(isModalOpen, (open) => {
   if (open) carregarDadosModal();
 });
@@ -394,7 +422,7 @@ const salvarAgendamento = async () => {
         icon="i-lucide-plus"
         label="Novo Agendamento"
         color="secondary"
-        @click="isModalOpen = true"
+        @click="abrirModal"
       />
     </div>
 
@@ -560,7 +588,7 @@ const salvarAgendamento = async () => {
           size="sm"
           label="Criar agendamento"
           icon="i-lucide-plus"
-          @click="isModalOpen = true"
+          @click="abrirModal"
         />
       </div>
 

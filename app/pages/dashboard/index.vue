@@ -1,5 +1,7 @@
 ﻿<script setup lang="ts">
 import type { StatusAgendamento } from "~/types/agendamento";
+
+useBreadcrumb().set([{ label: "Dashboard" }]);
 import { useClienteStore } from "~/stores/cliente";
 
 const { agendamentos, fetchByDate } = useAgenda();

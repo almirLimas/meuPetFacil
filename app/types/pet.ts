@@ -72,7 +72,7 @@ export interface PetFormState {
   especie?: PetEspecie;
   sexo?: PetSexo;
   tamanho?: PetTamanho;
-  idade: string;
+  dataNascimento: string;
   peso: string;
   observacoes: string;
 }

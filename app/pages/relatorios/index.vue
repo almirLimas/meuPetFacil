@@ -1,4 +1,6 @@
 <script setup lang="ts">
+useBreadcrumb().set([{ label: "Relatórios" }]);
+
 import type { ClienteNaoVoltou } from "~/composables/useRelatorios";
 
 definePageMeta({ layout: "default" });
@@ -75,19 +77,17 @@ watch(diasFiltro, carregarClientesNaoVoltaram);
 
 const mostrarPainelRecuperacao = ref(false);
 
-// ── Modal resultado WhatsApp ─────────────────────────────────────────────────
-const modalWhatsapp = reactive({
-  aberto: false,
-  sucesso: false,
-  titulo: "",
-  descricao: "",
-});
+// ── Resultado WhatsApp via toast ─────────────────────────────────────────────
+const toast = useToast();
 
 function mostrarResultado(sucesso: boolean, titulo: string, descricao: string) {
-  modalWhatsapp.sucesso = sucesso;
-  modalWhatsapp.titulo = titulo;
-  modalWhatsapp.descricao = descricao;
-  modalWhatsapp.aberto = true;
+  toast.add({
+    title: titulo,
+    description: descricao,
+    color: sucesso ? "success" : "error",
+    icon: sucesso ? "i-lucide-check-circle" : "i-lucide-x-circle",
+    duration: 5000,
+  });
 }
 
 const abrirWhatsApp = (cliente: ClienteNaoVoltou) => {
@@ -165,7 +165,7 @@ const totalReceitaEstimada = computed(() =>
   servicosPopulares.value.reduce((acc, s) => acc + s.receitaEstimada, 0),
 );
 
-// ── Envio avulso (teste) ─────────────────────────────────────────────────────
+// ── Envio avulso ─────────────────────────────────────────────────────────────
 
 const { maskTelefone } = useMask();
 
@@ -203,7 +203,7 @@ const enviarAvulso = async () => {
         true,
         resultado.simulado ? "Mensagem simulada" : "✅ Mensagem enviada!",
         resultado.simulado
-          ? `Mensagem para ${resultado.telefone} registrada no log do servidor. Defina WHATSAPP_MODE=baileys no .env para enviar de verdade.`
+          ? `Mensagem para ${resultado.telefone} registrada no log do servidor.`
           : `Mensagem entregue com sucesso para ${resultado.telefone}.`,
       );
     } else {
@@ -547,7 +547,7 @@ const enviarAvulso = async () => {
       </div>
     </UCard>
 
-    <!-- ═══ Envio avulso (teste de WhatsApp) ═══════════════════════════════ -->
+    <!-- ═══ Envio avulso de WhatsApp ══════════════════════════════════════ -->
     <UCard class="border border-green-200 dark:border-green-800">
       <template #header>
         <div class="flex items-center gap-2">
@@ -555,11 +555,9 @@ const enviarAvulso = async () => {
           <h2 class="font-semibold text-neutral-900 dark:text-white">
             Enviar mensagem avulsa
           </h2>
-          <UBadge color="success" variant="soft" size="sm">teste</UBadge>
         </div>
         <p class="text-xs text-neutral-500 mt-1">
-          Teste o envio de WhatsApp para qualquer número. Em modo simulação, a
-          mensagem aparece no log do servidor.
+          Envie uma mensagem de WhatsApp para qualquer número.
         </p>
       </template>
 
@@ -734,66 +732,4 @@ const enviarAvulso = async () => {
       </div>
     </UCard>
   </div>
-
-  <!-- ═══ Modal resultado WhatsApp ══════════════════════════════════════════ -->
-  <UModal v-model:open="modalWhatsapp.aberto" :ui="{ width: 'max-w-xs' }">
-    <template #body>
-      <div class="flex flex-col items-center text-center px-4 pt-6 pb-2">
-        <!-- Ícone com brilhos decorativos -->
-        <div class="relative mb-5">
-          <span
-            class="absolute -top-3 left-1 text-sm"
-            :class="modalWhatsapp.sucesso ? 'text-green-400' : 'text-red-300'"
-            >✦</span
-          >
-          <span
-            class="absolute -top-1 -right-3 text-xs"
-            :class="modalWhatsapp.sucesso ? 'text-green-300' : 'text-red-200'"
-            >✦</span
-          >
-          <span
-            class="absolute -bottom-2 -left-3 text-xs"
-            :class="modalWhatsapp.sucesso ? 'text-green-300' : 'text-red-200'"
-            >✦</span
-          >
-          <span
-            class="absolute bottom-0 -right-2 text-sm"
-            :class="modalWhatsapp.sucesso ? 'text-green-400' : 'text-red-300'"
-            >✦</span
-          >
-
-          <div
-            class="w-20 h-20 rounded-full flex items-center justify-center shadow-md"
-            :class="modalWhatsapp.sucesso ? 'bg-green-500' : 'bg-red-500'"
-          >
-            <UIcon
-              :name="modalWhatsapp.sucesso ? 'i-lucide-check' : 'i-lucide-x'"
-              class="size-10 text-white"
-            />
-          </div>
-        </div>
-
-        <p
-          class="text-xl font-bold text-neutral-900 dark:text-white leading-tight"
-        >
-          {{ modalWhatsapp.titulo }}
-        </p>
-        <p class="text-sm text-neutral-500 mt-1.5 leading-snug">
-          {{ modalWhatsapp.descricao }}
-        </p>
-      </div>
-    </template>
-    <template #footer>
-      <div class="px-4 pb-4 pt-1 w-full">
-        <UButton
-          block
-          :color="modalWhatsapp.sucesso ? 'success' : 'error'"
-          class="font-semibold"
-          @click="modalWhatsapp.aberto = false"
-        >
-          OK
-        </UButton>
-      </div>
-    </template>
-  </UModal>
 </template>
