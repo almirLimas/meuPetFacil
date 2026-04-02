@@ -10,8 +10,10 @@ const nomeUsuario = computed(
 );
 const iniciaisUsuario = computed(() => {
   const partes = nomeUsuario.value.trim().split(" ").filter(Boolean);
-  if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
-  return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+  if (partes.length === 1) return (partes[0] ?? "").slice(0, 2).toUpperCase();
+  return (
+    (partes[0]?.[0] ?? "") + (partes[partes.length - 1]?.[0] ?? "")
+  ).toUpperCase();
 });
 
 const menuUsuario = computed(() => [
@@ -177,13 +179,11 @@ const statusAssinaturaLabel = computed(() => {
     <!-- ===== BODY (sidebar + page content) ===== -->
     <div class="flex flex-1 min-h-0">
       <!-- Backdrop mobile -->
-      <Teleport to="body">
-        <div
-          v-if="open"
-          class="fixed inset-0 bg-black/40 z-[9998] md:hidden"
-          @click="open = false"
-        />
-      </Teleport>
+      <div
+        v-if="open"
+        class="fixed inset-0 bg-black/40 z-[9998] md:hidden"
+        @click="open = false"
+      />
 
       <!-- Sidebar -->
       <transition name="sidebar">
@@ -191,6 +191,24 @@ const statusAssinaturaLabel = computed(() => {
           v-show="open"
           class="fixed top-16 left-0 bottom-0 z-[9999] w-56 md:relative md:top-auto md:left-auto md:bottom-auto md:z-auto md:w-44 shrink-0 md:m-4 md:mr-0 bg-white dark:bg-neutral-800 md:rounded-2xl shadow-xl md:shadow-sm py-3 flex flex-col gap-0.5 overflow-y-auto"
         >
+          <!-- Botão fechar (apenas mobile) -->
+          <div
+            class="flex items-center justify-between px-3 pb-2 mb-1 border-b border-gray-100 dark:border-neutral-700 md:hidden"
+          >
+            <span
+              class="text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >Menu</span
+            >
+            <UButton
+              icon="i-lucide-x"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              aria-label="Fechar menu"
+              @click="open = false"
+            />
+          </div>
+
           <NuxtLink
             v-for="item in menuItems"
             :key="item.label"
@@ -297,10 +315,10 @@ const statusAssinaturaLabel = computed(() => {
             color="neutral"
             size="sm"
             leading-icon="i-lucide-arrow-left"
-            :to="breadcrumb.items.value[breadcrumb.items.value.length - 2].to"
+            :to="breadcrumb.items.value[breadcrumb.items.value.length - 2]?.to"
           >
             {{
-              breadcrumb.items.value[breadcrumb.items.value.length - 2].label
+              breadcrumb.items.value[breadcrumb.items.value.length - 2]?.label
             }}
           </UButton>
         </div>
