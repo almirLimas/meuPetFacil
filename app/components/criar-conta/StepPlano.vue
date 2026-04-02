@@ -64,7 +64,9 @@ defineExpose({
               >
               <span class="text-xs text-gray-400">/mês</span>
             </div>
-            <span class="text-xs font-semibold text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full whitespace-nowrap">
+            <span
+              class="text-xs font-semibold text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full whitespace-nowrap"
+            >
               🎁 14 dias grátis
             </span>
             <div
