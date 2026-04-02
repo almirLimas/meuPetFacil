@@ -1,2 +1,17 @@
 User-Agent: *
-Disallow:
+Disallow: /dashboard
+Disallow: /agenda
+Disallow: /clientes
+Disallow: /pets
+Disallow: /financeiro
+Disallow: /estoque
+Disallow: /servicos
+Disallow: /vacinas
+Disallow: /relatorios
+Disallow: /configuracoes
+Disallow: /primeiros-passos
+Allow: /
+Allow: /login
+Allow: /criar-conta
+
+Sitemap: https://www.aninpet.com.br/sitemap.xml

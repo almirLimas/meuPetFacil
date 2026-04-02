@@ -1,6 +1,24 @@
 <script setup lang="ts">
 definePageMeta({ layout: "landing" });
 
+useSeoMeta({
+  title: "AninPet — Sistema de Gestão para Petshops",
+  description:
+    "Gerencie seu petshop com facilidade: agenda, clientes, financeiro, estoque e muito mais. Experimente grátis por 14 dias.",
+  ogTitle: "AninPet — Sistema de Gestão para Petshops",
+  ogDescription:
+    "Gerencie seu petshop com facilidade: agenda, clientes, financeiro, estoque e muito mais. Experimente grátis por 14 dias.",
+  ogImage: "https://www.aninpet.com.br/anninLogo.png",
+  ogUrl: "https://www.aninpet.com.br",
+  ogType: "website",
+  ogSiteName: "AninPet",
+  twitterCard: "summary_large_image",
+  twitterTitle: "AninPet — Sistema de Gestão para Petshops",
+  twitterDescription:
+    "Gerencie seu petshop com facilidade: agenda, clientes, financeiro, estoque e muito mais. Experimente grátis por 14 dias.",
+  twitterImage: "https://www.aninpet.com.br/anninLogo.png",
+});
+
 const features = [
   {
     icone: "i-lucide-calendar-check",
