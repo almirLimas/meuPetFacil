@@ -40,13 +40,8 @@ const stepperItems: StepperItem[] = [
   },
   {
     title: "Escolha seu Plano",
-    description: "Módulos e mensalidade",
+    description: "14 dias grátis, sem cartão",
     icon: "i-lucide-layout-grid",
-  },
-  {
-    title: "Pagamento",
-    description: "Forma de cobrança",
-    icon: "i-lucide-credit-card",
   },
 ];
 
@@ -72,8 +67,7 @@ const onStepClick = (index: string | number | undefined) => {
 // -- Refs dos componentes de step -------------------------------------------
 const stepDados = ref();
 const stepPlano = ref();
-const stepPagamento = ref();
-const stepRefs = [stepDados, stepPlano, stepPagamento];
+const stepRefs = [stepDados, stepPlano];
 
 // -- Navegação ---------------------------------------------------------------
 const handleNext = async () => {
@@ -167,11 +161,6 @@ const submitForm = async () => {
         <CriarContaStepPlano
           v-else-if="currentStep === 1"
           ref="stepPlano"
-          v-model="state"
-        />
-        <CriarContaStepPagamento
-          v-else-if="currentStep === 2"
-          ref="stepPagamento"
           v-model="state"
         />
       </div>

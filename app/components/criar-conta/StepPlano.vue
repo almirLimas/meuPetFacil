@@ -64,9 +64,12 @@ defineExpose({
               >
               <span class="text-xs text-gray-400">/mês</span>
             </div>
+            <span class="text-xs font-semibold text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full whitespace-nowrap">
+              🎁 14 dias grátis
+            </span>
             <div
               v-if="state.plano === plano.key"
-              class="w-5 h-5 rounded-full bg-secondary-500 flex items-center justify-center"
+              class="w-5 h-5 rounded-full bg-secondary-500 flex items-center justify-center mt-1"
             >
               <UIcon name="i-lucide-check" class="text-white text-xs" />
             </div>
@@ -95,18 +98,9 @@ defineExpose({
       </button>
     </div>
 
-    <!-- Aviso trial -->
-    <div
-      class="flex items-start gap-2 p-3 rounded-lg bg-blue-50 border border-blue-200"
-    >
-      <UIcon
-        name="i-lucide-gift"
-        class="text-blue-500 text-base mt-0.5 shrink-0"
-      />
-      <p class="text-xs text-blue-700">
-        Os primeiros <strong>14 dias são gratuitos</strong>. O pagamento começa
-        somente após o período de teste, sem compromisso.
-      </p>
-    </div>
+    <!-- Nota informativa -->
+    <p class="text-xs text-center text-gray-400">
+      Sem cartão agora. O pagamento começa somente após os 14 dias de teste.
+    </p>
   </div>
 </template>
