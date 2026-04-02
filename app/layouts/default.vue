@@ -128,7 +128,11 @@ const statusAssinaturaLabel = computed(() => {
     <UHeader
       toggle-side="left"
       :toggle="false"
-      :ui="{ container: 'max-w-full px-4 sm:px-6' }"
+      :ui="{
+        container: 'max-w-full px-4 sm:px-6',
+        content: 'hidden',
+        overlay: 'hidden',
+      }"
     >
       <template #left>
         <!-- Logo -->
