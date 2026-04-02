@@ -279,6 +279,27 @@ const statusAssinaturaLabel = computed(() => {
           :items="breadcrumb.items.value"
           class="-mb-2"
         />
+
+        <!-- Botão voltar (apenas mobile, em sub-páginas) -->
+        <div
+          v-if="
+            breadcrumb.items.value.length > 1 &&
+            breadcrumb.items.value[breadcrumb.items.value.length - 2]?.to
+          "
+          class="flex md:hidden -mb-2"
+        >
+          <UButton
+            variant="ghost"
+            color="neutral"
+            size="sm"
+            leading-icon="i-lucide-arrow-left"
+            :to="breadcrumb.items.value[breadcrumb.items.value.length - 2].to"
+          >
+            {{
+              breadcrumb.items.value[breadcrumb.items.value.length - 2].label
+            }}
+          </UButton>
+        </div>
         <!-- Skeleton global durante navegação -->
         <template v-if="pageLoading">
           <div class="flex items-center justify-between">

@@ -175,7 +175,7 @@ const percentReceita = computed(() =>
 
 <template>
   <!-- ── Row 1: Stats ── -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+  <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
     <DashboardStatCard
       v-for="stat in stats"
       :key="stat.lines[0]"

@@ -383,7 +383,7 @@ const enviarAvulso = async () => {
     <!-- Cards de agendamentos (linha secundária) -->
     <div
       v-if="resumo && !loading"
-      class="grid grid-cols-2 sm:grid-cols-4 gap-3"
+      class="grid grid-cols-1 sm:grid-cols-4 gap-3"
     >
       <div
         class="bg-white dark:bg-neutral-800 rounded-lg p-3 border border-neutral-200 dark:border-neutral-700 text-center"

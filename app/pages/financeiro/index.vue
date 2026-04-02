@@ -144,7 +144,7 @@ const fmtData = (d: string) =>
     </div>
 
     <!-- Cards de resumo do mês -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <template v-if="loading">
         <div
           v-for="i in 3"
