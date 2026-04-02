@@ -9,6 +9,18 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: "pt-BR" },
       link: [{ rel: "icon", type: "image/png", href: "/anninLogo.png" }],
       meta: [{ name: "theme-color", content: "#1d9fb6" }],
+      script: [
+        {
+          src: "https://www.googletagmanager.com/gtag/js?id=AW-18059774716",
+          async: true,
+        },
+        {
+          innerHTML: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'AW-18059774716');`,
+        },
+      ],
     },
   },
   colorMode: {
