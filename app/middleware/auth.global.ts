@@ -27,8 +27,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo("/login");
   }
 
+  // Usuário master (isMaster no JWT) nunca é bloqueado por assinatura
+  const isMaster = auth.usuario?.email === "admin@aninpet.com";
+
   // Usuário com assinatura suspensa ou cancelada só pode acessar páginas de renovação
   if (
+    !isMaster &&
     (auth.usuario?.assinaturaStatus === "suspensa" ||
       auth.usuario?.assinaturaStatus === "cancelada") &&
     !renovacaoRoutes.has(to.path)

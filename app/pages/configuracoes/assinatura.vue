@@ -5,11 +5,14 @@ import { PLANOS } from "~/types/usuario";
 definePageMeta({ layout: "default" });
 
 const authStore = useAuthStore();
-const { obterStatus, renovarAssinatura } = usePagamento();
+const { obterStatus, renovarAssinatura, cancelarAssinatura, trocarPlano } =
+  usePagamento();
 const toast = useToast();
 
 const carregando = ref(true);
 const renovando = ref(false);
+const cancelando = ref(false);
+const confirmandoCancelamento = ref(false);
 const planoSelecionado = ref<"basico" | "plus">("basico");
 
 const statusInfo = ref<{
@@ -126,6 +129,16 @@ const podeAssinar = computed(() =>
   ["trial", "suspensa", "cancelada"].includes(status.value),
 );
 
+const podeTrocarPlano = computed(() =>
+  ["ativa", "pendente"].includes(status.value),
+);
+
+// cards clicáveis em qualquer cenário que permita escolher plano
+function selecionarPlano(plano: "basico" | "plus") {
+  if (!podeAssinar.value && !podeTrocarPlano.value) return;
+  planoSelecionado.value = plano;
+}
+
 async function handleRenovar() {
   renovando.value = true;
   try {
@@ -141,9 +154,53 @@ async function handleRenovar() {
   }
 }
 
-function selecionarPlano(plano: "basico" | "plus") {
-  if (!podeAssinar.value) return;
-  planoSelecionado.value = plano;
+const trocando = ref(false);
+
+async function handleTrocarPlano() {
+  trocando.value = true;
+  try {
+    await trocarPlano(planoSelecionado.value);
+    if (statusInfo.value) statusInfo.value.plano = planoSelecionado.value;
+    if (authStore.usuario) authStore.usuario.plano = planoSelecionado.value;
+    toast.add({
+      title: "Plano atualizado!",
+      description: `Seu plano foi alterado para ${
+        planoSelecionado.value === "plus" ? "Plus" : "Básico"
+      } com sucesso.`,
+      color: "success",
+    });
+  } catch {
+    toast.add({
+      title: "Erro ao trocar plano",
+      description: "Tente novamente ou fale com o suporte.",
+      color: "error",
+    });
+  } finally {
+    trocando.value = false;
+  }
+}
+
+async function handleCancelar() {
+  cancelando.value = true;
+  try {
+    await cancelarAssinatura();
+    if (statusInfo.value) statusInfo.value.assinaturaStatus = "cancelada";
+    if (authStore.usuario) authStore.usuario.assinaturaStatus = "cancelada";
+    confirmandoCancelamento.value = false;
+    toast.add({
+      title: "Assinatura cancelada",
+      description: "Sua assinatura foi cancelada com sucesso.",
+      color: "neutral",
+    });
+  } catch {
+    toast.add({
+      title: "Erro ao cancelar",
+      description: "Tente novamente ou fale com o suporte.",
+      color: "error",
+    });
+  } finally {
+    cancelando.value = false;
+  }
 }
 </script>
 
@@ -219,13 +276,11 @@ function selecionarPlano(plano: "basico" | "plus") {
           <div
             class="rounded-xl border-2 p-4 flex flex-col gap-3 transition-colors"
             :class="
-              podeAssinar
+              podeAssinar || podeTrocarPlano
                 ? planoSelecionado === 'basico'
                   ? 'border-sky-500 bg-sky-500/5 cursor-pointer'
                   : 'border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900 cursor-pointer hover:border-sky-300'
-                : statusInfo?.plano === 'basico'
-                  ? 'border-sky-500 bg-sky-500/5'
-                  : 'border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900'
+                : 'border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900'
             "
             @click="selecionarPlano('basico')"
           >
@@ -234,24 +289,27 @@ function selecionarPlano(plano: "basico" | "plus") {
                 PLANOS.basico.nome
               }}</span>
               <UBadge
-                v-if="podeAssinar && planoSelecionado === 'basico'"
-                color="primary"
-                variant="soft"
-                size="xs"
-              >
-                Selecionado
-              </UBadge>
-              <UBadge
-                v-else-if="
-                  !podeAssinar &&
+                v-if="
+                  podeTrocarPlano &&
                   statusInfo?.plano === 'basico' &&
-                  status === 'ativa'
+                  planoSelecionado === 'basico'
                 "
                 color="primary"
                 variant="soft"
                 size="xs"
               >
                 Seu plano
+              </UBadge>
+              <UBadge
+                v-else-if="
+                  (podeAssinar || podeTrocarPlano) &&
+                  planoSelecionado === 'basico'
+                "
+                color="primary"
+                variant="soft"
+                size="xs"
+              >
+                Selecionado
               </UBadge>
             </div>
             <p class="text-2xl font-extrabold text-gray-900 dark:text-white">
@@ -280,13 +338,11 @@ function selecionarPlano(plano: "basico" | "plus") {
           <div
             class="rounded-xl border-2 p-4 flex flex-col gap-3 transition-colors relative overflow-hidden"
             :class="
-              podeAssinar
+              podeAssinar || podeTrocarPlano
                 ? planoSelecionado === 'plus'
                   ? 'border-orange-500 bg-orange-500/5 cursor-pointer'
                   : 'border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900 cursor-pointer hover:border-orange-300'
-                : statusInfo?.plano === 'plus'
-                  ? 'border-orange-500 bg-orange-500/5'
-                  : 'border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900'
+                : 'border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900'
             "
             @click="selecionarPlano('plus')"
           >
@@ -300,24 +356,27 @@ function selecionarPlano(plano: "basico" | "plus") {
                 PLANOS.plus.nome
               }}</span>
               <UBadge
-                v-if="podeAssinar && planoSelecionado === 'plus'"
-                color="secondary"
-                variant="soft"
-                size="xs"
-              >
-                Selecionado
-              </UBadge>
-              <UBadge
-                v-else-if="
-                  !podeAssinar &&
+                v-if="
+                  podeTrocarPlano &&
                   statusInfo?.plano === 'plus' &&
-                  status === 'ativa'
+                  planoSelecionado === 'plus'
                 "
                 color="secondary"
                 variant="soft"
                 size="xs"
               >
                 Seu plano
+              </UBadge>
+              <UBadge
+                v-else-if="
+                  (podeAssinar || podeTrocarPlano) &&
+                  planoSelecionado === 'plus'
+                "
+                color="secondary"
+                variant="soft"
+                size="xs"
+              >
+                Selecionado
               </UBadge>
             </div>
             <p class="text-2xl font-extrabold text-gray-900 dark:text-white">
@@ -362,20 +421,79 @@ function selecionarPlano(plano: "basico" | "plus") {
             Assinar plano {{ planoSelecionado === "plus" ? "Plus" : "Básico" }}
           </UButton>
         </div>
-        <div v-else-if="status === 'ativa'" class="pt-2">
-          <p class="text-xs text-gray-500 dark:text-gray-400">
-            Para trocar de plano ou cancelar sua assinatura, entre em contato
-            com o suporte.
-          </p>
-          <a
-            href="https://wa.me/5511966389057?text=Olá!%20Quero%20alterar%20meu%20plano%20AninPet."
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1.5 text-sm font-medium text-green-600 hover:text-green-700 mt-2"
+        <div v-else-if="podeTrocarPlano" class="pt-2 space-y-3">
+          <!-- Botão de troca de plano (só aparece quando selecionar plano diferente) -->
+          <div
+            v-if="planoSelecionado !== statusInfo?.plano"
+            class="flex flex-col sm:flex-row gap-3 items-center justify-between"
           >
-            <UIcon name="i-lucide-headset" class="size-4" />
-            Falar com suporte via WhatsApp
-          </a>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Seu plano será atualizado imediatamente.
+            </p>
+            <UButton
+              :loading="trocando"
+              size="md"
+              class="font-semibold rounded-xl text-white shrink-0"
+              style="background-color: #f07030"
+              @click="handleTrocarPlano"
+            >
+              Trocar para {{ planoSelecionado === "plus" ? "Plus" : "Básico" }}
+            </UButton>
+          </div>
+
+          <!-- Cancelamento -->
+          <div class="border-t border-gray-100 dark:border-neutral-700 pt-3">
+            <template v-if="!confirmandoCancelamento">
+              <button
+                class="text-xs text-gray-400 hover:text-red-500 dark:hover:text-red-400 underline underline-offset-2 transition-colors"
+                @click="confirmandoCancelamento = true"
+              >
+                Cancelar assinatura
+              </button>
+            </template>
+            <template v-else>
+              <div
+                class="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/20 p-4 space-y-3"
+              >
+                <div class="flex items-start gap-3">
+                  <UIcon
+                    name="i-lucide-triangle-alert"
+                    class="size-5 text-red-500 shrink-0 mt-0.5"
+                  />
+                  <div>
+                    <p
+                      class="text-sm font-semibold text-gray-900 dark:text-white"
+                    >
+                      Tem certeza que deseja cancelar?
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                      Seu acesso será encerrado imediatamente. Para reativar,
+                      será necessário assinar novamente.
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-2 justify-end">
+                  <UButton
+                    size="sm"
+                    color="neutral"
+                    variant="soft"
+                    :disabled="cancelando"
+                    @click="confirmandoCancelamento = false"
+                  >
+                    Manter assinatura
+                  </UButton>
+                  <UButton
+                    size="sm"
+                    color="error"
+                    :loading="cancelando"
+                    @click="handleCancelar"
+                  >
+                    Sim, cancelar
+                  </UButton>
+                </div>
+              </div>
+            </template>
+          </div>
         </div>
       </div>
     </template>

@@ -39,5 +39,22 @@ export const usePagamento = () => {
       plano: PlanoSistema;
     }>("/pagamento/status");
 
-  return { iniciarPagamento, renovarAssinatura, obterStatus };
+  const cancelarAssinatura = () =>
+    apiFetch<{ cancelada: boolean }>("/pagamento/cancelar", {
+      method: "DELETE",
+    });
+
+  const trocarPlano = (plano: PlanoSistema) =>
+    apiFetch<{ plano: PlanoSistema }>("/pagamento/plano", {
+      method: "PATCH",
+      body: { plano },
+    });
+
+  return {
+    iniciarPagamento,
+    renovarAssinatura,
+    obterStatus,
+    cancelarAssinatura,
+    trocarPlano,
+  };
 };

@@ -78,8 +78,13 @@ watch(
 );
 
 // Skeleton global de navegação
-const pageLoading = ref(false);
+const pageLoading = ref(true);
 const router = useRouter();
+
+onMounted(() => {
+  pageLoading.value = false;
+});
+
 router.beforeEach(() => {
   pageLoading.value = true;
 });
@@ -278,14 +283,22 @@ const statusAssinaturaLabel = computed(() => {
         <template v-if="pageLoading">
           <div class="flex items-center justify-between">
             <div class="flex flex-col gap-1.5">
-              <USkeleton class="h-6 w-40" />
-              <USkeleton class="h-4 w-28" />
+              <USkeleton class="h-6 w-40 bg-gray-300 dark:bg-neutral-600" />
+              <USkeleton class="h-4 w-28 bg-gray-300 dark:bg-neutral-600" />
             </div>
-            <USkeleton class="h-9 w-32 rounded-md" />
+            <USkeleton
+              class="h-9 w-32 rounded-md bg-gray-300 dark:bg-neutral-600"
+            />
           </div>
-          <USkeleton class="h-10 w-full rounded-xl" />
+          <USkeleton
+            class="h-10 w-full rounded-xl bg-gray-300 dark:bg-neutral-600"
+          />
           <div class="flex flex-col gap-3">
-            <USkeleton v-for="i in 5" :key="i" class="h-16 w-full rounded-xl" />
+            <USkeleton
+              v-for="i in 5"
+              :key="i"
+              class="h-16 w-full rounded-xl bg-gray-300 dark:bg-neutral-600"
+            />
           </div>
         </template>
         <slot v-else />

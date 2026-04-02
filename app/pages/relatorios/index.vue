@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { useAuthStore } from "~/stores/auth";
 useBreadcrumb().set([{ label: "Relatórios" }]);
 
 import type { ClienteNaoVoltou } from "~/composables/useRelatorios";
 
 definePageMeta({ layout: "default" });
+
+const authStore = useAuthStore();
+const isPlus = computed(() => authStore.usuario?.plano === "plus");
 
 const {
   resumo,
@@ -517,6 +521,7 @@ const enviarAvulso = async () => {
               }}
             </UBadge>
             <UButton
+              v-if="isPlus"
               size="sm"
               color="success"
               variant="soft"
@@ -547,8 +552,8 @@ const enviarAvulso = async () => {
       </div>
     </UCard>
 
-    <!-- ═══ Envio avulso de WhatsApp ══════════════════════════════════════ -->
-    <UCard class="border border-green-200 dark:border-green-800">
+    <!-- ═══ Envio avulso de WhatsApp (somente Plus) ═════════════════════ -->
+    <UCard v-if="isPlus" class="border border-green-200 dark:border-green-800">
       <template #header>
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-send" class="size-5 text-green-500" />
