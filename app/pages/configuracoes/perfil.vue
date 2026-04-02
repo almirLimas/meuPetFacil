@@ -95,15 +95,41 @@
           >
           <UInput
             v-model="senha.atual"
-            type="password"
+            :type="showSenhaAtual ? 'text' : 'password'"
             placeholder="••••••••"
-          />
+          >
+            <template #trailing>
+              <UButton
+                type="button"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                :icon="showSenhaAtual ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                @click="showSenhaAtual = !showSenhaAtual"
+              />
+            </template>
+          </UInput>
         </div>
         <div class="flex flex-col gap-1.5">
           <label class="text-xs font-medium text-gray-600 dark:text-gray-300"
             >Nova senha</label
           >
-          <UInput v-model="senha.nova" type="password" placeholder="••••••••" />
+          <UInput
+            v-model="senha.nova"
+            :type="showSenhaNova ? 'text' : 'password'"
+            placeholder="••••••••"
+          >
+            <template #trailing>
+              <UButton
+                type="button"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                :icon="showSenhaNova ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                @click="showSenhaNova = !showSenhaNova"
+              />
+            </template>
+          </UInput>
         </div>
         <div class="flex flex-col gap-1.5">
           <label class="text-xs font-medium text-gray-600 dark:text-gray-300"
@@ -111,9 +137,20 @@
           >
           <UInput
             v-model="senha.confirmar"
-            type="password"
+            :type="showSenhaConfirmar ? 'text' : 'password'"
             placeholder="••••••••"
-          />
+          >
+            <template #trailing>
+              <UButton
+                type="button"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                :icon="showSenhaConfirmar ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                @click="showSenhaConfirmar = !showSenhaConfirmar"
+              />
+            </template>
+          </UInput>
         </div>
       </div>
 
@@ -158,6 +195,9 @@ const form = reactive({
 
 // ── Form senha ─────────────────────────────────────────────────────────────
 const senha = reactive({ atual: "", nova: "", confirmar: "" });
+const showSenhaAtual = ref(false);
+const showSenhaNova = ref(false);
+const showSenhaConfirmar = ref(false);
 
 // ── Loading states ─────────────────────────────────────────────────────────
 const salvandoDados = ref(false);

@@ -12,6 +12,7 @@ const renovacaoRoutes = new Set([
   "/renovar-assinatura",
   "/renovar-assinatura/sucesso",
   "/renovar-assinatura/falhou",
+  "/configuracoes/assinatura",
 ]);
 
 export default defineNuxtRouteMiddleware(async (to) => {
@@ -26,11 +27,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo("/login");
   }
 
-  // Usuário com assinatura suspensa só pode acessar páginas de renovação
+  // Usuário com assinatura suspensa ou cancelada só pode acessar páginas de renovação
   if (
-    auth.usuario?.assinaturaStatus === "suspensa" &&
+    (auth.usuario?.assinaturaStatus === "suspensa" ||
+      auth.usuario?.assinaturaStatus === "cancelada") &&
     !renovacaoRoutes.has(to.path)
   ) {
-    return navigateTo("/renovar-assinatura");
+    return navigateTo("/configuracoes/assinatura");
   }
 });

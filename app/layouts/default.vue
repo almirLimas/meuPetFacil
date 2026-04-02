@@ -14,10 +14,10 @@ const iniciaisUsuario = computed(() => {
   return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
 });
 
-const menuUsuario = [
+const menuUsuario = computed(() => [
   [
     {
-      label: nomeUsuario,
+      label: nomeUsuario.value,
       slot: "account",
       disabled: true,
     },
@@ -29,12 +29,18 @@ const menuUsuario = [
       onSelect: () => navigateTo("/configuracoes/perfil"),
     },
     {
+      label: "Minha Assinatura",
+      icon: "i-lucide-credit-card",
+      suffix: statusAssinaturaLabel.value,
+      onSelect: () => navigateTo("/configuracoes/assinatura"),
+    },
+    {
       label: "Sair",
       icon: "i-lucide-log-out",
       onSelect: () => authStore.logout(),
     },
   ],
-];
+]);
 
 const menuItems = [
   { label: "Dashboard", icon: "i-lucide-layout-dashboard", to: "/dashboard" },
@@ -92,6 +98,22 @@ const diasRestantesTrial = computed(() => {
   if (!expira) return null;
   const diff = new Date(expira).getTime() - Date.now();
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+});
+
+const statusAssinaturaLabel = computed(() => {
+  const status = assinaturaStatus.value;
+  if (status === "ativa") return "✅  Assinatura ativa";
+  if (status === "trial") {
+    const dias = diasRestantesTrial.value;
+    if (dias === null) return "🕐  Trial gratuito";
+    if (dias === 0) return "⚠️  Trial expirado";
+    if (dias === 1) return "⚠️  Trial expira hoje!";
+    return `🕐  Trial: ${dias} dias restantes`;
+  }
+  if (status === "suspensa") return "🔴  Assinatura suspensa";
+  if (status === "cancelada") return "🚫  Assinatura cancelada";
+  if (status === "pendente") return "⏳  Pagamento pendente";
+  return "📋  Ver assinatura";
 });
 </script>
 

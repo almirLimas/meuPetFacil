@@ -127,6 +127,7 @@ async function handleSubmit() {
               >
                 <template #trailing>
                   <UButton
+                    type="button"
                     color="neutral"
                     variant="ghost"
                     size="sm"
@@ -152,7 +153,18 @@ async function handleSubmit() {
                   errors.confirmar ? 'ring-2 ring-red-400 rounded-md' : ''
                 "
                 @keyup.enter="handleSubmit"
-              />
+              >
+                <template #trailing>
+                  <UButton
+                    type="button"
+                    color="neutral"
+                    variant="ghost"
+                    size="sm"
+                    :icon="showSenha ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                    @click="showSenha = !showSenha"
+                  />
+                </template>
+              </UInput>
               <p v-if="errors.confirmar" class="text-xs text-red-500 pl-1">
                 {{ errors.confirmar }}
               </p>

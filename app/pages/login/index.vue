@@ -81,6 +81,7 @@ async function handleLogin() {
             >
               <template #trailing>
                 <UButton
+                  type="button"
                   color="neutral"
                   variant="ghost"
                   size="sm"

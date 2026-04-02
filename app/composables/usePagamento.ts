@@ -26,8 +26,11 @@ export const usePagamento = () => {
       body: dados,
     });
 
-  const renovarAssinatura = () =>
-    apiFetch<ResultadoCheckout>("/pagamento/renovar", { method: "POST" });
+  const renovarAssinatura = (plano?: PlanoSistema) =>
+    apiFetch<ResultadoCheckout>("/pagamento/renovar", {
+      method: "POST",
+      body: plano ? { plano } : {},
+    });
 
   const obterStatus = () =>
     apiFetch<{

@@ -5,7 +5,13 @@ import type { CriarContaFormState } from "~/types/usuario";
 const schema = z
   .object({
     nomePetshop: z.string().min(2, "Informe o nome do petshop"),
-    nomeCompleto: z.string().min(3, "Informe o nome completo"),
+    nomeCompleto: z
+      .string()
+      .min(3, "Informe o nome completo")
+      .regex(
+        /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/,
+        "Use apenas letras e acentos, sem números ou símbolos",
+      ),
     email: z.string().email("E-mail inválido"),
     telefone: z.string().optional(),
     senha: z.string().min(8, "Senha deve ter ao menos 8 caracteres"),
@@ -21,6 +27,16 @@ const state = defineModel<CriarContaFormState>({ required: true });
 const formRef = ref();
 const showSenha = ref(false);
 const showConfirmar = ref(false);
+
+function filtrarNomeCompleto(e: Event) {
+  const input = e.target as HTMLInputElement;
+  const filtrado = input.value.replaceAll(
+    /[^A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s'-]/g,
+    "",
+  );
+  input.value = filtrado;
+  state.value.nomeCompleto = filtrado;
+}
 
 defineExpose({
   async validate(): Promise<boolean> {
@@ -64,6 +80,7 @@ defineExpose({
           leading-icon="i-lucide-user"
           placeholder="Maria da Silva"
           class="w-full"
+          @input="filtrarNomeCompleto"
         />
       </UFormField>
 
@@ -93,11 +110,20 @@ defineExpose({
           v-model="state.senha"
           :type="showSenha ? 'text' : 'password'"
           leading-icon="i-lucide-lock"
-          :trailing-icon="showSenha ? 'i-lucide-eye-off' : 'i-lucide-eye'"
           placeholder="Mínimo 8 caracteres"
           class="w-full"
-          @click:trailing="showSenha = !showSenha"
-        />
+        >
+          <template #trailing>
+            <UButton
+              type="button"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              :icon="showSenha ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+              @click="showSenha = !showSenha"
+            />
+          </template>
+        </UInput>
       </UFormField>
 
       <!-- Confirmar senha -->
@@ -106,11 +132,20 @@ defineExpose({
           v-model="state.confirmarSenha"
           :type="showConfirmar ? 'text' : 'password'"
           leading-icon="i-lucide-lock-keyhole"
-          :trailing-icon="showConfirmar ? 'i-lucide-eye-off' : 'i-lucide-eye'"
           placeholder="Repita a senha"
           class="w-full"
-          @click:trailing="showConfirmar = !showConfirmar"
-        />
+        >
+          <template #trailing>
+            <UButton
+              type="button"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              :icon="showConfirmar ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+              @click="showConfirmar = !showConfirmar"
+            />
+          </template>
+        </UInput>
       </UFormField>
     </div>
   </UForm>

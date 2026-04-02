@@ -178,7 +178,7 @@ const planos = [
               Experimente Grátis
             </NuxtLink>
           </div>
-          <p class="text-white/70 text-sm">Sem Cartão de Crédito</p>
+          <p class="text-white/70 text-sm">Cancele quando quiser</p>
         </div>
         <div class="relative flex justify-center lg:justify-end items-end">
           <div class="relative">
@@ -527,10 +527,10 @@ const planos = [
                 </div>
                 <div>
                   <p class="text-sm font-semibold text-gray-800">
-                    Sem cartão de crédito
+                    Pagamento seguro
                   </p>
                   <p class="text-xs text-gray-400">
-                    Só paga se quiser continuar
+                    Via Mercado Pago, só paga se quiser continuar
                   </p>
                 </div>
               </li>
@@ -643,7 +643,7 @@ const planos = [
           </div>
         </div>
         <p class="text-center text-sm text-gray-400 mt-6">
-          14 dias de trial gratuito. Sem cartão de crédito.
+          14 dias de trial gratuito. Cancele quando quiser.
         </p>
       </div>
     </section>
@@ -670,7 +670,7 @@ const planos = [
           Teste Grátis
         </NuxtLink>
         <p class="text-teal-200 text-sm">
-          Sem cartão de crédito. Cancele quando quiser.
+          Sem fidelidade. Cancele quando quiser.
         </p>
       </div>
     </section>
