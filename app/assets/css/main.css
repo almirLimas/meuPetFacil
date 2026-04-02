@@ -62,6 +62,13 @@ body {
   background-color: #f5f5f0;
 }
 
+.dark html,
+.dark body,
+html.dark,
+body.dark {
+  background-color: #0a0a0a;
+}
+
 button,
 [role="button"] {
   cursor: pointer;

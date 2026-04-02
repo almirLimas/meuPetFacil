@@ -692,6 +692,16 @@ const planos = [
           >
         </div>
       </div>
+      <div
+        class="max-w-6xl mx-auto mt-6 pt-6 border-t border-gray-800 text-center"
+      >
+        <p class="text-gray-500 text-xs italic">
+          "Tudo o que fizerem, façam de todo o coração, como para o Senhor."
+          <span class="not-italic font-semibold text-gray-400"
+            >— Colossenses 3:23</span
+          >
+        </p>
+      </div>
     </footer>
   </div>
 </template>

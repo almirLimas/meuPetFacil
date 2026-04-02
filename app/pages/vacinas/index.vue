@@ -195,7 +195,7 @@ const resumoCards = computed(() => [
         />
       </div>
 
-      <table class="w-full text-sm">
+      <table class="w-full text-sm dark:text-gray-200">
         <thead>
           <tr class="border-b border-gray-100 dark:border-neutral-700">
             <th

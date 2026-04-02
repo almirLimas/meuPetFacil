@@ -427,7 +427,7 @@ const abrirHistorico = async (p: Produto) => {
       </div>
 
       <!-- Tabela -->
-      <table v-else class="w-full text-sm">
+      <table v-else class="w-full text-sm dark:text-gray-200">
         <thead>
           <tr class="border-b border-gray-100 dark:border-neutral-700">
             <th
