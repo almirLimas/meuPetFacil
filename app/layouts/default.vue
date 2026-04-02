@@ -141,7 +141,7 @@ const statusAssinaturaLabel = computed(() => {
           color="neutral"
           variant="ghost"
           aria-label="Toggle sidebar"
-          @click="open = !open"
+          @click.stop="open = !open"
         />
       </template>
 
@@ -184,7 +184,7 @@ const statusAssinaturaLabel = computed(() => {
       <!-- Sidebar -->
       <transition name="sidebar">
         <aside
-          v-show="open"
+          v-if="open"
           class="fixed top-16 left-0 bottom-0 z-50 w-56 md:relative md:top-auto md:left-auto md:bottom-auto md:z-auto md:w-44 shrink-0 md:m-4 md:mr-0 bg-white dark:bg-neutral-800 md:rounded-2xl shadow-xl md:shadow-sm py-3 flex flex-col gap-0.5 overflow-y-auto"
         >
           <NuxtLink
