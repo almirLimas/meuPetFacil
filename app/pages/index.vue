@@ -98,7 +98,7 @@ const planos = [
         <div class="flex items-center gap-3">
           <NuxtLink
             to="/login"
-            class="hidden sm:block text-sm text-gray-600 hover:text-gray-900 font-medium"
+            class="text-sm text-gray-600 hover:text-gray-900 font-medium"
             >Entrar</NuxtLink
           >
           <NuxtLink

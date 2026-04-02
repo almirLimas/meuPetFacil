@@ -3,6 +3,11 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: process.env.NODE_ENV !== "production" },
   modules: ["@nuxt/ui", "@pinia/nuxt"],
+  app: {
+    head: {
+      link: [{ rel: "icon", type: "image/png", href: "/anninLogo.png" }],
+    },
+  },
   colorMode: {
     preference: "light",
   },
