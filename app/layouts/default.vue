@@ -124,35 +124,26 @@ const statusAssinaturaLabel = computed(() => {
 
 <template>
   <div class="min-h-screen flex flex-col bg-[#f8f8f5] dark:bg-neutral-950">
-    <!-- ===== HEADER (NuxtUI) ===== -->
-    <UHeader
-      toggle-side="left"
-      :toggle="false"
-      :ui="{ container: 'max-w-full px-4 sm:px-6' }"
+    <!-- ===== HEADER ===== -->
+    <header
+      class="sticky top-0 z-50 h-16 flex items-center justify-between px-4 sm:px-6 gap-3 bg-white/80 dark:bg-neutral-900/80 backdrop-blur border-b border-gray-200 dark:border-neutral-800"
     >
-      <template #left>
-        <!-- Logo -->
-        <div class="flex items-center gap-2 ml-2">
-          <AppLogo :size="100" />
-        </div>
-        <!-- Sidebar toggle -->
-        <UButton
-          icon="i-lucide-panel-left"
-          color="neutral"
-          variant="ghost"
+      <!-- Esquerda: toggle + logo -->
+      <div class="flex items-center gap-2">
+        <button
+          class="inline-flex items-center justify-center h-9 w-9 rounded-lg text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
           aria-label="Toggle sidebar"
           @click="open = !open"
-        />
-      </template>
+        >
+          <UIcon name="i-lucide-panel-left" class="size-5" />
+        </button>
+        <AppLogo :size="100" />
+      </div>
 
-      <template #right>
-        <!-- Notificações -->
+      <!-- Direita: notificações, tema, avatar -->
+      <div class="flex items-center gap-1.5">
         <NotificacoesSino />
-
-        <!-- Tema claro/escuro -->
         <UColorModeButton />
-
-        <!-- Avatar usuário com dropdown -->
         <UDropdownMenu :items="menuUsuario">
           <div class="flex items-center gap-2 cursor-pointer">
             <div
@@ -167,8 +158,8 @@ const statusAssinaturaLabel = computed(() => {
             <UIcon name="i-lucide-chevron-down" class="size-4" />
           </div>
         </UDropdownMenu>
-      </template>
-    </UHeader>
+      </div>
+    </header>
 
     <!-- ===== BODY (sidebar + page content) ===== -->
     <div class="flex flex-1 min-h-0">
