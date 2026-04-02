@@ -6,6 +6,7 @@ import { useAuthStore } from "~/stores/auth";
 
 definePageMeta({
   layout: false,
+  colorMode: "light",
 });
 
 const auth = useAuthStore();

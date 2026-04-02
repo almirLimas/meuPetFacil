@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ResultadoPagamento } from "~/composables/usePagamento";
 
-definePageMeta({ layout: false });
+definePageMeta({ layout: false, colorMode: "light" });
 
 const pixCheckout = useState<ResultadoPagamento | null>("pix-checkout");
 
