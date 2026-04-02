@@ -8,9 +8,7 @@ export default defineNuxtConfig({
       titleTemplate: "%s — AninPet",
       htmlAttrs: { lang: "pt-BR" },
       link: [{ rel: "icon", type: "image/png", href: "/anninLogo.png" }],
-      meta: [
-        { name: "theme-color", content: "#1d9fb6" },
-      ],
+      meta: [{ name: "theme-color", content: "#1d9fb6" }],
     },
   },
   colorMode: {
