@@ -124,26 +124,35 @@ const statusAssinaturaLabel = computed(() => {
 
 <template>
   <div class="min-h-screen flex flex-col bg-[#f8f8f5] dark:bg-neutral-950">
-    <!-- ===== HEADER ===== -->
-    <header
-      class="sticky top-0 z-50 h-16 flex items-center justify-between px-4 sm:px-6 gap-3 bg-white/80 dark:bg-neutral-900/80 backdrop-blur border-b border-gray-200 dark:border-neutral-800"
+    <!-- ===== HEADER (NuxtUI) ===== -->
+    <UHeader
+      toggle-side="left"
+      :toggle="false"
+      :ui="{ container: 'max-w-full px-4 sm:px-6' }"
     >
-      <!-- Esquerda: toggle + logo -->
-      <div class="flex items-center gap-2">
-        <button
-          class="inline-flex items-center justify-center h-9 w-9 rounded-lg text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+      <template #left>
+        <!-- Logo -->
+        <div class="flex items-center gap-2 ml-2">
+          <AppLogo :size="100" />
+        </div>
+        <!-- Sidebar toggle -->
+        <UButton
+          icon="i-lucide-panel-left"
+          color="neutral"
+          variant="ghost"
           aria-label="Toggle sidebar"
           @click="open = !open"
-        >
-          <UIcon name="i-lucide-panel-left" class="size-5" />
-        </button>
-        <AppLogo :size="100" />
-      </div>
+        />
+      </template>
 
-      <!-- Direita: notificações, tema, avatar -->
-      <div class="flex items-center gap-1.5">
+      <template #right>
+        <!-- Notificações -->
         <NotificacoesSino />
+
+        <!-- Tema claro/escuro -->
         <UColorModeButton />
+
+        <!-- Avatar usuário com dropdown -->
         <UDropdownMenu :items="menuUsuario">
           <div class="flex items-center gap-2 cursor-pointer">
             <div
@@ -158,8 +167,8 @@ const statusAssinaturaLabel = computed(() => {
             <UIcon name="i-lucide-chevron-down" class="size-4" />
           </div>
         </UDropdownMenu>
-      </div>
-    </header>
+      </template>
+    </UHeader>
 
     <!-- ===== BODY (sidebar + page content) ===== -->
     <div class="flex flex-1 min-h-0">
@@ -167,7 +176,7 @@ const statusAssinaturaLabel = computed(() => {
       <Teleport to="body">
         <div
           v-if="open"
-          class="fixed inset-0 bg-black/40 z-40 md:hidden"
+          class="fixed inset-0 bg-black/40 z-[9998] md:hidden"
           @click="open = false"
         />
       </Teleport>
@@ -176,7 +185,7 @@ const statusAssinaturaLabel = computed(() => {
       <transition name="sidebar">
         <aside
           v-show="open"
-          class="fixed top-16 left-0 bottom-0 z-50 w-56 md:relative md:top-auto md:left-auto md:bottom-auto md:z-auto md:w-44 shrink-0 md:m-4 md:mr-0 bg-white dark:bg-neutral-800 md:rounded-2xl shadow-xl md:shadow-sm py-3 flex flex-col gap-0.5 overflow-y-auto"
+          class="fixed top-16 left-0 bottom-0 z-[9999] w-56 md:relative md:top-auto md:left-auto md:bottom-auto md:z-auto md:w-44 shrink-0 md:m-4 md:mr-0 bg-white dark:bg-neutral-800 md:rounded-2xl shadow-xl md:shadow-sm py-3 flex flex-col gap-0.5 overflow-y-auto"
         >
           <NuxtLink
             v-for="item in menuItems"
