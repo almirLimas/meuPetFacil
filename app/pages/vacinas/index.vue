@@ -195,101 +195,103 @@ const resumoCards = computed(() => [
         />
       </div>
 
-      <table class="w-full text-sm dark:text-gray-200">
-        <thead>
-          <tr class="border-b border-gray-100 dark:border-neutral-700">
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Pet
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Dono
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Vacina
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Lote
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Aplicada
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Vencimento
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Status
-            </th>
-            <th
-              class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Ações
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="v in vacinasFiltradas"
-            :key="v.pet + v.vacina"
-            class="border-b border-gray-50 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors"
-          >
-            <td
-              class="px-4 py-3 font-semibold text-gray-800 dark:text-gray-100"
-            >
-              {{ v.pet }}
-            </td>
-            <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
-              {{ v.dono }}
-            </td>
-            <td class="px-4 py-3 text-gray-700 dark:text-gray-200">
-              {{ v.vacina }}
-            </td>
-            <td
-              class="px-4 py-3 text-gray-500 dark:text-gray-400 font-mono text-xs"
-            >
-              {{ v.lote }}
-            </td>
-            <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
-              {{ v.aplicada }}
-            </td>
-            <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
-              {{ v.vence }}
-            </td>
-            <td class="px-4 py-3">
-              <span
-                class="text-xs font-semibold rounded-full px-2.5 py-1"
-                :class="[
-                  statusConfig[v.status].bg,
-                  statusConfig[v.status].text,
-                ]"
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm dark:text-gray-200">
+          <thead>
+            <tr class="border-b border-gray-100 dark:border-neutral-700">
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide whitespace-nowrap"
               >
-                {{ statusConfig[v.status].label }}
-              </span>
-            </td>
-            <td class="px-4 py-3">
-              <UButton
-                icon="i-lucide-pencil"
-                color="neutral"
-                variant="ghost"
-                size="xs"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                Pet
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Dono
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Vacina
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Lote
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Aplicada
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Vencimento
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Status
+              </th>
+              <th
+                class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Ações
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="v in vacinasFiltradas"
+              :key="v.pet + v.vacina"
+              class="border-b border-gray-50 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors"
+            >
+              <td
+                class="px-4 py-3 font-semibold text-gray-800 dark:text-gray-100"
+              >
+                {{ v.pet }}
+              </td>
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
+                {{ v.dono }}
+              </td>
+              <td class="px-4 py-3 text-gray-700 dark:text-gray-200">
+                {{ v.vacina }}
+              </td>
+              <td
+                class="px-4 py-3 text-gray-500 dark:text-gray-400 font-mono text-xs"
+              >
+                {{ v.lote }}
+              </td>
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
+                {{ v.aplicada }}
+              </td>
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
+                {{ v.vence }}
+              </td>
+              <td class="px-4 py-3">
+                <span
+                  class="text-xs font-semibold rounded-full px-2.5 py-1"
+                  :class="[
+                    statusConfig[v.status].bg,
+                    statusConfig[v.status].text,
+                  ]"
+                >
+                  {{ statusConfig[v.status].label }}
+                </span>
+              </td>
+              <td class="px-4 py-3">
+                <UButton
+                  icon="i-lucide-pencil"
+                  color="neutral"
+                  variant="ghost"
+                  size="xs"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>

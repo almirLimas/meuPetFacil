@@ -264,125 +264,125 @@ const fmtData = (d: string) =>
       </div>
 
       <!-- Tabela -->
-      <table v-else class="w-full text-sm dark:text-gray-200">
-        <thead>
-          <tr class="border-b border-gray-100 dark:border-neutral-700">
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+      <div v-else class="overflow-x-auto">
+        <table class="min-w-full text-sm dark:text-gray-200">
+          <thead>
+            <tr class="border-b border-gray-100 dark:border-neutral-700">
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide whitespace-nowrap"
+              >
+                Descrição
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden sm:table-cell"
+              >
+                Categoria
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden md:table-cell"
+              >
+                Data
+              </th>
+              <th
+                class="text-right px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Valor
+              </th>
+              <th
+                class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Ações
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="item in lancamentos"
+              :key="item.id"
+              class="border-b border-gray-50 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors"
             >
-              Descrição
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden sm:table-cell"
-            >
-              Categoria
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden md:table-cell"
-            >
-              Data
-            </th>
-            <th
-              class="text-right px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Valor
-            </th>
-            <th
-              class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Ações
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="item in lancamentos"
-            :key="item.id"
-            class="border-b border-gray-50 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors"
-          >
-            <td class="px-4 py-3">
-              <div class="flex items-center gap-2">
-                <div
-                  class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                  :style="{
-                    backgroundColor:
-                      item.tipo === 'Receita' ? '#D1FAE5' : '#FFE0E0',
-                  }"
-                >
-                  <UIcon
-                    :name="
-                      item.tipo === 'Receita'
-                        ? 'i-lucide-trending-up'
-                        : 'i-lucide-trending-down'
-                    "
-                    class="size-4"
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-2">
+                  <div
+                    class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
                     :style="{
-                      color: item.tipo === 'Receita' ? '#10B981' : '#E85A5A',
+                      backgroundColor:
+                        item.tipo === 'Receita' ? '#D1FAE5' : '#FFE0E0',
                     }"
+                  >
+                    <UIcon
+                      :name="
+                        item.tipo === 'Receita'
+                          ? 'i-lucide-trending-up'
+                          : 'i-lucide-trending-down'
+                      "
+                      class="size-4"
+                      :style="{
+                        color: item.tipo === 'Receita' ? '#10B981' : '#E85A5A',
+                      }"
+                    />
+                  </div>
+                  <div>
+                    <p class="font-semibold text-gray-800 dark:text-gray-100">
+                      {{ item.descricao }}
+                    </p>
+                    <p
+                      v-if="item.agendamento"
+                      class="text-xs text-gray-400 mt-0.5"
+                    >
+                      {{ item.agendamento.pet.nome }} ·
+                      {{ item.agendamento.servico.nome }}
+                    </p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 hidden sm:table-cell">
+                <span
+                  class="text-xs font-semibold px-2.5 py-1 rounded-full"
+                  :class="
+                    item.tipo === 'Receita'
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
+                      : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'
+                  "
+                >
+                  {{ labelCategoria[item.categoria] }}
+                </span>
+              </td>
+              <td
+                class="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell"
+              >
+                {{ fmtData(item.data) }}
+              </td>
+              <td class="px-4 py-3 text-right">
+                <span
+                  class="font-bold"
+                  :class="
+                    item.tipo === 'Receita'
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-red-500 dark:text-red-400'
+                  "
+                >
+                  {{ item.tipo === "Receita" ? "+" : "-"
+                  }}{{ fmt(Number(item.valor)) }}
+                </span>
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-1 justify-end">
+                  <UButton
+                    icon="i-lucide-trash-2"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    aria-label="Remover"
+                    @click="confirmarRemover(item.id)"
                   />
                 </div>
-                <div>
-                  <p class="font-semibold text-gray-800 dark:text-gray-100">
-                    {{ item.descricao }}
-                  </p>
-                  <p
-                    v-if="item.agendamento"
-                    class="text-xs text-gray-400 mt-0.5"
-                  >
-                    {{ item.agendamento.pet.nome }} ·
-                    {{ item.agendamento.servico.nome }}
-                  </p>
-                </div>
-              </div>
-            </td>
-            <td class="px-4 py-3 hidden sm:table-cell">
-              <span
-                class="text-xs font-semibold px-2.5 py-1 rounded-full"
-                :class="
-                  item.tipo === 'Receita'
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
-                    : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'
-                "
-              >
-                {{ labelCategoria[item.categoria] }}
-              </span>
-            </td>
-            <td
-              class="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell"
-            >
-              {{ fmtData(item.data) }}
-            </td>
-            <td class="px-4 py-3 text-right">
-              <span
-                class="font-bold"
-                :class="
-                  item.tipo === 'Receita'
-                    ? 'text-green-600 dark:text-green-400'
-                    : 'text-red-500 dark:text-red-400'
-                "
-              >
-                {{ item.tipo === "Receita" ? "+" : "-"
-                }}{{ fmt(Number(item.valor)) }}
-              </span>
-            </td>
-            <td class="px-4 py-3">
-              <div class="flex items-center gap-1 justify-end">
-                <UButton
-                  icon="i-lucide-trash-2"
-                  color="neutral"
-                  variant="ghost"
-                  size="xs"
-                  aria-label="Remover"
-                  @click="confirmarRemover(item.id)"
-                />
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-
-    <!-- Modal novo lançamento -->
     <UModal v-model:open="isModalOpen" title="Novo Lançamento">
       <template #body>
         <div class="flex flex-col gap-4 p-2">

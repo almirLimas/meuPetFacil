@@ -427,174 +427,174 @@ const abrirHistorico = async (p: Produto) => {
       </div>
 
       <!-- Tabela -->
-      <table v-else class="w-full text-sm dark:text-gray-200">
-        <thead>
-          <tr class="border-b border-gray-100 dark:border-neutral-700">
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+      <div v-else class="overflow-x-auto">
+        <table class="min-w-full text-sm dark:text-gray-200">
+          <thead>
+            <tr class="border-b border-gray-100 dark:border-neutral-700">
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide whitespace-nowrap"
+              >
+                Produto
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden sm:table-cell"
+              >
+                Categoria
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Qtd. Atual
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden md:table-cell"
+              >
+                Qtd. Mínima
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden md:table-cell"
+              >
+                Custo
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden lg:table-cell"
+              >
+                Venda
+              </th>
+              <th
+                class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Ações
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="p in produtosFiltrados"
+              :key="p.id"
+              class="border-b border-gray-50 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors"
             >
-              Produto
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden sm:table-cell"
-            >
-              Categoria
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Qtd. Atual
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden md:table-cell"
-            >
-              Qtd. Mínima
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden md:table-cell"
-            >
-              Custo
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden lg:table-cell"
-            >
-              Venda
-            </th>
-            <th
-              class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Ações
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="p in produtosFiltrados"
-            :key="p.id"
-            class="border-b border-gray-50 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors"
-          >
-            <td class="px-4 py-3">
-              <div class="flex items-center gap-2">
-                <!-- Ícone da categoria -->
-                <div
-                  class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                  :class="categoriaConfig[p.categoria].bg"
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-2">
+                  <!-- Ícone da categoria -->
+                  <div
+                    class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                    :class="categoriaConfig[p.categoria].bg"
+                  >
+                    <UIcon
+                      :name="categoriaConfig[p.categoria].icon"
+                      class="size-4"
+                      :class="categoriaConfig[p.categoria].text"
+                    />
+                  </div>
+                  <div>
+                    <p class="font-semibold text-gray-800 dark:text-gray-100">
+                      {{ p.nome }}
+                    </p>
+                    <p v-if="p.descricao" class="text-xs text-gray-400 mt-0.5">
+                      {{ p.descricao }}
+                    </p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 hidden sm:table-cell">
+                <span
+                  class="text-xs font-semibold px-2.5 py-1 rounded-full"
+                  :class="[
+                    categoriaConfig[p.categoria].bg,
+                    categoriaConfig[p.categoria].text,
+                  ]"
                 >
+                  {{ categoriaConfig[p.categoria].label }}
+                </span>
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-1.5">
+                  <span
+                    class="font-bold"
+                    :class="
+                      p.quantidadeAtual === 0
+                        ? 'text-red-600 dark:text-red-400'
+                        : emAlerta(p)
+                          ? 'text-amber-600 dark:text-amber-400'
+                          : 'text-gray-800 dark:text-gray-100'
+                    "
+                  >
+                    {{ p.quantidadeAtual }}
+                  </span>
+                  <span class="text-gray-400 text-xs">{{ p.unidade }}</span>
                   <UIcon
-                    :name="categoriaConfig[p.categoria].icon"
-                    class="size-4"
-                    :class="categoriaConfig[p.categoria].text"
+                    v-if="emAlerta(p)"
+                    name="i-lucide-alert-triangle"
+                    class="size-3.5 text-amber-500"
+                    title="Estoque abaixo do mínimo"
                   />
                 </div>
-                <div>
-                  <p class="font-semibold text-gray-800 dark:text-gray-100">
-                    {{ p.nome }}
-                  </p>
-                  <p v-if="p.descricao" class="text-xs text-gray-400 mt-0.5">
-                    {{ p.descricao }}
-                  </p>
-                </div>
-              </div>
-            </td>
-            <td class="px-4 py-3 hidden sm:table-cell">
-              <span
-                class="text-xs font-semibold px-2.5 py-1 rounded-full"
-                :class="[
-                  categoriaConfig[p.categoria].bg,
-                  categoriaConfig[p.categoria].text,
-                ]"
+              </td>
+              <td
+                class="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell"
               >
-                {{ categoriaConfig[p.categoria].label }}
-              </span>
-            </td>
-            <td class="px-4 py-3">
-              <div class="flex items-center gap-1.5">
-                <span
-                  class="font-bold"
-                  :class="
-                    p.quantidadeAtual === 0
-                      ? 'text-red-600 dark:text-red-400'
-                      : emAlerta(p)
-                        ? 'text-amber-600 dark:text-amber-400'
-                        : 'text-gray-800 dark:text-gray-100'
-                  "
-                >
-                  {{ p.quantidadeAtual }}
-                </span>
-                <span class="text-gray-400 text-xs">{{ p.unidade }}</span>
-                <UIcon
-                  v-if="emAlerta(p)"
-                  name="i-lucide-alert-triangle"
-                  class="size-3.5 text-amber-500"
-                  title="Estoque abaixo do mínimo"
-                />
-              </div>
-            </td>
-            <td
-              class="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell"
-            >
-              {{ p.estoqueMinimo }} {{ p.unidade }}
-            </td>
-            <td
-              class="px-4 py-3 text-gray-700 dark:text-gray-300 hidden md:table-cell"
-            >
-              {{ formatPreco(Number(p.precoCompra)) }}
-            </td>
-            <td
-              class="px-4 py-3 text-gray-700 dark:text-gray-300 hidden lg:table-cell"
-            >
-              {{ p.precoVenda ? formatPreco(p.precoVenda) : "—" }}
-            </td>
-            <td class="px-4 py-3">
-              <div class="flex items-center gap-1 justify-end">
-                <UButton
-                  icon="i-lucide-arrow-down-to-line"
-                  color="neutral"
-                  variant="ghost"
-                  size="xs"
-                  title="Registrar entrada"
-                  @click="abrirMovimentacao(p, 'Entrada')"
-                />
-                <UButton
-                  icon="i-lucide-arrow-up-from-line"
-                  color="neutral"
-                  variant="ghost"
-                  size="xs"
-                  title="Registrar saída"
-                  @click="abrirMovimentacao(p, 'Saida')"
-                />
-                <UButton
-                  icon="i-lucide-history"
-                  color="neutral"
-                  variant="ghost"
-                  size="xs"
-                  title="Histórico"
-                  @click="abrirHistorico(p)"
-                />
-                <UButton
-                  icon="i-lucide-pencil"
-                  color="neutral"
-                  variant="ghost"
-                  size="xs"
-                  title="Editar"
-                  @click="abrirEditarProduto(p)"
-                />
-                <UButton
-                  icon="i-lucide-trash-2"
-                  color="neutral"
-                  variant="ghost"
-                  size="xs"
-                  title="Remover"
-                  @click="excluirProduto(p.id)"
-                />
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                {{ p.estoqueMinimo }} {{ p.unidade }}
+              </td>
+              <td
+                class="px-4 py-3 text-gray-700 dark:text-gray-300 hidden md:table-cell"
+              >
+                {{ formatPreco(Number(p.precoCompra)) }}
+              </td>
+              <td
+                class="px-4 py-3 text-gray-700 dark:text-gray-300 hidden lg:table-cell"
+              >
+                {{ p.precoVenda ? formatPreco(p.precoVenda) : "—" }}
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-1 justify-end">
+                  <UButton
+                    icon="i-lucide-arrow-down-to-line"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    title="Registrar entrada"
+                    @click="abrirMovimentacao(p, 'Entrada')"
+                  />
+                  <UButton
+                    icon="i-lucide-arrow-up-from-line"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    title="Registrar saída"
+                    @click="abrirMovimentacao(p, 'Saida')"
+                  />
+                  <UButton
+                    icon="i-lucide-history"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    title="Histórico"
+                    @click="abrirHistorico(p)"
+                  />
+                  <UButton
+                    icon="i-lucide-pencil"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    title="Editar"
+                    @click="abrirEditarProduto(p)"
+                  />
+                  <UButton
+                    icon="i-lucide-trash-2"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    title="Remover"
+                    @click="excluirProduto(p.id)"
+                  />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-
-    <!-- Modal: Cadastro/Edição de produto -->
     <UModal v-model:open="isModalProduto">
       <template #content>
         <UCard class="ring-0">

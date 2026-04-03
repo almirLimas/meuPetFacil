@@ -114,71 +114,88 @@ const getAvatarColor = (id: string) => {
       </div>
 
       <!-- Tabela -->
-      <UTable
-        ref="table"
-        v-model:pagination="pagination"
-        v-model:global-filter="globalFilter"
-        :data="clientes"
-        :columns="columns"
-        :loading="pending"
-        :pagination-options="{ getPaginationRowModel: getPaginationRowModel() }"
-        :ui="{ tr: 'hover:bg-gray-50 transition-colors' }"
-      >
-        <!-- Coluna nome com avatar -->
-        <template #nome-cell="{ row }">
-          <div class="flex items-center gap-3">
-            <div
-              class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-gray-700 shrink-0"
-              :style="`background: ${getAvatarColor(row.original.id)}`"
-            >
-              {{
+      <div class="overflow-x-auto">
+        <UTable
+          ref="table"
+          v-model:pagination="pagination"
+          v-model:global-filter="globalFilter"
+          :data="clientes"
+          :columns="columns"
+          :loading="pending"
+          :pagination-options="{
+            getPaginationRowModel: getPaginationRowModel(),
+          }"
+          :ui="{
+            tr: 'hover:bg-gray-50 transition-colors',
+            th: 'whitespace-nowrap',
+          }"
+        >
+          <!-- Coluna nome com avatar -->
+          <template #nome-cell="{ row }">
+            <div class="flex items-center gap-3">
+              <div
+                class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-gray-700 shrink-0"
+                :style="`background: ${getAvatarColor(row.original.id)}`"
+              >
+                {{
+                  row.original.nome
+                    .split(" ")
+                    .map((n: string) => n[0])
+                    .slice(0, 2)
+                    .join("")
+                    .toUpperCase()
+                }}
+              </div>
+              <span class="font-medium text-gray-800">{{
                 row.original.nome
-                  .split(" ")
-                  .map((n: string) => n[0])
-                  .slice(0, 2)
-                  .join("")
-                  .toUpperCase()
-              }}
+              }}</span>
             </div>
-            <span class="font-medium text-gray-800">{{
-              row.original.nome
-            }}</span>
-          </div>
-        </template>
+          </template>
 
-        <!-- Coluna status com badge -->
-        <template #status-cell="{ row }">
-          <UBadge
-            :color="row.original.status === 'Ativo' ? 'success' : 'neutral'"
-            variant="soft"
-            size="sm"
-          >
-            {{ row.original.status }}
-          </UBadge>
-        </template>
+          <!-- Coluna status com badge -->
+          <template #status-cell="{ row }">
+            <UBadge
+              :color="row.original.status === 'Ativo' ? 'success' : 'neutral'"
+              variant="soft"
+              size="sm"
+            >
+              {{ row.original.status }}
+            </UBadge>
+          </template>
 
-        <!-- Coluna ações -->
-        <template #acoes-cell="{ row }">
-          <div class="flex items-center justify-end gap-1">
-            <UButton
-              icon="i-lucide-eye"
-              color="neutral"
-              variant="ghost"
-              size="xs"
-              :aria-label="`Ver ${row.original.nome}`"
-              @click="navigateTo(`/clientes/${row.original.id}`)"
-            />
-            <UButton
-              icon="i-lucide-pencil"
-              color="neutral"
-              variant="ghost"
-              size="xs"
-              :aria-label="`Editar ${row.original.nome}`"
-              @click="navigateTo(`/clientes/${row.original.id}/editar`)"
-            />
-          </div>
-        </template>
-      </UTable>
+          <!-- Coluna ações -->
+          <template #acoes-cell="{ row }">
+            <div class="flex items-center justify-end gap-1">
+              <UButton
+                icon="i-lucide-eye"
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                :aria-label="`Ver ${row.original.nome}`"
+                @click="navigateTo(`/clientes/${row.original.id}`)"
+              />
+              <UButton
+                icon="i-lucide-pencil"
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                :aria-label="`Editar ${row.original.nome}`"
+                @click="navigateTo(`/clientes/${row.original.id}/editar`)"
+              />
+            </div>
+          </template>
+
+          <!-- Empty state PT-BR -->
+          <template #empty>
+            <div
+              class="flex flex-col items-center justify-center py-12 gap-2 text-gray-400"
+            >
+              <UIcon name="i-lucide-users" class="text-4xl" />
+              <p class="text-sm font-medium">Nenhum cliente encontrado</p>
+            </div>
+          </template>
+        </UTable>
+      </div>
 
       <!-- Paginação -->
       <div

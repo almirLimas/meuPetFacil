@@ -137,18 +137,18 @@ const statusAssinaturaLabel = computed(() => {
       }"
     >
       <template #left>
-        <!-- Logo -->
-        <div class="flex items-center gap-2 ml-2">
-          <AppLogo :size="100" />
-        </div>
-        <!-- Sidebar toggle -->
+        <!-- Sidebar toggle (hamburguer) -->
         <UButton
-          icon="i-lucide-panel-left"
+          icon="i-lucide-menu"
           color="neutral"
           variant="ghost"
-          aria-label="Toggle sidebar"
+          aria-label="Abrir menu"
           @click="open = !open"
         />
+        <!-- Logo -->
+        <div class="flex items-center gap-2">
+          <AppLogo :size="100" />
+        </div>
       </template>
 
       <template #right>

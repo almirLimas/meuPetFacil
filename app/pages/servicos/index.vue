@@ -257,7 +257,7 @@ const excluir = async (id: string) => {
     </div>
 
     <!-- Cards de resumo -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
       <div
         v-for="card in [
           {
@@ -376,133 +376,133 @@ const excluir = async (id: string) => {
       </div>
 
       <!-- Tabela -->
-      <table v-else class="w-full text-sm dark:text-gray-200">
-        <thead>
-          <tr class="border-b border-gray-100 dark:border-neutral-700">
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Serviço
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden sm:table-cell"
-            >
-              Categoria
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden md:table-cell"
-            >
-              Porte
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden md:table-cell"
-            >
-              Duração
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Preço
-            </th>
-            <th
-              class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden sm:table-cell"
-            >
-              Status
-            </th>
-            <th
-              class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
-            >
-              Ações
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="s in servicosFiltrados"
-            :key="s.id"
-            class="border-b border-gray-50 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors"
-            :class="{ 'opacity-50': !s.ativo }"
-          >
-            <td class="px-4 py-3">
-              <p class="font-semibold text-gray-800 dark:text-gray-100">
-                {{ s.nome }}
-              </p>
-              <p v-if="s.descricao" class="text-xs text-gray-400 mt-0.5">
-                {{ s.descricao }}
-              </p>
-            </td>
-            <td class="px-4 py-3 hidden sm:table-cell">
-              <span
-                class="text-xs font-semibold px-2.5 py-1 rounded-full"
-                :class="[
-                  categoriaConfig[s.categoria].bg,
-                  categoriaConfig[s.categoria].text,
-                ]"
+      <div v-else class="overflow-x-auto">
+        <table class="min-w-full text-sm dark:text-gray-200">
+          <thead>
+            <tr class="border-b border-gray-100 dark:border-neutral-700">
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide whitespace-nowrap"
               >
-                {{ categoriaConfig[s.categoria].label }}
-              </span>
-            </td>
-            <td
-              class="px-4 py-3 text-gray-600 dark:text-gray-300 hidden md:table-cell"
-            >
-              {{ s.porte ? porteLabel[s.porte] : "-" }}
-            </td>
-            <td
-              class="px-4 py-3 text-gray-600 dark:text-gray-300 hidden md:table-cell"
-            >
-              {{ formatDuracao(s.duracaoMinutos) }}
-            </td>
-            <td
-              class="px-4 py-3 font-semibold text-gray-800 dark:text-gray-100"
-            >
-              {{ formatPreco(s.preco) }}
-            </td>
-            <td class="px-4 py-3 hidden sm:table-cell">
-              <span
-                class="text-xs font-semibold px-2.5 py-1 rounded-full"
-                :class="
-                  s.ativo
-                    ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
-                    : 'bg-gray-100 dark:bg-neutral-700 text-gray-500 dark:text-gray-400'
-                "
+                Serviço
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden sm:table-cell"
               >
-                {{ s.ativo ? "Ativo" : "Inativo" }}
-              </span>
-            </td>
-            <td class="px-4 py-3">
-              <div class="flex items-center gap-1 justify-end">
-                <UButton
-                  :icon="s.ativo ? 'i-lucide-pause' : 'i-lucide-play'"
-                  color="neutral"
-                  variant="ghost"
-                  size="xs"
-                  :title="s.ativo ? 'Desativar' : 'Ativar'"
-                  @click="toggleAtivo(s)"
-                />
-                <UButton
-                  icon="i-lucide-pencil"
-                  color="neutral"
-                  variant="ghost"
-                  size="xs"
-                  title="Editar"
-                  @click="abrirEditar(s)"
-                />
-                <UButton
-                  icon="i-lucide-trash-2"
-                  color="neutral"
-                  variant="ghost"
-                  size="xs"
-                  title="Excluir"
-                  @click="excluir(s.id)"
-                />
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                Categoria
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden md:table-cell"
+              >
+                Porte
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden md:table-cell"
+              >
+                Duração
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Preço
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden sm:table-cell"
+              >
+                Status
+              </th>
+              <th
+                class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Ações
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="s in servicosFiltrados"
+              :key="s.id"
+              class="border-b border-gray-50 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors"
+              :class="{ 'opacity-50': !s.ativo }"
+            >
+              <td class="px-4 py-3">
+                <p class="font-semibold text-gray-800 dark:text-gray-100">
+                  {{ s.nome }}
+                </p>
+                <p v-if="s.descricao" class="text-xs text-gray-400 mt-0.5">
+                  {{ s.descricao }}
+                </p>
+              </td>
+              <td class="px-4 py-3 hidden sm:table-cell">
+                <span
+                  class="text-xs font-semibold px-2.5 py-1 rounded-full"
+                  :class="[
+                    categoriaConfig[s.categoria].bg,
+                    categoriaConfig[s.categoria].text,
+                  ]"
+                >
+                  {{ categoriaConfig[s.categoria].label }}
+                </span>
+              </td>
+              <td
+                class="px-4 py-3 text-gray-600 dark:text-gray-300 hidden md:table-cell"
+              >
+                {{ s.porte ? porteLabel[s.porte] : "-" }}
+              </td>
+              <td
+                class="px-4 py-3 text-gray-600 dark:text-gray-300 hidden md:table-cell"
+              >
+                {{ formatDuracao(s.duracaoMinutos) }}
+              </td>
+              <td
+                class="px-4 py-3 font-semibold text-gray-800 dark:text-gray-100"
+              >
+                {{ formatPreco(s.preco) }}
+              </td>
+              <td class="px-4 py-3 hidden sm:table-cell">
+                <span
+                  class="text-xs font-semibold px-2.5 py-1 rounded-full"
+                  :class="
+                    s.ativo
+                      ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
+                      : 'bg-gray-100 dark:bg-neutral-700 text-gray-500 dark:text-gray-400'
+                  "
+                >
+                  {{ s.ativo ? "Ativo" : "Inativo" }}
+                </span>
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-1 justify-end">
+                  <UButton
+                    :icon="s.ativo ? 'i-lucide-pause' : 'i-lucide-play'"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    :title="s.ativo ? 'Desativar' : 'Ativar'"
+                    @click="toggleAtivo(s)"
+                  />
+                  <UButton
+                    icon="i-lucide-pencil"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    title="Editar"
+                    @click="abrirEditar(s)"
+                  />
+                  <UButton
+                    icon="i-lucide-trash-2"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    title="Excluir"
+                    @click="excluir(s.id)"
+                  />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-
-    <!-- Modal criar/editar -->
     <UModal v-model:open="isModalOpen">
       <template #content>
         <UCard class="ring-0">
