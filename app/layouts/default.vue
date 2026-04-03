@@ -46,7 +46,12 @@ const menuUsuario = computed(() => [
 
 const menuItems = [
   { label: "Dashboard", icon: "i-lucide-layout-dashboard", to: "/dashboard" },
-  { label: "Clientes", icon: "i-lucide-users", to: "/clientes" },
+  {
+    label: "Clientes",
+    icon: "i-lucide-users",
+    to: "/clientes",
+    activeOn: ["/cadastro-cliente", "/pets/"],
+  },
   { label: "Agenda", icon: "i-lucide-calendar", to: "/agenda" },
   { label: "Serviços", icon: "i-lucide-briefcase", to: "/servicos" },
   { label: "Estoque", icon: "i-lucide-package", to: "/estoque" },
@@ -63,6 +68,14 @@ const menuItems = [
     to: "/primeiros-passos",
   },
 ];
+
+const isMenuItemActive = (item: (typeof menuItems)[number]) => {
+  if (route.path === item.to) return true;
+  if (item.to !== "/dashboard" && route.path.startsWith(item.to)) return true;
+  if ("activeOn" in item && item.activeOn)
+    return item.activeOn.some((p) => route.path.startsWith(p));
+  return false;
+};
 
 const breadcrumb = useBreadcrumb();
 
@@ -215,16 +228,12 @@ const statusAssinaturaLabel = computed(() => {
             :to="item.to"
             class="flex items-center gap-3 mx-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors"
             :class="
-              route.path === item.to ||
-              (item.to !== '/dashboard' && route.path.startsWith(item.to))
+              isMenuItemActive(item)
                 ? 'text-white'
                 : 'text-gray-500 dark:text-gray-400 hover:bg-sky-50 dark:hover:bg-neutral-700'
             "
             :style="
-              route.path === item.to ||
-              (item.to !== '/dashboard' && route.path.startsWith(item.to))
-                ? { backgroundColor: '#1d9fb6' }
-                : {}
+              isMenuItemActive(item) ? { backgroundColor: '#1d9fb6' } : {}
             "
           >
             <UIcon :name="item.icon" class="size-4.5 shrink-0" />
