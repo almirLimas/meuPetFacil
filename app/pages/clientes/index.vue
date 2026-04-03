@@ -94,7 +94,9 @@ const getAvatarColor = (id: string) => {
     </div>
 
     <!-- Card da tabela -->
-    <UCard class="bg-white! ring-0 shadow-sm p-0 overflow-hidden">
+    <UCard
+      class="bg-white dark:bg-neutral-900 ring-0 shadow-sm p-0 overflow-hidden"
+    >
       <!-- Filtro -->
       <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
         <UInput
@@ -126,7 +128,7 @@ const getAvatarColor = (id: string) => {
             getPaginationRowModel: getPaginationRowModel(),
           }"
           :ui="{
-            tr: 'hover:bg-gray-50 transition-colors',
+            tr: 'hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors',
             th: 'whitespace-nowrap',
           }"
         >
