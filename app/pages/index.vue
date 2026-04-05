@@ -18,10 +18,12 @@ useHead({
 });
 
 useSeoMeta({
-  title: "AninPet — Sistema para Pet Shop que quer organizar a agenda e aumentar o faturamento",
+  title:
+    "AninPet — Sistema para Pet Shop que quer organizar a agenda e aumentar o faturamento",
   description:
     "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Confirmação automática por WhatsApp, controle financeiro e muito mais. Experimente grátis por 14 dias.",
-  ogTitle: "AninPet — Sistema para Pet Shop que quer organizar a agenda e aumentar o faturamento",
+  ogTitle:
+    "AninPet — Sistema para Pet Shop que quer organizar a agenda e aumentar o faturamento",
   ogDescription:
     "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Confirmação automática por WhatsApp, controle financeiro e muito mais. Experimente grátis por 14 dias.",
   ogImage: "https://www.aninpet.com.br/logo_aninpet.png",
@@ -29,7 +31,8 @@ useSeoMeta({
   ogType: "website",
   ogSiteName: "AninPet",
   twitterCard: "summary_large_image",
-  twitterTitle: "AninPet — Sistema para Pet Shop que quer organizar a agenda e aumentar o faturamento",
+  twitterTitle:
+    "AninPet — Sistema para Pet Shop que quer organizar a agenda e aumentar o faturamento",
   twitterDescription:
     "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Confirmação automática por WhatsApp, controle financeiro e muito mais. Experimente grátis por 14 dias.",
   twitterImage: "https://www.aninpet.com.br/logo_aninpet.png",
@@ -54,7 +57,8 @@ const features = [
   {
     icone: "i-lucide-message-circle",
     titulo: "WhatsApp Automático",
-    descricao: "Confirmação automática ao agendar, lembretes e campanhas para clientes inativos — tudo no celular do cliente.",
+    descricao:
+      "Confirmação automática ao agendar, lembretes e campanhas para clientes inativos — tudo no celular do cliente.",
   },
   {
     icone: "i-lucide-package",
@@ -163,7 +167,8 @@ const planos = [
         <div class="text-white pb-16 pt-4 flex flex-col gap-6">
           <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
             Sistema para pet shop<br />
-            que quer <span class="text-orange-300">organizar a agenda</span><br />
+            que quer <span class="text-orange-300">organizar a agenda</span
+            ><br />
             e <span class="text-orange-300">aumentar o faturamento</span>
           </h1>
           <ul class="flex flex-col gap-3">
