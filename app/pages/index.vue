@@ -99,6 +99,7 @@ const planos = [
     recursos: [
       "Tudo do Básico",
       "WhatsApp automático",
+      "Confirmação automática ao agendar via WhatsApp",
       "Lembretes de agendamento",
       "Controle de estoque",
       "Campanhas para clientes inativos",
