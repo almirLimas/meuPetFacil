@@ -1,22 +1,38 @@
 <script setup lang="ts">
 definePageMeta({ layout: "landing" });
 
+useHead({
+  script: [
+    {
+      type: "application/ld+json",
+      innerHTML: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "AninPet",
+        url: "https://www.aninpet.com.br",
+        logo: "https://www.aninpet.com.br/logo_aninpet.png",
+        sameAs: [],
+      }),
+    },
+  ],
+});
+
 useSeoMeta({
-  title: "AninPet — Sistema de Gestão para Petshops",
+  title: "AninPet — Sistema para Pet Shop que quer organizar a agenda e aumentar o faturamento",
   description:
-    "Gerencie seu petshop com facilidade: agenda, clientes, financeiro, estoque e muito mais. Experimente grátis por 14 dias.",
-  ogTitle: "AninPet — Sistema de Gestão para Petshops",
+    "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Confirmação automática por WhatsApp, controle financeiro e muito mais. Experimente grátis por 14 dias.",
+  ogTitle: "AninPet — Sistema para Pet Shop que quer organizar a agenda e aumentar o faturamento",
   ogDescription:
-    "Gerencie seu petshop com facilidade: agenda, clientes, financeiro, estoque e muito mais. Experimente grátis por 14 dias.",
-  ogImage: "https://www.aninpet.com.br/anninLogo.png",
+    "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Confirmação automática por WhatsApp, controle financeiro e muito mais. Experimente grátis por 14 dias.",
+  ogImage: "https://www.aninpet.com.br/logo_aninpet.png",
   ogUrl: "https://www.aninpet.com.br",
   ogType: "website",
   ogSiteName: "AninPet",
   twitterCard: "summary_large_image",
-  twitterTitle: "AninPet — Sistema de Gestão para Petshops",
+  twitterTitle: "AninPet — Sistema para Pet Shop que quer organizar a agenda e aumentar o faturamento",
   twitterDescription:
-    "Gerencie seu petshop com facilidade: agenda, clientes, financeiro, estoque e muito mais. Experimente grátis por 14 dias.",
-  twitterImage: "https://www.aninpet.com.br/anninLogo.png",
+    "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Confirmação automática por WhatsApp, controle financeiro e muito mais. Experimente grátis por 14 dias.",
+  twitterImage: "https://www.aninpet.com.br/logo_aninpet.png",
 });
 
 const features = [
@@ -38,7 +54,7 @@ const features = [
   {
     icone: "i-lucide-message-circle",
     titulo: "WhatsApp Automático",
-    descricao: "Lembretes e promoções no celular do cliente.",
+    descricao: "Confirmação automática ao agendar, lembretes e campanhas para clientes inativos — tudo no celular do cliente.",
   },
   {
     icone: "i-lucide-package",
@@ -146,7 +162,9 @@ const planos = [
       >
         <div class="text-white pb-16 pt-4 flex flex-col gap-6">
           <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
-            Gerencie Seu Pet Shop<br />de Forma Fácil!
+            Sistema para pet shop<br />
+            que quer <span class="text-orange-300">organizar a agenda</span><br />
+            e <span class="text-orange-300">aumentar o faturamento</span>
           </h1>
           <ul class="flex flex-col gap-3">
             <li class="flex items-center gap-3 text-lg">
@@ -174,7 +192,7 @@ const planos = [
                   class="size-3.5 text-white"
                 />
               </div>
-              Lembretes e Retornos via WhatsApp
+              WhatsApp automático ao confirmar agendamento
             </li>
             <li class="flex items-center gap-3 text-lg">
               <div
