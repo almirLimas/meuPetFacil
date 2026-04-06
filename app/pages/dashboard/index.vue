@@ -3,6 +3,9 @@ import type { StatusAgendamento } from "~/types/agendamento";
 
 useBreadcrumb().set([{ label: "Dashboard" }]);
 import { useClienteStore } from "~/stores/cliente";
+import { useAuthStore } from "~/stores/auth";
+
+const authStore = useAuthStore();
 
 const { agendamentos, fetchByDate } = useAgenda();
 const clienteStore = useClienteStore();
@@ -167,9 +170,9 @@ const totalAlertasEstoque = computed(
 );
 
 const lucroMes = computed(() => resumo.value.receitas - resumo.value.despesas);
-const metaReceita = 8000;
+const metaReceita = computed(() => authStore.usuario?.metaMensal ?? 8000);
 const percentReceita = computed(() =>
-  Math.min(100, Math.round((resumo.value.receitas / metaReceita) * 100)),
+  Math.min(100, Math.round((resumo.value.receitas / metaReceita.value) * 100)),
 );
 </script>
 
@@ -485,7 +488,12 @@ const percentReceita = computed(() =>
           />
         </div>
         <span class="text-[11px] text-gray-400"
-          >{{ percentReceita }}% da meta (R$ 8.000)</span
+          >{{ percentReceita }}% da meta ({{
+            metaReceita.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })
+          }})</span
         >
       </div>
       <!-- Despesas -->

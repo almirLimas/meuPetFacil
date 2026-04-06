@@ -177,6 +177,46 @@
         As senhas não coincidem.
       </p>
     </div>
+
+    <!-- Meta de Receita Mensal -->
+    <div
+      class="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm p-6 space-y-5"
+    >
+      <div>
+        <h2 class="font-semibold text-gray-800 dark:text-gray-100 text-base">
+          Meta de Receita Mensal
+        </h2>
+        <p class="text-xs text-gray-400 mt-1">
+          Acompanhe no dashboard o progresso das suas receitas em relação à
+          meta.
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-1.5 max-w-xs">
+        <label class="text-xs font-medium text-gray-600 dark:text-gray-300"
+          >Meta (R$)</label
+        >
+        <UInput
+          v-model="meta.valor"
+          type="number"
+          min="1"
+          step="100"
+          placeholder="Ex: 8000"
+        />
+      </div>
+
+      <div class="flex justify-end">
+        <UButton
+          :loading="salvandoMeta"
+          :disabled="salvandoMeta || !meta.valor"
+          color="primary"
+          class="text-sm font-semibold rounded-xl px-6"
+          @click="salvarMeta"
+        >
+          Salvar Meta
+        </UButton>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -202,6 +242,12 @@ const showSenhaConfirmar = ref(false);
 // ── Loading states ─────────────────────────────────────────────────────────
 const salvandoDados = ref(false);
 const salvandoSenha = ref(false);
+const salvandoMeta = ref(false);
+
+// ── Meta mensal ─────────────────────────────────────────────────────────────
+const meta = reactive({
+  valor: auth.usuario?.metaMensal ? String(auth.usuario.metaMensal) : "",
+});
 
 // ── Assinatura badge ───────────────────────────────────────────────────────
 const diasTrial = computed(() => {
@@ -291,6 +337,28 @@ async function salvarSenha() {
     showError(msg);
   } finally {
     salvandoSenha.value = false;
+  }
+}
+async function salvarMeta() {
+  salvandoMeta.value = true;
+  try {
+    await $fetch(`${config.public.apiUrl}/auth/meta`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${useCookie("auth_token").value}` },
+      body: { metaMensal: Number(meta.valor) },
+    });
+    if (auth.usuario) {
+      auth.usuario.metaMensal = Number(meta.valor);
+    }
+    useToast().add({ title: "Meta atualizada com sucesso!", color: "success" });
+  } catch (err: unknown) {
+    const data = (err as { data?: { message?: string | string[] } })?.data;
+    const msg = Array.isArray(data?.message)
+      ? data.message.join(", ")
+      : (data?.message ?? "Erro ao salvar meta.");
+    showError(msg);
+  } finally {
+    salvandoMeta.value = false;
   }
 }
 </script>

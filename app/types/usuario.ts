@@ -89,6 +89,7 @@ export interface Usuario {
   plano?: PlanoSistema;
   assinaturaStatus?: AssinaturaStatus;
   trialExpiraEm?: string;
+  metaMensal?: number | null;
   createdAt: string;
   lastAccess?: string;
   avatar?: string;

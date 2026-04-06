@@ -491,6 +491,38 @@ const planos = [
       </div>
     </section>
 
+    <!-- DEMO VIDEO -->
+    <section class="py-16 px-6 bg-gray-50">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl font-bold text-gray-900">
+            Veja o sistema em ação
+          </h2>
+          <p class="text-gray-500 mt-2">
+            Do cadastro ao agendamento em poucos segundos.
+          </p>
+        </div>
+        <div
+          class="rounded-2xl overflow-hidden shadow-2xl border border-gray-200 bg-gray-800"
+        >
+          <!-- Browser bar -->
+          <div class="flex items-center gap-1.5 px-4 py-2.5 bg-gray-800">
+            <div class="w-3 h-3 rounded-full bg-red-400"></div>
+            <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+            <div class="w-3 h-3 rounded-full bg-green-400"></div>
+            <div
+              class="ml-3 flex-1 bg-gray-700 rounded-md h-5 flex items-center px-3"
+            >
+              <span class="text-gray-400 text-xs">aninpet.com.br</span>
+            </div>
+          </div>
+          <video autoplay loop muted playsinline class="w-full block">
+            <source src="/demo.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </div>
+    </section>
+
     <!-- BANNER DEPOIMENTO -->
     <section id="depoimentos" class="relative overflow-hidden bg-orange-500">
       <UIcon

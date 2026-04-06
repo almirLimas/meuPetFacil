@@ -451,7 +451,7 @@ const fmtData = (d: string) =>
           />
           <UButton
             :loading="salvando"
-            :color="form.tipo === 'Receita' ? 'success' : 'error'"
+            color="primary"
             :label="`Salvar ${form.tipo}`"
             @click="salvar"
           />
