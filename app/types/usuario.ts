@@ -40,7 +40,7 @@ export const PLANOS: Record<PlanoSistema, PlanoInfo> = {
     nome: "Plus",
     preco: 109,
     descricao:
-      "Básico + WhatsApp automático para vender mais e fidelizar clientes.",
+      "Básico + lembretes automáticos por e-mail para fidelizar seus clientes.",
     modulos: [
       "dashboard",
       "clientes",
@@ -50,7 +50,9 @@ export const PLANOS: Record<PlanoSistema, PlanoInfo> = {
       "estoque",
       "financeiro",
       "relatorios",
-      "whatsapp",
+      "lembretes",
+      "relatorio_mensal",
+      "meta_mensal",
     ],
     destaque: true,
   },
@@ -65,7 +67,9 @@ export const MODULO_LABELS: Record<string, string> = {
   estoque: "Estoque",
   financeiro: "Financeiro",
   relatorios: "Relatórios",
-  whatsapp: "WhatsApp",
+  lembretes: "Lembretes automáticos por e-mail",
+  relatorio_mensal: "Relatório mensal por e-mail",
+  meta_mensal: "Meta mensal",
 };
 
 export interface DadosCartao {

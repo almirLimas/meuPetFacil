@@ -58,11 +58,6 @@ const menuItems = [
   { label: "Financeiro", icon: "i-lucide-wallet", to: "/financeiro" },
   { label: "Relatórios", icon: "i-lucide-bar-chart-2", to: "/relatorios" },
   {
-    label: "WhatsApp",
-    icon: "i-logos-whatsapp-icon",
-    to: "/configuracoes/whatsapp",
-  },
-  {
     label: "Primeiros passos",
     icon: "i-lucide-rocket",
     to: "/primeiros-passos",

@@ -21,11 +21,11 @@ useSeoMeta({
   title:
     "AninPet — Sistema para Pet Shop que quer organizar a agenda e aumentar o faturamento",
   description:
-    "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Confirmação automática por WhatsApp, controle financeiro e muito mais. Experimente grátis por 14 dias.",
+    "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Lembretes automáticos por e-mail, controle financeiro e muito mais. Experimente grátis por 14 dias.",
   ogTitle:
     "AninPet — Sistema para Pet Shop que quer organizar a agenda e aumentar o faturamento",
   ogDescription:
-    "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Confirmação automática por WhatsApp, controle financeiro e muito mais. Experimente grátis por 14 dias.",
+    "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Lembretes automáticos por e-mail, controle financeiro e muito mais. Experimente grátis por 14 dias.",
   ogImage: "https://www.aninpet.com.br/logo_aninpet.png",
   ogUrl: "https://www.aninpet.com.br",
   ogType: "website",
@@ -34,7 +34,7 @@ useSeoMeta({
   twitterTitle:
     "AninPet — Sistema para Pet Shop que quer organizar a agenda e aumentar o faturamento",
   twitterDescription:
-    "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Confirmação automática por WhatsApp, controle financeiro e muito mais. Experimente grátis por 14 dias.",
+    "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Lembretes automáticos por e-mail, controle financeiro e muito mais. Experimente grátis por 14 dias.",
   twitterImage: "https://www.aninpet.com.br/logo_aninpet.png",
 });
 
@@ -55,10 +55,10 @@ const features = [
     descricao: "Tudo sobre seus clientes e animais.",
   },
   {
-    icone: "i-lucide-message-circle",
-    titulo: "WhatsApp Automático",
+    icone: "i-lucide-mail",
+    titulo: "Lembretes Automáticos",
     descricao:
-      "Confirmação automática ao agendar, lembretes e campanhas para clientes inativos — tudo no celular do cliente.",
+      "E-mails automáticos para clientes que não voltam há 30 dias — sem precisar fazer nada.",
   },
   {
     icone: "i-lucide-package",
@@ -90,19 +90,18 @@ const planos = [
     ],
   },
   {
-    id: "profissional",
+    id: "plus",
     nome: "Plus",
     preco: 109,
     destaque: true,
     badge: "Mais popular",
-    descricao: "Para petshops que querem vender mais com automação.",
+    descricao:
+      "Para petshops que querem fidelizar clientes no piloto automático.",
     recursos: [
       "Tudo do Básico",
-      "WhatsApp automático",
-      "Confirmação automática ao agendar via WhatsApp",
-      "Lembretes de agendamento",
-      "Controle de estoque",
-      "Campanhas para clientes inativos",
+      "Lembrete automático por e-mail para clientes inativos",
+      "Relatório mensal enviado por e-mail",
+      "Meta mensal com acompanhamento",
       "Suporte prioritário",
     ],
   },
@@ -193,12 +192,9 @@ const planos = [
               <div
                 class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
               >
-                <UIcon
-                  name="i-logos-whatsapp-icon"
-                  class="size-3.5 text-white"
-                />
+                <UIcon name="i-lucide-mail" class="size-3.5 text-white" />
               </div>
-              WhatsApp automático ao confirmar agendamento
+              Lembretes automáticos por e-mail para clientes inativos
             </li>
             <li class="flex items-center gap-3 text-lg">
               <div

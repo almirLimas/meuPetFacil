@@ -2,8 +2,6 @@
 import { useAuthStore } from "~/stores/auth";
 useBreadcrumb().set([{ label: "Relatórios" }]);
 
-import type { ClienteNaoVoltou } from "~/composables/useRelatorios";
-
 definePageMeta({ layout: "default" });
 
 const authStore = useAuthStore();
@@ -15,12 +13,9 @@ const {
   servicosPopulares,
   loading,
   loadingClientes,
-  enviandoWhatsApp,
   fetchResumo,
   fetchClientesNaoVoltaram,
   fetchServicosPopulares,
-  gerarLinkWhatsApp,
-  enviarWhatsAppApi,
 } = useRelatorios();
 
 // ── Filtros ──────────────────────────────────────────────────────────────────
@@ -94,42 +89,6 @@ function mostrarResultado(sucesso: boolean, titulo: string, descricao: string) {
   });
 }
 
-const abrirWhatsApp = (cliente: ClienteNaoVoltou) => {
-  const url = gerarLinkWhatsApp(
-    cliente.telefonePrincipal,
-    cliente.nome,
-    cliente.diasSemVoltar,
-  );
-  window.open(url, "_blank", "noopener,noreferrer");
-};
-
-const enviarMensagem = async (cliente: ClienteNaoVoltou) => {
-  try {
-    const resultado = await enviarWhatsAppApi(cliente);
-    if (resultado.sucesso) {
-      mostrarResultado(
-        true,
-        resultado.simulado ? "Mensagem simulada" : "✅ Mensagem enviada!",
-        resultado.simulado
-          ? `Mensagem para ${resultado.telefone} registrada no log do servidor. Defina WHATSAPP_MODE=baileys no .env para enviar de verdade.`
-          : `Mensagem entregue com sucesso para ${resultado.telefone}.`,
-      );
-    } else {
-      mostrarResultado(
-        false,
-        "Falha ao enviar mensagem",
-        resultado.detalhes ?? "Tente novamente.",
-      );
-    }
-  } catch {
-    mostrarResultado(
-      false,
-      "Erro ao chamar a API",
-      "Verifique se o servidor backend está rodando.",
-    );
-  }
-};
-
 const recuperarTodos = () => {
   mostrarPainelRecuperacao.value = true;
 };
@@ -168,65 +127,6 @@ const taxaCorLabel = computed(() => {
 const totalReceitaEstimada = computed(() =>
   servicosPopulares.value.reduce((acc, s) => acc + s.receitaEstimada, 0),
 );
-
-// ── Envio avulso ─────────────────────────────────────────────────────────────
-
-const { maskTelefone } = useMask();
-
-const envioAvulso = reactive({
-  telefone: "",
-  mensagem:
-    "Olá! 👋 Aqui é do nosso petshop. Que tal agendarmos um banho ou tosa essa semana? Temos horários disponíveis! 🐾",
-  erro: "",
-});
-const enviandoAvulso = ref(false);
-
-const enviarAvulso = async () => {
-  envioAvulso.erro = "";
-  if (!envioAvulso.telefone || !envioAvulso.mensagem) {
-    envioAvulso.erro = "Preencha o telefone e a mensagem.";
-    return;
-  }
-  enviandoAvulso.value = true;
-  try {
-    const { apiFetch } = useApi();
-    const resultado = await apiFetch<{
-      sucesso: boolean;
-      simulado: boolean;
-      telefone: string;
-      detalhes?: string;
-    }>("/whatsapp/enviar", {
-      method: "POST",
-      body: {
-        telefone: envioAvulso.telefone,
-        mensagem: envioAvulso.mensagem,
-      },
-    });
-    if (resultado.sucesso) {
-      mostrarResultado(
-        true,
-        resultado.simulado ? "Mensagem simulada" : "✅ Mensagem enviada!",
-        resultado.simulado
-          ? `Mensagem para ${resultado.telefone} registrada no log do servidor.`
-          : `Mensagem entregue com sucesso para ${resultado.telefone}.`,
-      );
-    } else {
-      mostrarResultado(
-        false,
-        "Falha ao enviar",
-        resultado.detalhes ?? "Verifique o servidor.",
-      );
-    }
-  } catch {
-    mostrarResultado(
-      false,
-      "Erro ao chamar a API",
-      "Verifique se o backend está rodando.",
-    );
-  } finally {
-    enviandoAvulso.value = false;
-  }
-};
 </script>
 
 <template>
@@ -459,9 +359,15 @@ const enviarAvulso = async () => {
 
         <p class="text-sm text-neutral-500 mt-1">
           💡 <strong>Dica:</strong> Um único cliente recuperado pode valer R$
-          150–300/mês em atendimentos recorrentes. Clique em
-          <span class="text-green-600 font-medium">WhatsApp</span> para enviar
-          uma mensagem personalizada.
+          150–300/mês em atendimentos recorrentes.
+          <span v-if="isPlus" class="text-green-600 font-medium"
+            >Os lembretes por e-mail são enviados automaticamente todo dia às
+            10h para clientes sem visita há mais de 30 dias.</span
+          >
+          <span v-else class="text-orange-500 font-medium"
+            >Assine o plano Plus para ativar lembretes automáticos por
+            e-mail.</span
+          >
         </p>
       </template>
 
@@ -520,25 +426,31 @@ const enviarAvulso = async () => {
                     : "Monitorar"
               }}
             </UBadge>
-            <UButton
-              v-if="isPlus"
-              size="sm"
-              color="success"
-              variant="soft"
-              icon="i-lucide-send"
-              :loading="enviandoWhatsApp[cliente.id]"
-              @click="enviarMensagem(cliente)"
+            <UTooltip
+              v-if="isPlus && cliente.email"
+              text="Lembrete enviado automaticamente por e-mail"
             >
-              Enviar msg
-            </UButton>
-            <UTooltip text="Abrir no WhatsApp Web">
-              <UButton
+              <UBadge
+                color="success"
+                variant="soft"
                 size="sm"
+                icon="i-lucide-mail"
+              >
+                E-mail ativo
+              </UBadge>
+            </UTooltip>
+            <UTooltip
+              v-else-if="isPlus && !cliente.email"
+              text="Cliente sem e-mail cadastrado"
+            >
+              <UBadge
                 color="neutral"
-                variant="ghost"
-                icon="i-lucide-external-link"
-                @click="abrirWhatsApp(cliente)"
-              />
+                variant="soft"
+                size="sm"
+                icon="i-lucide-mail-x"
+              >
+                Sem e-mail
+              </UBadge>
             </UTooltip>
           </div>
         </div>
@@ -552,59 +464,26 @@ const enviarAvulso = async () => {
       </div>
     </UCard>
 
-    <!-- ═══ Envio avulso de WhatsApp (somente Plus) ═════════════════════ -->
-    <UCard v-if="isPlus" class="border border-green-200 dark:border-green-800">
-      <template #header>
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-send" class="size-5 text-green-500" />
-          <h2 class="font-semibold text-neutral-900 dark:text-white">
-            Enviar mensagem avulsa
-          </h2>
+    <!-- ═══ Info: lembretes automáticos por e-mail (somente Plus) ══════════ -->
+    <UCard
+      v-if="isPlus"
+      class="border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950"
+    >
+      <div class="flex items-start gap-3">
+        <UIcon
+          name="i-lucide-mail-check"
+          class="size-6 text-green-500 shrink-0 mt-0.5"
+        />
+        <div>
+          <p class="font-semibold text-green-800 dark:text-green-300">
+            Lembretes automáticos por e-mail ativos
+          </p>
+          <p class="text-sm text-green-700 dark:text-green-400 mt-1">
+            Todo dia às <strong>10h</strong> o sistema envia automaticamente um
+            e-mail para cada cliente que não voltou há mais de 30 dias e possui
+            e-mail cadastrado. Nenhuma ação necessária.
+          </p>
         </div>
-        <p class="text-xs text-neutral-500 mt-1">
-          Envie uma mensagem de WhatsApp para qualquer número.
-        </p>
-      </template>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <UFormField label="Telefone (com DDD)">
-          <UInput
-            :model-value="envioAvulso.telefone"
-            placeholder="(11) 99999-9999"
-            class="w-full"
-            @input="
-              (e: Event) =>
-                (envioAvulso.telefone = maskTelefone(
-                  (e.target as HTMLInputElement).value,
-                ))
-            "
-          />
-        </UFormField>
-
-        <div class="sm:col-span-1">
-          <UFormField label="Mensagem">
-            <UTextarea
-              v-model="envioAvulso.mensagem"
-              :rows="3"
-              class="w-full"
-            />
-          </UFormField>
-        </div>
-      </div>
-
-      <p v-if="envioAvulso.erro" class="mt-2 text-sm text-red-500">
-        {{ envioAvulso.erro }}
-      </p>
-
-      <div class="mt-4 flex justify-end">
-        <UButton
-          color="success"
-          icon="i-lucide-send"
-          :loading="enviandoAvulso"
-          @click="enviarAvulso"
-        >
-          Enviar mensagem
-        </UButton>
       </div>
     </UCard>
 
