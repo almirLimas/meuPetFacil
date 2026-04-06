@@ -86,7 +86,6 @@ const planos = [
       "Controle de serviços",
       "Financeiro",
       "Relatórios essenciais",
-      "Suporte por email",
     ],
   },
   {
@@ -102,7 +101,6 @@ const planos = [
       "Lembrete automático por e-mail para clientes inativos",
       "Relatório mensal enviado por e-mail",
       "Meta mensal com acompanhamento",
-      "Suporte prioritário",
     ],
   },
 ];
@@ -654,6 +652,9 @@ const planos = [
           </h2>
           <p class="text-gray-500 mt-2">
             Comece grátis por 14 dias. Sem surpresas na fatura.
+          </p>
+          <p class="text-sm text-gray-400 mt-1">
+            Todos os planos incluem suporte via WhatsApp.
           </p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
