@@ -124,6 +124,9 @@ const planos = [
             class="hover:text-sky-500 transition-colors"
             >Funcionalidades</a
           >
+          <a href="#preview" class="hover:text-sky-500 transition-colors"
+            >Preview</a
+          >
           <a href="#planos" class="hover:text-sky-500 transition-colors"
             >Planos</a
           >
@@ -478,6 +481,207 @@ const planos = [
               <h3 class="font-semibold text-gray-800 mb-1">{{ f.titulo }}</h3>
               <p class="text-sm text-gray-500 leading-relaxed">
                 {{ f.descricao }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREENSHOTS DO SISTEMA -->
+    <section class="py-20 px-6 bg-gray-50" id="preview">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12">
+          <span
+            class="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-600 text-xs font-semibold mb-3 uppercase tracking-wide"
+            >O sistema por dentro</span
+          >
+          <h2 class="text-3xl font-bold text-gray-900">
+            Telas que facilitam o seu dia a dia
+          </h2>
+          <p class="text-gray-500 mt-2 max-w-xl mx-auto">
+            Cada detalhe pensado para o dono de petshop que quer gastar tempo
+            com os pets, não com burocracia.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Agenda do Dia -->
+          <div
+            class="flex flex-col rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all overflow-hidden"
+          >
+            <div class="bg-[#f8f8f5] px-4 pt-4 overflow-hidden">
+              <img
+                src="/screenshots/agenda.png"
+                alt="Tela de agenda"
+                class="rounded-t-xl w-full object-cover object-top shadow-sm"
+                style="max-height: 180px"
+              />
+            </div>
+            <div class="p-5 flex flex-col gap-1.5">
+              <div class="flex items-center gap-2">
+                <UIcon
+                  name="i-lucide-calendar-check"
+                  class="size-4 text-sky-500 shrink-0"
+                />
+                <h3 class="font-semibold text-gray-800">Agenda do Dia</h3>
+              </div>
+              <p class="text-sm text-gray-500 leading-relaxed">
+                Veja todos os atendimentos, filtre por status e saiba em tempo
+                real quem chegou, quem foi atendido e quem não compareceu.
+              </p>
+            </div>
+          </div>
+
+          <!-- Novo Agendamento Modal -->
+          <div
+            class="flex flex-col rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all overflow-hidden"
+          >
+            <div
+              class="bg-[#f8f8f5] px-4 pt-4 flex justify-center overflow-hidden"
+            >
+              <img
+                src="/screenshots/agendamento-modal.png"
+                alt="Modal de novo agendamento"
+                class="rounded-t-xl shadow-sm object-top object-contain"
+                style="max-height: 180px"
+              />
+            </div>
+            <div class="p-5 flex flex-col gap-1.5">
+              <div class="flex items-center gap-2">
+                <UIcon
+                  name="i-lucide-plus-circle"
+                  class="size-4 text-sky-500 shrink-0"
+                />
+                <h3 class="font-semibold text-gray-800">Agendar em Segundos</h3>
+              </div>
+              <p class="text-sm text-gray-500 leading-relaxed">
+                Selecione o serviço, o pet, a data e se o cliente traz ou o
+                petshop busca. Rápido, sem complicação.
+              </p>
+            </div>
+          </div>
+
+          <!-- Catálogo de Serviços -->
+          <div
+            class="flex flex-col rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all overflow-hidden"
+          >
+            <div class="bg-[#f8f8f5] px-4 pt-4 overflow-hidden">
+              <img
+                src="/screenshots/servicos.png"
+                alt="Tabela de serviços"
+                class="rounded-t-xl w-full object-cover object-top shadow-sm"
+                style="max-height: 180px"
+              />
+            </div>
+            <div class="p-5 flex flex-col gap-1.5">
+              <div class="flex items-center gap-2">
+                <UIcon
+                  name="i-lucide-scissors"
+                  class="size-4 text-sky-500 shrink-0"
+                />
+                <h3 class="font-semibold text-gray-800">
+                  Catálogo de Serviços
+                </h3>
+              </div>
+              <p class="text-sm text-gray-500 leading-relaxed">
+                Liste todos os serviços com preço, duração e porte. Filtre por
+                categoria e mantenha tudo atualizado com facilidade.
+              </p>
+            </div>
+          </div>
+
+          <!-- Cadastro de Serviço Modal -->
+          <div
+            class="flex flex-col rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all overflow-hidden"
+          >
+            <div
+              class="bg-[#f8f8f5] px-4 pt-4 flex justify-center overflow-hidden"
+            >
+              <img
+                src="/screenshots/servico-modal.png"
+                alt="Modal de novo serviço"
+                class="rounded-t-xl shadow-sm object-top object-contain"
+                style="max-height: 180px"
+              />
+            </div>
+            <div class="p-5 flex flex-col gap-1.5">
+              <div class="flex items-center gap-2">
+                <UIcon
+                  name="i-lucide-tag"
+                  class="size-4 text-sky-500 shrink-0"
+                />
+                <h3 class="font-semibold text-gray-800">Cadastro de Serviço</h3>
+              </div>
+              <p class="text-sm text-gray-500 leading-relaxed">
+                Nome, categoria, porte e duração em um único formulário. Crie
+                serviços personalizados para qualquer tipo de atendimento.
+              </p>
+            </div>
+          </div>
+
+          <!-- Avaliações dos Clientes (Plus) -->
+          <div
+            class="flex flex-col rounded-2xl border-2 border-orange-200 bg-white shadow-sm hover:shadow-lg transition-all overflow-hidden"
+          >
+            <div class="bg-orange-50 px-4 pt-4 overflow-hidden relative">
+              <span
+                class="absolute top-3 right-3 z-10 px-2 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wide shadow"
+                >⭐ Plus</span
+              >
+              <img
+                src="/screenshots/avaliacoes.png"
+                alt="Avaliações recebidas"
+                class="rounded-t-xl w-full object-cover object-center shadow-sm"
+                style="max-height: 180px"
+              />
+            </div>
+            <div class="p-5 flex flex-col gap-1.5">
+              <div class="flex items-center gap-2">
+                <UIcon
+                  name="i-lucide-star"
+                  class="size-4 text-orange-500 shrink-0"
+                />
+                <h3 class="font-semibold text-gray-800">
+                  Avaliações dos Clientes
+                </h3>
+              </div>
+              <p class="text-sm text-gray-500 leading-relaxed">
+                Receba avaliações automáticas após cada atendimento. Veja nota
+                por nota, por serviço e por pet — sem pedir nada ao cliente.
+              </p>
+            </div>
+          </div>
+
+          <!-- Painel de Satisfação (Plus) -->
+          <div
+            class="flex flex-col rounded-2xl border-2 border-orange-200 bg-white shadow-sm hover:shadow-lg transition-all overflow-hidden"
+          >
+            <div class="bg-orange-50 px-4 pt-4 overflow-hidden relative">
+              <span
+                class="absolute top-3 right-3 z-10 px-2 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wide shadow"
+                >⭐ Plus</span
+              >
+              <img
+                src="/screenshots/satisfacao.png"
+                alt="Painel de satisfação dos clientes"
+                class="rounded-t-xl w-full object-cover object-bottom shadow-sm"
+                style="max-height: 180px"
+              />
+            </div>
+            <div class="p-5 flex flex-col gap-1.5">
+              <div class="flex items-center gap-2">
+                <UIcon
+                  name="i-lucide-smile"
+                  class="size-4 text-orange-500 shrink-0"
+                />
+                <h3 class="font-semibold text-gray-800">
+                  Painel de Satisfação
+                </h3>
+              </div>
+              <p class="text-sm text-gray-500 leading-relaxed">
+                Nota média e índice de satisfação direto no painel. Saiba se
+                seus clientes estão felizes sem precisar perguntar um por um.
               </p>
             </div>
           </div>
