@@ -491,7 +491,7 @@ const planos = [
     <!-- SCREENSHOTS DO SISTEMA -->
     <section class="py-20 px-6 bg-gray-50" id="preview">
       <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-12">
+        <div class="text-center mb-14">
           <span
             class="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-600 text-xs font-semibold mb-3 uppercase tracking-wide"
             >O sistema por dentro</span
@@ -505,20 +505,38 @@ const planos = [
           </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           <!-- Agenda do Dia -->
           <div
-            class="flex flex-col rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all overflow-hidden"
+            class="group flex flex-col rounded-2xl border border-gray-200 bg-white shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
           >
-            <div class="bg-[#f8f8f5] px-4 pt-4 overflow-hidden">
+            <!-- browser chrome -->
+            <div
+              class="flex items-center gap-1.5 px-4 py-2.5 bg-gray-100 border-b border-gray-200 shrink-0"
+            >
+              <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+              <div
+                class="ml-2 flex-1 bg-gray-200 rounded h-4 flex items-center px-2"
+              >
+                <div class="w-2 h-2 rounded-full bg-gray-400 mr-1.5"></div>
+                <div class="h-1.5 bg-gray-300 rounded w-24"></div>
+              </div>
+            </div>
+            <!-- image -->
+            <div class="relative overflow-hidden">
               <img
                 src="/screenshots/agenda.png"
                 alt="Tela de agenda"
-                class="rounded-t-xl w-full object-cover object-top shadow-sm"
-                style="max-height: 180px"
+                class="w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                style="height: 220px"
               />
+              <div
+                class="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent"
+              ></div>
             </div>
-            <div class="p-5 flex flex-col gap-1.5">
+            <div class="px-5 pt-3 pb-5 flex flex-col gap-1.5">
               <div class="flex items-center gap-2">
                 <UIcon
                   name="i-lucide-calendar-check"
@@ -535,19 +553,35 @@ const planos = [
 
           <!-- Novo Agendamento Modal -->
           <div
-            class="flex flex-col rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all overflow-hidden"
+            class="group flex flex-col rounded-2xl border border-gray-200 bg-white shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
           >
             <div
-              class="bg-[#f8f8f5] px-4 pt-4 flex justify-center overflow-hidden"
+              class="flex items-center gap-1.5 px-4 py-2.5 bg-gray-100 border-b border-gray-200 shrink-0"
+            >
+              <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+              <div
+                class="ml-2 flex-1 bg-gray-200 rounded h-4 flex items-center px-2"
+              >
+                <div class="w-2 h-2 rounded-full bg-gray-400 mr-1.5"></div>
+                <div class="h-1.5 bg-gray-300 rounded w-24"></div>
+              </div>
+            </div>
+            <div
+              class="relative overflow-hidden flex justify-center bg-[#f8f8f5]"
             >
               <img
                 src="/screenshots/agendamento-modal.png"
                 alt="Modal de novo agendamento"
-                class="rounded-t-xl shadow-sm object-top object-contain"
-                style="max-height: 180px"
+                class="object-contain object-top transition-transform duration-500 group-hover:scale-105"
+                style="height: 220px"
               />
+              <div
+                class="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#f8f8f5] to-transparent"
+              ></div>
             </div>
-            <div class="p-5 flex flex-col gap-1.5">
+            <div class="px-5 pt-3 pb-5 flex flex-col gap-1.5">
               <div class="flex items-center gap-2">
                 <UIcon
                   name="i-lucide-plus-circle"
@@ -564,17 +598,33 @@ const planos = [
 
           <!-- Catálogo de Serviços -->
           <div
-            class="flex flex-col rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all overflow-hidden"
+            class="group flex flex-col rounded-2xl border border-gray-200 bg-white shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
           >
-            <div class="bg-[#f8f8f5] px-4 pt-4 overflow-hidden">
+            <div
+              class="flex items-center gap-1.5 px-4 py-2.5 bg-gray-100 border-b border-gray-200 shrink-0"
+            >
+              <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+              <div
+                class="ml-2 flex-1 bg-gray-200 rounded h-4 flex items-center px-2"
+              >
+                <div class="w-2 h-2 rounded-full bg-gray-400 mr-1.5"></div>
+                <div class="h-1.5 bg-gray-300 rounded w-24"></div>
+              </div>
+            </div>
+            <div class="relative overflow-hidden">
               <img
                 src="/screenshots/servicos.png"
                 alt="Tabela de serviços"
-                class="rounded-t-xl w-full object-cover object-top shadow-sm"
-                style="max-height: 180px"
+                class="w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                style="height: 220px"
               />
+              <div
+                class="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent"
+              ></div>
             </div>
-            <div class="p-5 flex flex-col gap-1.5">
+            <div class="px-5 pt-3 pb-5 flex flex-col gap-1.5">
               <div class="flex items-center gap-2">
                 <UIcon
                   name="i-lucide-scissors"
@@ -593,19 +643,35 @@ const planos = [
 
           <!-- Cadastro de Serviço Modal -->
           <div
-            class="flex flex-col rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all overflow-hidden"
+            class="group flex flex-col rounded-2xl border border-gray-200 bg-white shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
           >
             <div
-              class="bg-[#f8f8f5] px-4 pt-4 flex justify-center overflow-hidden"
+              class="flex items-center gap-1.5 px-4 py-2.5 bg-gray-100 border-b border-gray-200 shrink-0"
+            >
+              <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+              <div
+                class="ml-2 flex-1 bg-gray-200 rounded h-4 flex items-center px-2"
+              >
+                <div class="w-2 h-2 rounded-full bg-gray-400 mr-1.5"></div>
+                <div class="h-1.5 bg-gray-300 rounded w-24"></div>
+              </div>
+            </div>
+            <div
+              class="relative overflow-hidden flex justify-center bg-[#f8f8f5]"
             >
               <img
                 src="/screenshots/servico-modal.png"
                 alt="Modal de novo serviço"
-                class="rounded-t-xl shadow-sm object-top object-contain"
-                style="max-height: 180px"
+                class="object-contain object-top transition-transform duration-500 group-hover:scale-105"
+                style="height: 220px"
               />
+              <div
+                class="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#f8f8f5] to-transparent"
+              ></div>
             </div>
-            <div class="p-5 flex flex-col gap-1.5">
+            <div class="px-5 pt-3 pb-5 flex flex-col gap-1.5">
               <div class="flex items-center gap-2">
                 <UIcon
                   name="i-lucide-tag"
@@ -622,21 +688,38 @@ const planos = [
 
           <!-- Avaliações dos Clientes (Plus) -->
           <div
-            class="flex flex-col rounded-2xl border-2 border-orange-200 bg-white shadow-sm hover:shadow-lg transition-all overflow-hidden"
+            class="group flex flex-col rounded-2xl border-2 border-orange-300 bg-white shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
           >
-            <div class="bg-orange-50 px-4 pt-4 overflow-hidden relative">
+            <!-- browser chrome laranja -->
+            <div
+              class="flex items-center gap-1.5 px-4 py-2.5 bg-orange-50 border-b border-orange-200 shrink-0"
+            >
+              <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+              <div
+                class="ml-2 flex-1 bg-orange-100 rounded h-4 flex items-center px-2"
+              >
+                <div class="w-2 h-2 rounded-full bg-orange-300 mr-1.5"></div>
+                <div class="h-1.5 bg-orange-200 rounded w-24"></div>
+              </div>
               <span
-                class="absolute top-3 right-3 z-10 px-2 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wide shadow"
+                class="ml-auto px-2 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wide"
                 >⭐ Plus</span
               >
+            </div>
+            <div class="relative overflow-hidden">
               <img
                 src="/screenshots/avaliacoes.png"
                 alt="Avaliações recebidas"
-                class="rounded-t-xl w-full object-cover object-center shadow-sm"
-                style="max-height: 180px"
+                class="w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                style="height: 220px"
               />
+              <div
+                class="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent"
+              ></div>
             </div>
-            <div class="p-5 flex flex-col gap-1.5">
+            <div class="px-5 pt-3 pb-5 flex flex-col gap-1.5">
               <div class="flex items-center gap-2">
                 <UIcon
                   name="i-lucide-star"
@@ -655,21 +738,37 @@ const planos = [
 
           <!-- Painel de Satisfação (Plus) -->
           <div
-            class="flex flex-col rounded-2xl border-2 border-orange-200 bg-white shadow-sm hover:shadow-lg transition-all overflow-hidden"
+            class="group flex flex-col rounded-2xl border-2 border-orange-300 bg-white shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
           >
-            <div class="bg-orange-50 px-4 pt-4 overflow-hidden relative">
+            <div
+              class="flex items-center gap-1.5 px-4 py-2.5 bg-orange-50 border-b border-orange-200 shrink-0"
+            >
+              <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+              <div
+                class="ml-2 flex-1 bg-orange-100 rounded h-4 flex items-center px-2"
+              >
+                <div class="w-2 h-2 rounded-full bg-orange-300 mr-1.5"></div>
+                <div class="h-1.5 bg-orange-200 rounded w-24"></div>
+              </div>
               <span
-                class="absolute top-3 right-3 z-10 px-2 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wide shadow"
+                class="ml-auto px-2 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wide"
                 >⭐ Plus</span
               >
+            </div>
+            <div class="relative overflow-hidden">
               <img
                 src="/screenshots/satisfacao.png"
                 alt="Painel de satisfação dos clientes"
-                class="rounded-t-xl w-full object-cover object-bottom shadow-sm"
-                style="max-height: 180px"
+                class="w-full object-cover object-bottom transition-transform duration-500 group-hover:scale-105"
+                style="height: 220px"
               />
+              <div
+                class="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent"
+              ></div>
             </div>
-            <div class="p-5 flex flex-col gap-1.5">
+            <div class="px-5 pt-3 pb-5 flex flex-col gap-1.5">
               <div class="flex items-center gap-2">
                 <UIcon
                   name="i-lucide-smile"
