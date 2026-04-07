@@ -9,12 +9,14 @@ const nota = ref<number | null>(null);
 const enviado = ref(false);
 const erro = ref(false);
 const carregando = ref(false);
+const autoEnvio = ref(false);
 
 // Se vier da URL com ?nota=X (clicou direto no e-mail)
 onMounted(() => {
   const notaQuery = Number(route.query.nota);
   if (notaQuery >= 1 && notaQuery <= 5) {
     nota.value = notaQuery;
+    autoEnvio.value = true;
     enviar();
   }
 });
@@ -76,6 +78,16 @@ const labels = [
         <p class="text-gray-500 text-sm">
           Esta avaliação pode já ter sido respondida ou o link expirou.
         </p>
+      </template>
+
+      <!-- Enviando automaticamente (veio do e-mail) -->
+      <template v-else-if="autoEnvio">
+        <div class="flex flex-col items-center gap-4 py-4">
+          <div
+            class="w-10 h-10 rounded-full border-4 border-sky-200 border-t-sky-500 animate-spin"
+          ></div>
+          <p class="text-gray-500 text-sm">Registrando sua avaliação...</p>
+        </div>
       </template>
 
       <!-- Formulário de avaliação -->
