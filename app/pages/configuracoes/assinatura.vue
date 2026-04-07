@@ -19,6 +19,7 @@ const statusInfo = ref<{
   assinaturaStatus: string;
   trialExpiraEm: string | null;
   plano: string;
+  mpAssinaturaId: string | null;
 } | null>(null);
 
 onMounted(async () => {
@@ -30,6 +31,7 @@ onMounted(async () => {
       assinaturaStatus: authStore.usuario?.assinaturaStatus ?? "trial",
       trialExpiraEm: authStore.usuario?.trialExpiraEm ?? null,
       plano: authStore.usuario?.plano ?? "basico",
+      mpAssinaturaId: null,
     };
   } finally {
     planoSelecionado.value =
@@ -104,16 +106,30 @@ const statusConfig = computed(() => {
         cardColor:
           "bg-gray-50 border border-gray-200 dark:bg-gray-900/10 dark:border-gray-700",
       };
-    case "pendente":
+    case "pendente": {
+      const expirou = diasRestantes.value !== null && diasRestantes.value <= 0;
+      const checkoutIniciado = !!statusInfo.value?.mpAssinaturaId;
+      let pendenteDesc: string;
+      if (!expirou) {
+        pendenteDesc =
+          "Seu checkout foi iniciado. Conclua o cadastro do cartão no Mercado Pago para garantir o acesso após os 14 dias.";
+      } else if (checkoutIniciado) {
+        pendenteDesc =
+          'Você não concluiu o cadastro do cartão no Mercado Pago. Clique em "Assinar agora" para finalizar.';
+      } else {
+        pendenteDesc =
+          "Seu período gratuito encerrou. Assine para continuar usando o sistema.";
+      }
       return {
-        label: "Pagamento Pendente",
-        desc: "Aguardando confirmação do pagamento",
-        icon: "i-lucide-hourglass",
+        label: expirou ? "Acesso encerrado" : "Cadastro de cartão pendente",
+        desc: pendenteDesc,
+        icon: expirou ? "i-lucide-credit-card" : "i-lucide-hourglass",
         badgeColor:
           "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
         cardColor:
           "bg-yellow-50 border border-yellow-200 dark:bg-yellow-900/10 dark:border-yellow-800",
       };
+    }
     default:
       return {
         label: "Status desconhecido",
@@ -126,7 +142,7 @@ const statusConfig = computed(() => {
 });
 
 const podeAssinar = computed(() =>
-  ["trial", "suspensa", "cancelada"].includes(status.value),
+  ["trial", "pendente", "suspensa", "cancelada"].includes(status.value),
 );
 
 const podeTrocarPlano = computed(() =>
@@ -250,6 +266,33 @@ async function handleCancelar() {
           >
             {{ statusConfig.desc }}
           </p>
+          <!-- Detalhes do plano ativo -->
+          <div v-if="status === 'ativa'" class="mt-3 flex flex-wrap gap-3">
+            <span
+              class="inline-flex items-center gap-1.5 text-xs font-medium bg-white dark:bg-neutral-700 border border-green-200 dark:border-green-700 text-gray-700 dark:text-gray-200 rounded-full px-3 py-1"
+            >
+              <UIcon name="i-lucide-package" class="size-3.5 text-green-500" />
+              Plano {{ planoAtual.nome }}
+            </span>
+            <span
+              class="inline-flex items-center gap-1.5 text-xs font-medium bg-white dark:bg-neutral-700 border border-green-200 dark:border-green-700 text-gray-700 dark:text-gray-200 rounded-full px-3 py-1"
+            >
+              <UIcon
+                name="i-lucide-credit-card"
+                class="size-3.5 text-green-500"
+              />
+              R$ {{ planoAtual.preco }}/mês via Mercado Pago
+            </span>
+            <span
+              class="inline-flex items-center gap-1.5 text-xs font-medium bg-white dark:bg-neutral-700 border border-green-200 dark:border-green-700 text-gray-700 dark:text-gray-200 rounded-full px-3 py-1"
+            >
+              <UIcon
+                name="i-lucide-refresh-cw"
+                class="size-3.5 text-green-500"
+              />
+              Renovação automática mensal
+            </span>
+          </div>
         </div>
         <UButton
           v-if="podeAssinar"

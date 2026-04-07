@@ -35,13 +35,18 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Usuário master (isMaster no JWT) nunca é bloqueado por assinatura
   const isMaster = auth.usuario?.email === "admin@aninpet.com";
 
-  // Usuário com assinatura suspensa ou cancelada só pode acessar páginas de renovação
-  if (
-    !isMaster &&
-    (auth.usuario?.assinaturaStatus === "suspensa" ||
-      auth.usuario?.assinaturaStatus === "cancelada") &&
-    !renovacaoRoutes.has(to.path)
-  ) {
+  // Bloqueia acesso quando assinatura expirou/cancelou/suspenso
+  // Para pendente: bloqueia apenas após o trial expirar
+  const trialExpirado = auth.usuario?.trialExpiraEm
+    ? new Date(auth.usuario.trialExpiraEm) < new Date()
+    : true;
+
+  const bloqueado =
+    auth.usuario?.assinaturaStatus === "suspensa" ||
+    auth.usuario?.assinaturaStatus === "cancelada" ||
+    (auth.usuario?.assinaturaStatus === "pendente" && trialExpirado);
+
+  if (!isMaster && bloqueado && !renovacaoRoutes.has(to.path)) {
     return navigateTo("/configuracoes/assinatura");
   }
 });
