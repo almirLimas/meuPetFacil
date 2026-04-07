@@ -525,7 +525,10 @@ const planos = [
               </div>
             </div>
             <!-- image -->
-            <div class="relative overflow-hidden bg-white flex items-center justify-center" style="height: 220px">
+            <div
+              class="relative overflow-hidden bg-white flex items-center justify-center"
+              style="height: 220px"
+            >
               <img
                 src="/screenshots/agenda.png"
                 alt="Tela de agenda"
@@ -612,7 +615,10 @@ const planos = [
                 <div class="h-1.5 bg-gray-300 rounded w-24"></div>
               </div>
             </div>
-            <div class="relative overflow-hidden bg-white flex items-center justify-center" style="height: 220px">
+            <div
+              class="relative overflow-hidden bg-white flex items-center justify-center"
+              style="height: 220px"
+            >
               <img
                 src="/screenshots/servicos.png"
                 alt="Tabela de serviços"
@@ -706,7 +712,10 @@ const planos = [
                 >⭐ Plus</span
               >
             </div>
-            <div class="relative overflow-hidden bg-white flex items-center justify-center" style="height: 220px">
+            <div
+              class="relative overflow-hidden bg-white flex items-center justify-center"
+              style="height: 220px"
+            >
               <img
                 src="/screenshots/avaliacoes.png"
                 alt="Avaliações recebidas"
@@ -754,7 +763,10 @@ const planos = [
                 >⭐ Plus</span
               >
             </div>
-            <div class="relative overflow-hidden bg-white flex items-center justify-center" style="height: 220px">
+            <div
+              class="relative overflow-hidden bg-white flex items-center justify-center"
+              style="height: 220px"
+            >
               <img
                 src="/screenshots/satisfacao.png"
                 alt="Painel de satisfação dos clientes"
