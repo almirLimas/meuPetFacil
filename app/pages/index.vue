@@ -1044,7 +1044,7 @@ const planos = [
                   <p class="text-sm font-semibold text-gray-800">
                     14 dias grátis
                   </p>
-                  <p class="text-xs text-gray-400">Teste sem compromisso</p>
+                  <p class="text-xs text-gray-400">Primeira cobrança após 14 dias</p>
                 </div>
               </li>
               <li class="flex items-start gap-3">
@@ -1116,7 +1116,7 @@ const planos = [
             Planos simples e transparentes
           </h2>
           <p class="text-gray-500 mt-2">
-            Comece grátis por 14 dias. Sem surpresas na fatura.
+            14 dias grátis. Primeira cobrança só após o período de teste.
           </p>
           <p class="text-sm text-gray-400 mt-1">
             Todos os planos incluem suporte via WhatsApp.

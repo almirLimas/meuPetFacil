@@ -102,7 +102,7 @@ defineExpose({
 
     <!-- Nota informativa -->
     <p class="text-xs text-center text-gray-400">
-      Sem cartão agora. O pagamento começa somente após os 14 dias de teste.
+      Cartão necessário para ativar. A primeira cobrança ocorre somente após os 14 dias.
     </p>
   </div>
 </template>

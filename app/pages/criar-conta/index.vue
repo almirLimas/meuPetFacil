@@ -40,7 +40,7 @@ const stepperItems: StepperItem[] = [
   },
   {
     title: "Escolha seu Plano",
-    description: "14 dias grátis, sem cartão",
+    description: "14 dias grátis",
     icon: "i-lucide-layout-grid",
   },
 ];
@@ -135,7 +135,7 @@ const submitForm = async () => {
           <div class="text-center">
             <h1 class="text-xl font-bold text-gray-800">Criar conta</h1>
             <p class="text-sm text-gray-500 mt-0.5">
-              Comece grátis por 14 dias, sem compromisso
+              14 dias grátis — cancele quando quiser
             </p>
           </div>
           <UStepper
