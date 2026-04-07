@@ -169,10 +169,8 @@ const planos = [
       >
         <div class="text-white pb-16 pt-4 flex flex-col gap-6">
           <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
-            Sistema para pet shop<br />
-            que quer <span class="text-orange-300">organizar a agenda</span
-            ><br />
-            e <span class="text-orange-300">aumentar o faturamento</span>
+            Pet shop <span class="text-orange-300">organizado</span><br />
+            e com mais <span class="text-orange-300">faturamento</span>
           </h1>
           <ul class="flex flex-col gap-3">
             <li class="flex items-center gap-3 text-lg">
@@ -209,6 +207,14 @@ const planos = [
                 />
               </div>
               Fidelize Clientes e Aumente a Receita
+            </li>
+            <li class="flex items-center gap-3 text-lg">
+              <div
+                class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
+              >
+                <UIcon name="i-lucide-star" class="size-3.5 text-white" />
+              </div>
+              Avaliação automática dos clientes após cada atendimento
             </li>
           </ul>
           <div class="flex flex-col sm:flex-row gap-3 mt-2">
