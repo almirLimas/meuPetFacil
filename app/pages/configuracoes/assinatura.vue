@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/auth";
-import { PLANOS } from "~/types/usuario";
+import { PLANOS, MODULO_LABELS } from "~/types/usuario";
 
 definePageMeta({ layout: "default" });
 
@@ -372,7 +372,7 @@ async function handleCancelar() {
                   name="i-lucide-check"
                   class="size-3.5 text-sky-500 shrink-0"
                 />
-                {{ modulo.charAt(0).toUpperCase() + modulo.slice(1) }}
+                {{ MODULO_LABELS[modulo] ?? modulo }}
               </li>
             </ul>
           </div>
@@ -433,13 +433,23 @@ async function handleCancelar() {
               <li
                 v-for="modulo in PLANOS.plus.modulos"
                 :key="modulo"
-                class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300"
+                class="flex flex-col gap-0.5 text-xs text-gray-600 dark:text-gray-300"
               >
-                <UIcon
-                  name="i-lucide-check"
-                  class="size-3.5 text-orange-500 shrink-0"
-                />
-                {{ modulo.charAt(0).toUpperCase() + modulo.slice(1) }}
+                <span class="flex items-center gap-2">
+                  <UIcon
+                    name="i-lucide-check"
+                    class="size-3.5 text-orange-500 shrink-0"
+                  />
+                  {{ MODULO_LABELS[modulo] ?? modulo }}
+                </span>
+                <span
+                  v-if="modulo === 'avaliacao_cliente'"
+                  class="ml-5.5 text-[10px] text-gray-400 dark:text-gray-500 leading-tight"
+                >
+                  Após cada atendimento concluído, o cliente avalia via e-mail
+                  com emojis. Você acompanha a nota média, índice de satisfação
+                  e cada avaliação individualmente.
+                </span>
               </li>
             </ul>
           </div>

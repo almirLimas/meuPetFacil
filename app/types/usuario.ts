@@ -53,6 +53,7 @@ export const PLANOS: Record<PlanoSistema, PlanoInfo> = {
       "lembretes",
       "relatorio_mensal",
       "meta_mensal",
+      "avaliacao_cliente",
     ],
     destaque: true,
   },
@@ -70,6 +71,7 @@ export const MODULO_LABELS: Record<string, string> = {
   lembretes: "Lembretes automáticos por e-mail",
   relatorio_mensal: "Relatório mensal por e-mail",
   meta_mensal: "Meta mensal",
+  avaliacao_cliente: "Avaliação automática após cada atendimento",
 };
 
 export interface DadosCartao {
