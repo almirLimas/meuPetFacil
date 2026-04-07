@@ -65,8 +65,15 @@ const agendamentosDoDia = computed(() => {
         filtroStatus.value === "Todos" || a.status === filtroStatus.value;
       return matchBusca && matchStatus;
     })
-    .sort((a, b) => a.dataHora.localeCompare(b.dataHora));
+    .sort((a, b) =>
+      ordemCrescente.value
+        ? a.dataHora.localeCompare(b.dataHora)
+        : b.dataHora.localeCompare(a.dataHora),
+    );
 });
+
+// -- Ordem ------------------------------------------------------------------
+const ordemCrescente = ref(true);
 
 // -- Paginação ---------------------------------------------------------------
 const POR_PAGINA = 8;
@@ -564,6 +571,23 @@ const salvarAgendamento = async () => {
           size="sm"
           class="max-w-xs"
         />
+        <button
+          class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-colors bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-neutral-600"
+          :title="
+            ordemCrescente ? 'Mais antigos primeiro' : 'Mais recentes primeiro'
+          "
+          @click="ordemCrescente = !ordemCrescente"
+        >
+          <UIcon
+            :name="
+              ordemCrescente
+                ? 'i-lucide-arrow-up-narrow-wide'
+                : 'i-lucide-arrow-down-wide-narrow'
+            "
+            class="size-3.5"
+          />
+          {{ ordemCrescente ? "Mais antigos" : "Mais recentes" }}
+        </button>
         <div class="flex flex-wrap gap-1 ml-auto">
           <button
             v-for="opt in opcoesStatus"
