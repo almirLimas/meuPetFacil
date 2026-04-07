@@ -1044,7 +1044,9 @@ const planos = [
                   <p class="text-sm font-semibold text-gray-800">
                     14 dias grátis
                   </p>
-                  <p class="text-xs text-gray-400">Primeira cobrança após 14 dias</p>
+                  <p class="text-xs text-gray-400">
+                    Primeira cobrança após 14 dias
+                  </p>
                 </div>
               </li>
               <li class="flex items-start gap-3">

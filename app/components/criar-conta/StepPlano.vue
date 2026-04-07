@@ -102,7 +102,8 @@ defineExpose({
 
     <!-- Nota informativa -->
     <p class="text-xs text-center text-gray-400">
-      Cartão necessário para ativar. A primeira cobrança ocorre somente após os 14 dias.
+      Cartão necessário para ativar. A primeira cobrança ocorre somente após os
+      14 dias.
     </p>
   </div>
 </template>
