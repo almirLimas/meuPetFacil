@@ -72,6 +72,7 @@ const stats = computed(() => [
 const agendaItems = computed(() =>
   agendamentos.value
     .sort((a, b) => a.dataHora.localeCompare(b.dataHora))
+    .slice(0, 5)
     .map((a) => ({
       time: new Date(a.dataHora).toLocaleTimeString("pt-BR", {
         hour: "2-digit",

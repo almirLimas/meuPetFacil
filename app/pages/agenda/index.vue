@@ -68,6 +68,23 @@ const agendamentosDoDia = computed(() => {
     .sort((a, b) => a.dataHora.localeCompare(b.dataHora));
 });
 
+// -- Paginação ---------------------------------------------------------------
+const POR_PAGINA = 8;
+const paginaAtual = ref(1);
+
+watch([busca, filtroStatus, selectedDate], () => {
+  paginaAtual.value = 1;
+});
+
+const totalPaginas = computed(() =>
+  Math.max(1, Math.ceil(agendamentosDoDia.value.length / POR_PAGINA)),
+);
+
+const agendamentosPaginados = computed(() => {
+  const inicio = (paginaAtual.value - 1) * POR_PAGINA;
+  return agendamentosDoDia.value.slice(inicio, inicio + POR_PAGINA);
+});
+
 // -- Resumo do dia -----------------------------------------------------------
 const resumoDia = computed(() => ({
   total: agendamentos.value.length,
@@ -592,7 +609,7 @@ const salvarAgendamento = async () => {
       <!-- Itens -->
       <div v-else class="divide-y divide-gray-50 dark:divide-neutral-700">
         <div
-          v-for="item in agendamentosDoDia"
+          v-for="item in agendamentosPaginados"
           :key="item.id"
           class="flex items-center gap-4 px-4 py-3"
         >
@@ -733,6 +750,39 @@ const salvarAgendamento = async () => {
               @click="pedirCancelamento(item.id)"
             />
           </div>
+        </div>
+      </div>
+      <!-- Paginação -->
+      <div
+        v-if="agendamentosDoDia.length > POR_PAGINA"
+        class="flex items-center justify-between px-4 py-3 border-t border-gray-100 dark:border-neutral-700"
+      >
+        <span class="text-xs text-gray-400">
+          {{ (paginaAtual - 1) * POR_PAGINA + 1 }}–{{
+            Math.min(paginaAtual * POR_PAGINA, agendamentosDoDia.length)
+          }}
+          de {{ agendamentosDoDia.length }}
+        </span>
+        <div class="flex items-center gap-1">
+          <UButton
+            icon="i-lucide-chevron-left"
+            color="neutral"
+            variant="ghost"
+            size="xs"
+            :disabled="paginaAtual === 1"
+            @click="paginaAtual--"
+          />
+          <span class="text-xs text-gray-600 dark:text-gray-300 px-2">
+            {{ paginaAtual }} / {{ totalPaginas }}
+          </span>
+          <UButton
+            icon="i-lucide-chevron-right"
+            color="neutral"
+            variant="ghost"
+            size="xs"
+            :disabled="paginaAtual === totalPaginas"
+            @click="paginaAtual++"
+          />
         </div>
       </div>
     </div>
