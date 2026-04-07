@@ -525,15 +525,14 @@ const planos = [
               </div>
             </div>
             <!-- image -->
-            <div class="relative overflow-hidden">
+            <div class="relative overflow-hidden bg-white flex items-center justify-center" style="height: 220px">
               <img
                 src="/screenshots/agenda.png"
                 alt="Tela de agenda"
-                class="w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                style="height: 220px"
+                class="w-full h-full object-contain object-top transition-transform duration-500 group-hover:scale-105"
               />
               <div
-                class="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent"
+                class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent"
               ></div>
             </div>
             <div class="px-5 pt-3 pb-5 flex flex-col gap-1.5">
@@ -613,15 +612,14 @@ const planos = [
                 <div class="h-1.5 bg-gray-300 rounded w-24"></div>
               </div>
             </div>
-            <div class="relative overflow-hidden">
+            <div class="relative overflow-hidden bg-white flex items-center justify-center" style="height: 220px">
               <img
                 src="/screenshots/servicos.png"
                 alt="Tabela de serviços"
-                class="w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                style="height: 220px"
+                class="w-full h-full object-contain object-top transition-transform duration-500 group-hover:scale-105"
               />
               <div
-                class="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent"
+                class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent"
               ></div>
             </div>
             <div class="px-5 pt-3 pb-5 flex flex-col gap-1.5">
@@ -708,15 +706,14 @@ const planos = [
                 >⭐ Plus</span
               >
             </div>
-            <div class="relative overflow-hidden">
+            <div class="relative overflow-hidden bg-white flex items-center justify-center" style="height: 220px">
               <img
                 src="/screenshots/avaliacoes.png"
                 alt="Avaliações recebidas"
-                class="w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                style="height: 220px"
+                class="w-full h-full object-contain object-top transition-transform duration-500 group-hover:scale-105"
               />
               <div
-                class="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent"
+                class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent"
               ></div>
             </div>
             <div class="px-5 pt-3 pb-5 flex flex-col gap-1.5">
@@ -757,15 +754,14 @@ const planos = [
                 >⭐ Plus</span
               >
             </div>
-            <div class="relative overflow-hidden">
+            <div class="relative overflow-hidden bg-white flex items-center justify-center" style="height: 220px">
               <img
                 src="/screenshots/satisfacao.png"
                 alt="Painel de satisfação dos clientes"
-                class="w-full object-cover object-bottom transition-transform duration-500 group-hover:scale-105"
-                style="height: 220px"
+                class="w-full h-full object-contain object-bottom transition-transform duration-500 group-hover:scale-105"
               />
               <div
-                class="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent"
+                class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent"
               ></div>
             </div>
             <div class="px-5 pt-3 pb-5 flex flex-col gap-1.5">
