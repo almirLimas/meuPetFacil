@@ -496,6 +496,152 @@ const planos = [
       </div>
     </section>
 
+    <!-- DESTAQUE PLUS: SATISFAÇÃO -->
+    <section class="py-20 px-6 bg-white">
+      <div class="max-w-5xl mx-auto">
+        <div
+          class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-500 to-orange-400 px-8 py-12 md:py-16 md:px-14 flex flex-col md:flex-row items-center gap-10 shadow-xl"
+        >
+          <!-- Pata decorativa -->
+          <UIcon
+            name="i-lucide-paw-print"
+            class="absolute top-5 right-10 size-24 text-white/10 rotate-12 hidden md:block"
+          />
+          <UIcon
+            name="i-lucide-paw-print"
+            class="absolute bottom-4 left-6 size-14 text-white/10 -rotate-12"
+          />
+
+          <!-- Texto -->
+          <div class="relative flex flex-col gap-5 text-white flex-1">
+            <div
+              class="inline-flex items-center gap-2 self-start px-3 py-1 rounded-full bg-white/20 text-xs font-bold uppercase tracking-wide"
+            >
+              <UIcon name="i-lucide-star" class="size-3.5" />
+              Exclusivo no Plano Plus
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-extrabold leading-tight">
+              Saiba o que seus clientes<br />
+              pensam — <span class="text-yellow-200">sem perguntar</span>
+            </h2>
+            <p class="text-white/85 text-base leading-relaxed max-w-lg">
+              Após cada atendimento concluído, o cliente recebe um e-mail com
+              emojis para avaliar a experiência. Você acompanha a nota média, o
+              índice de satisfação e cada avaliação individualmente — tudo no
+              painel.
+            </p>
+            <ul class="flex flex-col gap-2">
+              <li class="flex items-center gap-2 text-sm">
+                <div
+                  class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center shrink-0"
+                >
+                  <UIcon name="i-lucide-send" class="size-3" />
+                </div>
+                E-mail automático com emojis enviado ao cliente
+              </li>
+              <li class="flex items-center gap-2 text-sm">
+                <div
+                  class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center shrink-0"
+                >
+                  <UIcon name="i-lucide-bar-chart-2" class="size-3" />
+                </div>
+                Nota média e % de clientes satisfeitos no painel
+              </li>
+              <li class="flex items-center gap-2 text-sm">
+                <div
+                  class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center shrink-0"
+                >
+                  <UIcon name="i-lucide-clock" class="size-3" />
+                </div>
+                Zero trabalho manual — funciona no piloto automático
+              </li>
+            </ul>
+            <NuxtLink
+              to="/criar-conta?plano=plus"
+              class="self-start inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-white text-orange-500 font-bold text-sm shadow-md hover:bg-orange-50 transition-colors mt-2"
+            >
+              Quero o Plus
+              <UIcon name="i-lucide-arrow-right" class="size-4" />
+            </NuxtLink>
+          </div>
+
+          <!-- Card mockup de avaliação -->
+          <div class="relative shrink-0 w-full max-w-xs">
+            <div
+              class="bg-white rounded-2xl shadow-2xl p-5 flex flex-col gap-4"
+            >
+              <!-- Header do card -->
+              <div class="flex items-center justify-between">
+                <p
+                  class="text-xs font-semibold text-gray-500 uppercase tracking-wide"
+                >
+                  Satisfação dos Clientes
+                </p>
+                <span class="text-xs text-sky-500 font-semibold cursor-pointer"
+                  >Ver detalhes &rsaquo;</span
+                >
+              </div>
+              <!-- Percentual + barra -->
+              <div class="flex items-center gap-3">
+                <span class="text-4xl font-black text-emerald-500">80%</span>
+                <div class="flex-1">
+                  <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      class="h-3 rounded-full bg-emerald-400"
+                      style="width: 80%"
+                    ></div>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-1">
+                    Média 4.4 &nbsp;·&nbsp; 5 avaliações
+                  </p>
+                </div>
+              </div>
+              <!-- Mini lista de avaliações -->
+              <div class="flex flex-col gap-1.5">
+                <div
+                  v-for="(av, i) in [
+                    {
+                      nome: 'Almir lima',
+                      nota: 5,
+                      servico: 'Banho e tosa — Viny',
+                    },
+                    {
+                      nome: 'Maria Izidorio',
+                      nota: 4,
+                      servico: 'Banho — Bidu',
+                    },
+                    { nome: 'Almir lima', nota: 5, servico: 'Banho — Viny' },
+                  ]"
+                  :key="i"
+                  class="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0"
+                >
+                  <div class="flex gap-0.5">
+                    <span
+                      v-for="s in 5"
+                      :key="s"
+                      class="text-xs"
+                      :class="
+                        s <= av.nota ? 'text-yellow-400' : 'text-gray-200'
+                      "
+                      >★</span
+                    >
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-[11px] font-semibold text-gray-700 truncate">
+                      {{ av.nome }}
+                    </p>
+                    <p class="text-[10px] text-gray-400 truncate">
+                      {{ av.servico }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- SCREENSHOTS DO SISTEMA -->
     <section class="py-20 px-6 bg-gray-50" id="preview">
       <div class="max-w-6xl mx-auto">
@@ -832,152 +978,6 @@ const planos = [
           <video autoplay loop muted playsinline class="w-full block">
             <source src="/demo.mp4" type="video/mp4" />
           </video>
-        </div>
-      </div>
-    </section>
-
-    <!-- DESTAQUE PLUS: SATISFAÇÃO -->
-    <section class="py-20 px-6 bg-white">
-      <div class="max-w-5xl mx-auto">
-        <div
-          class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-500 to-orange-400 px-8 py-12 md:py-16 md:px-14 flex flex-col md:flex-row items-center gap-10 shadow-xl"
-        >
-          <!-- Pata decorativa -->
-          <UIcon
-            name="i-lucide-paw-print"
-            class="absolute top-5 right-10 size-24 text-white/10 rotate-12 hidden md:block"
-          />
-          <UIcon
-            name="i-lucide-paw-print"
-            class="absolute bottom-4 left-6 size-14 text-white/10 -rotate-12"
-          />
-
-          <!-- Texto -->
-          <div class="relative flex flex-col gap-5 text-white flex-1">
-            <div
-              class="inline-flex items-center gap-2 self-start px-3 py-1 rounded-full bg-white/20 text-xs font-bold uppercase tracking-wide"
-            >
-              <UIcon name="i-lucide-star" class="size-3.5" />
-              Exclusivo no Plano Plus
-            </div>
-            <h2 class="text-3xl sm:text-4xl font-extrabold leading-tight">
-              Saiba o que seus clientes<br />
-              pensam — <span class="text-yellow-200">sem perguntar</span>
-            </h2>
-            <p class="text-white/85 text-base leading-relaxed max-w-lg">
-              Após cada atendimento concluído, o cliente recebe um e-mail com
-              emojis para avaliar a experiência. Você acompanha a nota média, o
-              índice de satisfação e cada avaliação individualmente — tudo no
-              painel.
-            </p>
-            <ul class="flex flex-col gap-2">
-              <li class="flex items-center gap-2 text-sm">
-                <div
-                  class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center shrink-0"
-                >
-                  <UIcon name="i-lucide-send" class="size-3" />
-                </div>
-                E-mail automático com emojis enviado ao cliente
-              </li>
-              <li class="flex items-center gap-2 text-sm">
-                <div
-                  class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center shrink-0"
-                >
-                  <UIcon name="i-lucide-bar-chart-2" class="size-3" />
-                </div>
-                Nota média e % de clientes satisfeitos no painel
-              </li>
-              <li class="flex items-center gap-2 text-sm">
-                <div
-                  class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center shrink-0"
-                >
-                  <UIcon name="i-lucide-clock" class="size-3" />
-                </div>
-                Zero trabalho manual — funciona no piloto automático
-              </li>
-            </ul>
-            <NuxtLink
-              to="/criar-conta?plano=plus"
-              class="self-start inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-white text-orange-500 font-bold text-sm shadow-md hover:bg-orange-50 transition-colors mt-2"
-            >
-              Quero o Plus
-              <UIcon name="i-lucide-arrow-right" class="size-4" />
-            </NuxtLink>
-          </div>
-
-          <!-- Card mockup de avaliação -->
-          <div class="relative shrink-0 w-full max-w-xs">
-            <div
-              class="bg-white rounded-2xl shadow-2xl p-5 flex flex-col gap-4"
-            >
-              <!-- Header do card -->
-              <div class="flex items-center justify-between">
-                <p
-                  class="text-xs font-semibold text-gray-500 uppercase tracking-wide"
-                >
-                  Satisfação dos Clientes
-                </p>
-                <span class="text-xs text-sky-500 font-semibold cursor-pointer"
-                  >Ver detalhes &rsaquo;</span
-                >
-              </div>
-              <!-- Percentual + barra -->
-              <div class="flex items-center gap-3">
-                <span class="text-4xl font-black text-emerald-500">80%</span>
-                <div class="flex-1">
-                  <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      class="h-3 rounded-full bg-emerald-400"
-                      style="width: 80%"
-                    ></div>
-                  </div>
-                  <p class="text-[10px] text-gray-400 mt-1">
-                    Média 4.4 &nbsp;·&nbsp; 5 avaliações
-                  </p>
-                </div>
-              </div>
-              <!-- Mini lista de avaliações -->
-              <div class="flex flex-col gap-1.5">
-                <div
-                  v-for="(av, i) in [
-                    {
-                      nome: 'Almir lima',
-                      nota: 5,
-                      servico: 'Banho e tosa — Viny',
-                    },
-                    {
-                      nome: 'Maria Izidorio',
-                      nota: 4,
-                      servico: 'Banho — Bidu',
-                    },
-                    { nome: 'Almir lima', nota: 5, servico: 'Banho — Viny' },
-                  ]"
-                  :key="i"
-                  class="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0"
-                >
-                  <div class="flex gap-0.5">
-                    <span
-                      v-for="s in 5"
-                      :key="s"
-                      class="text-xs"
-                      :class="
-                        s <= av.nota ? 'text-yellow-400' : 'text-gray-200'
-                      "
-                      >★</span
-                    >
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-[11px] font-semibold text-gray-700 truncate">
-                      {{ av.nome }}
-                    </p>
-                    <p class="text-[10px] text-gray-400 truncate">
-                      {{ av.servico }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
