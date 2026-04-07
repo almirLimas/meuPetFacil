@@ -18,6 +18,7 @@ const state = reactive<CriarContaFormState>({
   nomePetshop: "",
   nomeCompleto: "",
   email: "",
+  cpf: "",
   telefone: "",
   senha: "",
   confirmarSenha: "",
@@ -25,7 +26,6 @@ const state = reactive<CriarContaFormState>({
   plano: "plus",
   // Step 3
   formaPagamento: "cartao",
-  cpf: "",
   // Legacy
   perfil: "admin",
   status: "ativo",
@@ -97,6 +97,7 @@ const submitForm = async () => {
       nomePetshop: state.nomePetshop,
       nomeCompleto: state.nomeCompleto,
       email: state.email,
+      cpf: state.cpf,
       telefone: state.telefone || undefined,
       senha: state.senha,
       plano: state.plano,
@@ -107,17 +108,12 @@ const submitForm = async () => {
     const { iniciarPagamento } = usePagamento();
     const resultado = await iniciarPagamento({
       plano: state.plano,
-      formaPagamento: state.formaPagamento as "cartao" | "pix",
-      cpf: state.cpf || undefined,
     });
 
     if (resultado.tipo === "checkout") {
       globalThis.location.href = resultado.url;
     } else if (resultado.tipo === "trial") {
       await navigateTo("/criar-conta/sucesso");
-    } else {
-      pixCheckout.value = resultado;
-      await navigateTo("/criar-conta/pagamento-pix");
     }
   } catch {
     toast.add({

@@ -2,6 +2,8 @@
 import * as z from "zod";
 import type { CriarContaFormState } from "~/types/usuario";
 
+const { maskCpf, isValidCpf } = useMask();
+
 const schema = z
   .object({
     nomePetshop: z.string().min(2, "Informe o nome do petshop"),
@@ -13,6 +15,10 @@ const schema = z
         "Use apenas letras e acentos, sem números ou símbolos",
       ),
     email: z.string().email("E-mail inválido"),
+    cpf: z
+      .string()
+      .min(1, "CPF é obrigatório")
+      .refine(isValidCpf, "CPF inválido"),
     telefone: z.string().optional(),
     senha: z.string().min(8, "Senha deve ter ao menos 8 caracteres"),
     confirmarSenha: z.string(),
@@ -36,6 +42,13 @@ function filtrarNomeCompleto(e: Event) {
   );
   input.value = filtrado;
   state.value.nomeCompleto = filtrado;
+}
+
+function onCpfInput(e: Event) {
+  const input = e.target as HTMLInputElement;
+  const masked = maskCpf(input.value);
+  input.value = masked;
+  state.value.cpf = masked;
 }
 
 defineExpose({
@@ -92,6 +105,18 @@ defineExpose({
           leading-icon="i-lucide-mail"
           placeholder="maria@meupetfacil.com"
           class="w-full"
+        />
+      </UFormField>
+
+      <!-- CPF -->
+      <UFormField label="CPF" name="cpf" required class="md:col-span-2">
+        <UInput
+          v-model="state.cpf"
+          leading-icon="i-lucide-id-card"
+          placeholder="000.000.000-00"
+          maxlength="14"
+          class="w-full"
+          @input="onCpfInput"
         />
       </UFormField>
 

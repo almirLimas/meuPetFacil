@@ -129,6 +129,7 @@ export interface CriarContaFormState {
   nomePetshop: string;
   nomeCompleto: string;
   email: string;
+  cpf: string;
   telefone: string;
   senha: string;
   confirmarSenha: string;
@@ -136,7 +137,6 @@ export interface CriarContaFormState {
   plano: PlanoSistema;
   // Step 3 – Pagamento
   formaPagamento: FormaPagamento;
-  cpf?: string;
   // Mantido para compatibilidade com StepTipoAcesso (gerenciamento de usuários internos)
   perfil: UsuarioPerfil;
   status: UsuarioStatus;

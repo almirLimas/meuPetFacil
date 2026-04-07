@@ -73,6 +73,7 @@ export const useAuthStore = defineStore("auth", () => {
     nomePetshop: string;
     nomeCompleto: string;
     email: string;
+    cpf: string;
     telefone?: string;
     senha: string;
     plano: PlanoSistema;
