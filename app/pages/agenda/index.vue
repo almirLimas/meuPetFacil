@@ -47,8 +47,6 @@ const filtroStatus = ref<StatusAgendamento | "Todos">("Todos");
 const opcoesStatus: { label: string; value: StatusAgendamento | "Todos" }[] = [
   { label: "Todos", value: "Todos" },
   { label: "Agendado", value: "Agendado" },
-  { label: "Confirmado", value: "Confirmado" },
-  { label: "Em Atendimento", value: "EmAtendimento" },
   { label: "Concluído", value: "Concluido" },
   { label: "Cancelado", value: "Cancelado" },
   { label: "Não Compareceu", value: "NaoCompareceu" },
@@ -352,7 +350,6 @@ const salvarEdicao = async () => {
     ).toISOString();
     await update(editandoId.value, {
       servicoId: editForm.servicoId,
-      status: editForm.status,
       dataHora,
       modalidade: editForm.modalidade,
       observacoes: editForm.observacoes || undefined,
@@ -679,40 +676,25 @@ const salvarAgendamento = async () => {
 
           <!-- Ações -->
           <div class="flex items-center gap-1 shrink-0">
-            <!-- Ação principal do fluxo -->
+            <!-- Concluir -->
             <UButton
-              v-if="item.status === 'Agendado'"
-              icon="i-lucide-check"
-              color="neutral"
-              variant="ghost"
-              size="xs"
-              title="Confirmar agendamento"
-              :loading="alterandoStatus === item.id"
-              @click="alterarStatus(item.id, 'Confirmado')"
-            />
-            <UButton
-              v-else-if="item.status === 'Confirmado'"
-              icon="i-lucide-play"
-              color="neutral"
-              variant="ghost"
-              size="xs"
-              title="Iniciar atendimento"
-              :loading="alterandoStatus === item.id"
-              @click="alterarStatus(item.id, 'EmAtendimento')"
-            />
-            <UButton
-              v-else-if="item.status === 'EmAtendimento'"
+              v-if="
+                !['Concluido', 'Cancelado', 'NaoCompareceu'].includes(
+                  item.status,
+                )
+              "
               icon="i-lucide-check-check"
               color="neutral"
               variant="ghost"
               size="xs"
-              title="Concluir atendimento"
+              title="Concluir agendamento"
               :loading="alterandoStatus === item.id"
               @click="alterarStatus(item.id, 'Concluido')"
             />
 
             <!-- Editar -->
             <UButton
+              v-if="item.status !== 'Concluido'"
               icon="i-lucide-pencil"
               color="neutral"
               variant="ghost"
@@ -721,9 +703,13 @@ const salvarAgendamento = async () => {
               @click="abrirEditar(item)"
             />
 
-            <!-- Ações secundárias -->
+            <!-- Não Compareceu -->
             <UButton
-              v-if="item.status === 'Agendado' || item.status === 'Confirmado'"
+              v-if="
+                !['Concluido', 'Cancelado', 'NaoCompareceu'].includes(
+                  item.status,
+                )
+              "
               icon="i-lucide-user-x"
               color="neutral"
               variant="ghost"
@@ -731,8 +717,14 @@ const salvarAgendamento = async () => {
               title="Não Compareceu"
               @click="alterarStatus(item.id, 'NaoCompareceu')"
             />
+
+            <!-- Cancelar -->
             <UButton
-              v-if="item.status === 'Agendado' || item.status === 'Confirmado'"
+              v-if="
+                !['Concluido', 'Cancelado', 'NaoCompareceu'].includes(
+                  item.status,
+                )
+              "
               icon="i-lucide-x-circle"
               color="neutral"
               variant="ghost"
@@ -903,21 +895,6 @@ const salvarAgendamento = async () => {
                 <UInput v-model="editForm.hora" type="time" class="w-full" />
               </UFormField>
             </div>
-
-            <UFormField label="Status">
-              <USelect
-                v-model="editForm.status"
-                :items="[
-                  { label: 'Agendado', value: 'Agendado' },
-                  { label: 'Confirmado', value: 'Confirmado' },
-                  { label: 'Em Atendimento', value: 'EmAtendimento' },
-                  { label: 'Concluído', value: 'Concluido' },
-                  { label: 'Cancelado', value: 'Cancelado' },
-                  { label: 'Não Compareceu', value: 'NaoCompareceu' },
-                ]"
-                class="w-full"
-              />
-            </UFormField>
 
             <UFormField label="Serviço *">
               <USelect
