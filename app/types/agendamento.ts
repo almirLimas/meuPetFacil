@@ -13,6 +13,7 @@ export interface Agendamento {
   dataHora: string; // ISO 8601
   status: StatusAgendamento;
   modalidade: ModalidadeAgendamento;
+  taxaBusca?: number | null;
   observacoes?: string | null;
   clienteId: string;
   petId: string;
@@ -28,5 +29,6 @@ export interface CreateAgendamentoPayload {
   servicoId: string;
   dataHora: string;
   modalidade: ModalidadeAgendamento;
+  taxaBusca?: number;
   observacoes?: string;
 }

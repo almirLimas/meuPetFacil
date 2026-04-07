@@ -49,6 +49,7 @@ export const useAgenda = () => {
       status?: StatusAgendamento;
       dataHora?: string;
       modalidade?: string;
+      taxaBusca?: number;
       observacoes?: string;
     },
   ) => {

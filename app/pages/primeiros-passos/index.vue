@@ -62,6 +62,40 @@ useBreadcrumb().set([{ label: "Primeiros passos" }]);
           <div class="flex flex-col gap-1 flex-1">
             <div class="flex items-center justify-between gap-2 flex-wrap">
               <p class="font-semibold text-gray-800 dark:text-gray-100">
+                Configure a taxa de busca (taxidog)
+              </p>
+              <UButton
+                size="xs"
+                color="secondary"
+                variant="soft"
+                to="/configuracoes/perfil"
+                trailing-icon="i-lucide-arrow-right"
+              >
+                Ir para Configurações
+              </UButton>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Se o seu petshop busca o pet na casa do cliente (taxidog), defina
+              o valor fixo da taxa em
+              <strong>Configurações → Taxa de Busca</strong>. Esse valor será
+              somado automaticamente ao serviço nos agendamentos marcados como
+              "Petshop busca".
+            </p>
+          </div>
+        </div>
+      </UCard>
+
+      <!-- 3 -->
+      <UCard class="ring-0 shadow-sm">
+        <div class="flex gap-4">
+          <div
+            class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
+          >
+            3
+          </div>
+          <div class="flex flex-col gap-1 flex-1">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <p class="font-semibold text-gray-800 dark:text-gray-100">
                 Cadastre seus clientes
               </p>
               <UButton
@@ -89,7 +123,7 @@ useBreadcrumb().set([{ label: "Primeiros passos" }]);
           <div
             class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
           >
-            3
+            4
           </div>
           <div class="flex flex-col gap-1 flex-1">
             <div class="flex items-center justify-between gap-2 flex-wrap">
@@ -115,13 +149,13 @@ useBreadcrumb().set([{ label: "Primeiros passos" }]);
         </div>
       </UCard>
 
-      <!-- 4 -->
+      <!-- 5 -->
       <UCard class="ring-0 shadow-sm">
         <div class="flex gap-4">
           <div
             class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
           >
-            4
+            5
           </div>
           <div class="flex flex-col gap-1 flex-1">
             <div class="flex items-center justify-between gap-2 flex-wrap">
@@ -146,13 +180,13 @@ useBreadcrumb().set([{ label: "Primeiros passos" }]);
         </div>
       </UCard>
 
-      <!-- 5 -->
+      <!-- 6 -->
       <UCard class="ring-0 shadow-sm">
         <div class="flex gap-4">
           <div
             class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
           >
-            5
+            6
           </div>
           <div class="flex flex-col gap-1 flex-1">
             <div class="flex items-center justify-between gap-2 flex-wrap">
@@ -177,13 +211,13 @@ useBreadcrumb().set([{ label: "Primeiros passos" }]);
         </div>
       </UCard>
 
-      <!-- 6 -->
+      <!-- 7 -->
       <UCard class="ring-0 shadow-sm">
         <div class="flex gap-4">
           <div
             class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
           >
-            6
+            7
           </div>
           <div class="flex flex-col gap-1 flex-1">
             <div class="flex items-center justify-between gap-2 flex-wrap">

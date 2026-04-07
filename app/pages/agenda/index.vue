@@ -7,11 +7,13 @@ import type {
 } from "~/types/agendamento";
 import type { Cliente } from "~/types/cliente";
 import type { Pet } from "~/types/pet";
+import { useAuthStore } from "~/stores/auth";
 
 const { apiFetch } = useApi();
 const { agendamentos, loading, fetchByDate, create, update, updateStatus } =
   useAgenda();
 const toast = useToast();
+const auth = useAuthStore();
 
 // -- Data selecionada ---------------------------------------------------------
 const today = new Date().toISOString().slice(0, 10);
@@ -198,6 +200,68 @@ const confirmarCancelamento = async () => {
   agendamentoParaCancelar.value = null;
 };
 
+// -- Modal confirmação de concluir -------------------------------------------
+const confirmConcluirOpen = ref(false);
+const agendamentoParaConcluir = ref<string | null>(null);
+
+const pedirConcluir = (id: string) => {
+  agendamentoParaConcluir.value = id;
+  confirmConcluirOpen.value = true;
+};
+
+const confirmarConcluir = async () => {
+  if (!agendamentoParaConcluir.value) return;
+  await alterarStatus(agendamentoParaConcluir.value, "Concluido");
+  confirmConcluirOpen.value = false;
+  agendamentoParaConcluir.value = null;
+};
+
+// -- Modal confirmação de Não Compareceu -------------------------------------
+const confirmNaoCompareceuOpen = ref(false);
+const agendamentoParaNaoCompareceu = ref<string | null>(null);
+
+const pedirNaoCompareceu = (id: string) => {
+  agendamentoParaNaoCompareceu.value = id;
+  confirmNaoCompareceuOpen.value = true;
+};
+
+const confirmarNaoCompareceu = async () => {
+  if (!agendamentoParaNaoCompareceu.value) return;
+  await alterarStatus(agendamentoParaNaoCompareceu.value, "NaoCompareceu");
+  confirmNaoCompareceuOpen.value = false;
+  agendamentoParaNaoCompareceu.value = null;
+};
+
+// -- Modal confirmação de exclusão -------------------------------------------
+const confirmExcluirOpen = ref(false);
+const agendamentoParaExcluir = ref<string | null>(null);
+const excluindo = ref(false);
+
+const pedirExcluir = (id: string) => {
+  agendamentoParaExcluir.value = id;
+  confirmExcluirOpen.value = true;
+};
+
+const confirmarExcluir = async () => {
+  if (!agendamentoParaExcluir.value) return;
+  excluindo.value = true;
+  try {
+    await apiFetch(`/agenda/${agendamentoParaExcluir.value}`, {
+      method: "DELETE",
+    });
+    agendamentos.value = agendamentos.value.filter(
+      (a) => a.id !== agendamentoParaExcluir.value,
+    );
+    toast.add({ title: "Agendamento excluído!", color: "success" });
+  } catch {
+    toast.add({ title: "Erro ao excluir agendamento", color: "error" });
+  } finally {
+    excluindo.value = false;
+    confirmExcluirOpen.value = false;
+    agendamentoParaExcluir.value = null;
+  }
+};
+
 // -- Modal novo agendamento ---------------------------------------------------
 const isModalOpen = ref(false);
 const salvando = ref(false);
@@ -221,8 +285,24 @@ const novoForm = reactive({
   clienteId: "",
   petId: "",
   modalidade: "ClienteTraz" as ModalidadeAgendamento,
+  taxaBusca: "",
   observacoes: "",
 });
+
+// Auto-preenche taxa de busca ao mudar modalidade
+watch(
+  () => novoForm.modalidade,
+  (modalidade) => {
+    if (modalidade === "PetshopBusca" && novoForm.taxaBusca === "") {
+      const taxa = auth.usuario?.taxaBusca;
+      if (taxa != null && taxa > 0) {
+        novoForm.taxaBusca = String(taxa);
+      }
+    } else if (modalidade === "ClienteTraz") {
+      novoForm.taxaBusca = "";
+    }
+  },
+);
 
 const carregarDadosModal = async () => {
   novoForm.data = selectedDate.value;
@@ -231,6 +311,7 @@ const carregarDadosModal = async () => {
   novoForm.clienteId = "";
   novoForm.petId = "";
   novoForm.modalidade = "ClienteTraz";
+  novoForm.taxaBusca = "";
   novoForm.observacoes = "";
   petsDoCliente.value = [];
 
@@ -374,6 +455,7 @@ const salvarEdicao = async () => {
     ).toISOString();
     await update(editandoId.value, {
       servicoId: editForm.servicoId,
+      status: editForm.status,
       dataHora,
       modalidade: editForm.modalidade,
       observacoes: editForm.observacoes || undefined,
@@ -413,6 +495,7 @@ const salvarAgendamento = async () => {
       servicoId: novoForm.servicoId,
       dataHora,
       modalidade: novoForm.modalidade,
+      taxaBusca: novoForm.taxaBusca ? Number(novoForm.taxaBusca) : undefined,
       observacoes: novoForm.observacoes || undefined,
     });
 
@@ -730,12 +813,11 @@ const salvarAgendamento = async () => {
               size="xs"
               title="Concluir agendamento"
               :loading="alterandoStatus === item.id"
-              @click="alterarStatus(item.id, 'Concluido')"
+              @click="pedirConcluir(item.id)"
             />
 
             <!-- Editar -->
             <UButton
-              v-if="item.status !== 'Concluido'"
               icon="i-lucide-pencil"
               color="neutral"
               variant="ghost"
@@ -756,22 +838,33 @@ const salvarAgendamento = async () => {
               variant="ghost"
               size="xs"
               title="Não Compareceu"
-              @click="alterarStatus(item.id, 'NaoCompareceu')"
+              @click="pedirNaoCompareceu(item.id)"
             />
 
             <!-- Cancelar -->
             <UButton
-              v-if="
-                !['Concluido', 'Cancelado', 'NaoCompareceu'].includes(
-                  item.status,
-                )
-              "
+              v-if="!['Cancelado', 'NaoCompareceu'].includes(item.status)"
               icon="i-lucide-x-circle"
               color="neutral"
               variant="ghost"
               size="xs"
               title="Cancelar"
               @click="pedirCancelamento(item.id)"
+            />
+
+            <!-- Excluir (só para agendamentos não finalizados) -->
+            <UButton
+              v-if="
+                !['Concluido', 'Cancelado', 'NaoCompareceu'].includes(
+                  item.status,
+                )
+              "
+              icon="i-lucide-trash-2"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              title="Excluir agendamento"
+              @click="pedirExcluir(item.id)"
             />
           </div>
         </div>
@@ -916,6 +1009,26 @@ const salvarAgendamento = async () => {
                 class="w-full"
               />
             </UFormField>
+
+            <UFormField
+              v-if="novoForm.modalidade === 'PetshopBusca'"
+              label="Taxa de busca (R$)"
+            >
+              <UInput
+                v-model="novoForm.taxaBusca"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="Ex: 15"
+                class="w-full"
+              />
+              <template #help>
+                <span class="text-[11px] text-gray-400"
+                  >Será somada ao valor do serviço no lançamento
+                  financeiro.</span
+                >
+              </template>
+            </UFormField>
           </div>
 
           <template #footer>
@@ -1019,6 +1132,63 @@ const salvarAgendamento = async () => {
                 class="w-full"
               />
             </UFormField>
+
+            <UFormField label="Status">
+              <div class="flex flex-wrap gap-2">
+                <button
+                  v-for="opt in [
+                    {
+                      value: 'Agendado',
+                      label: 'Agendado',
+                      color:
+                        'border-blue-400 bg-blue-50 dark:bg-blue-900/20 text-blue-600',
+                    },
+                    {
+                      value: 'Confirmado',
+                      label: 'Confirmado',
+                      color:
+                        'border-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600',
+                    },
+                    {
+                      value: 'Concluido',
+                      label: 'Concluído',
+                      color:
+                        'border-green-400 bg-green-50 dark:bg-green-900/20 text-green-600',
+                    },
+                    {
+                      value: 'Cancelado',
+                      label: 'Cancelado',
+                      color:
+                        'border-red-400 bg-red-50 dark:bg-red-900/20 text-red-600',
+                    },
+                    {
+                      value: 'NaoCompareceu',
+                      label: 'Não Compareceu',
+                      color:
+                        'border-orange-400 bg-orange-50 dark:bg-orange-900/20 text-orange-600',
+                    },
+                  ]"
+                  :key="opt.value"
+                  type="button"
+                  class="px-3 py-1.5 rounded-xl border-2 text-xs font-semibold transition-all"
+                  :class="
+                    editForm.status === opt.value
+                      ? opt.color
+                      : 'border-gray-200 dark:border-neutral-600 text-gray-400 hover:border-gray-300'
+                  "
+                  @click="editForm.status = opt.value as StatusAgendamento"
+                >
+                  {{ opt.label }}
+                </button>
+              </div>
+              <p
+                v-if="editForm.status === 'Cancelado'"
+                class="text-xs text-red-500 mt-1"
+              >
+                ⚠️ Ao salvar como Cancelado, o lançamento financeiro vinculado
+                será removido.
+              </p>
+            </UFormField>
           </div>
 
           <template #footer>
@@ -1084,6 +1254,140 @@ const salvarAgendamento = async () => {
                 @click="confirmarCancelamento"
               >
                 Sim, cancelar
+              </UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
+    </UModal>
+
+    <!-- Modal confirmação de concluir -->
+    <UModal v-model:open="confirmConcluirOpen">
+      <template #content>
+        <UCard class="ring-0">
+          <template #header>
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0"
+              >
+                <UIcon
+                  name="i-lucide-check-circle"
+                  class="size-5 text-green-500"
+                />
+              </div>
+              <h3 class="font-semibold text-gray-800 dark:text-gray-100">
+                Concluir agendamento
+              </h3>
+            </div>
+          </template>
+
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            Confirma a conclusão deste agendamento? O lançamento financeiro será
+            gerado automaticamente.
+          </p>
+
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <UButton
+                color="neutral"
+                variant="ghost"
+                @click="confirmConcluirOpen = false"
+              >
+                Voltar
+              </UButton>
+              <UButton
+                color="success"
+                :loading="alterandoStatus === agendamentoParaConcluir"
+                @click="confirmarConcluir"
+              >
+                Sim, concluir
+              </UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
+    </UModal>
+
+    <!-- Modal confirmação de Não Compareceu -->
+    <UModal v-model:open="confirmNaoCompareceuOpen">
+      <template #content>
+        <UCard class="ring-0">
+          <template #header>
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center shrink-0"
+              >
+                <UIcon name="i-lucide-user-x" class="size-5 text-orange-500" />
+              </div>
+              <h3 class="font-semibold text-gray-800 dark:text-gray-100">
+                Marcar como Não Compareceu
+              </h3>
+            </div>
+          </template>
+
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            Confirma que o cliente não compareceu a este agendamento?
+          </p>
+
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <UButton
+                color="neutral"
+                variant="ghost"
+                @click="confirmNaoCompareceuOpen = false"
+              >
+                Voltar
+              </UButton>
+              <UButton
+                color="warning"
+                :loading="alterandoStatus === agendamentoParaNaoCompareceu"
+                @click="confirmarNaoCompareceu"
+              >
+                Sim, confirmar
+              </UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
+    </UModal>
+
+    <!-- Modal confirmação de exclusão -->
+    <UModal v-model:open="confirmExcluirOpen">
+      <template #content>
+        <UCard class="ring-0">
+          <template #header>
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0"
+              >
+                <UIcon name="i-lucide-trash-2" class="size-5 text-red-500" />
+              </div>
+              <h3 class="font-semibold text-gray-800 dark:text-gray-100">
+                Excluir agendamento
+              </h3>
+            </div>
+          </template>
+
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            Tem certeza que deseja excluir este agendamento permanentemente?
+            Esta ação não pode ser desfeita.
+          </p>
+
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <UButton
+                color="neutral"
+                variant="ghost"
+                @click="confirmExcluirOpen = false"
+              >
+                Voltar
+              </UButton>
+              <UButton
+                color="error"
+                :loading="excluindo"
+                @click="confirmarExcluir"
+              >
+                Sim, excluir
               </UButton>
             </div>
           </template>

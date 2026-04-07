@@ -217,6 +217,50 @@
         </UButton>
       </div>
     </div>
+
+    <!-- Taxa de Busca (Taxidog) -->
+    <div
+      class="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm p-6 space-y-5"
+    >
+      <div>
+        <h2 class="font-semibold text-gray-800 dark:text-gray-100 text-base">
+          Taxa de Busca (Taxidog)
+        </h2>
+        <p class="text-xs text-gray-400 mt-1">
+          Valor fixo cobrado quando o petshop busca o pet na casa do cliente.
+          Será somado automaticamente ao valor do serviço nos agendamentos com
+          modalidade "Petshop busca".
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-1.5 max-w-xs">
+        <label class="text-xs font-medium text-gray-600 dark:text-gray-300"
+          >Taxa de busca (R$)</label
+        >
+        <UInput
+          v-model="taxaBusca.valor"
+          type="number"
+          min="0"
+          step="1"
+          placeholder="Ex: 15"
+        />
+        <span class="text-[11px] text-gray-400"
+          >Use 0 para desativar a taxa.</span
+        >
+      </div>
+
+      <div class="flex justify-end">
+        <UButton
+          :loading="salvandoTaxaBusca"
+          :disabled="salvandoTaxaBusca || taxaBusca.valor === ''"
+          color="primary"
+          class="text-sm font-semibold rounded-xl px-6"
+          @click="salvarTaxaBusca"
+        >
+          Salvar Taxa
+        </UButton>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -248,6 +292,15 @@ const salvandoMeta = ref(false);
 const meta = reactive({
   valor: auth.usuario?.metaMensal ? String(auth.usuario.metaMensal) : "",
 });
+
+// ── Taxa de busca ────────────────────────────────────────────────────────────
+const taxaBusca = reactive({
+  valor:
+    auth.usuario?.taxaBusca != null && auth.usuario.taxaBusca >= 0
+      ? String(auth.usuario.taxaBusca)
+      : "",
+});
+const salvandoTaxaBusca = ref(false);
 
 // ── Assinatura badge ───────────────────────────────────────────────────────
 const diasTrial = computed(() => {
@@ -359,6 +412,29 @@ async function salvarMeta() {
     showError(msg);
   } finally {
     salvandoMeta.value = false;
+  }
+}
+
+async function salvarTaxaBusca() {
+  salvandoTaxaBusca.value = true;
+  try {
+    await $fetch(`${config.public.apiUrl}/auth/taxa-busca`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${useCookie("auth_token").value}` },
+      body: { taxaBusca: Number(taxaBusca.valor) },
+    });
+    if (auth.usuario) {
+      auth.usuario.taxaBusca = Number(taxaBusca.valor);
+    }
+    useToast().add({ title: "Taxa de busca atualizada!", color: "success" });
+  } catch (err: unknown) {
+    const data = (err as { data?: { message?: string | string[] } })?.data;
+    const msg = Array.isArray(data?.message)
+      ? data.message.join(", ")
+      : (data?.message ?? "Erro ao salvar taxa.");
+    showError(msg);
+  } finally {
+    salvandoTaxaBusca.value = false;
   }
 }
 </script>

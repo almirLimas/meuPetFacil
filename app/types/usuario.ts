@@ -96,6 +96,7 @@ export interface Usuario {
   assinaturaStatus?: AssinaturaStatus;
   trialExpiraEm?: string;
   metaMensal?: number | null;
+  taxaBusca?: number | null;
   createdAt: string;
   lastAccess?: string;
   avatar?: string;
