@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 import type { StatusAgendamento } from "~/types/agendamento";
+import { useAvaliacoes } from "~/composables/useAvaliacoes";
 
 useBreadcrumb().set([{ label: "Dashboard" }]);
 import { useClienteStore } from "~/stores/cliente";
@@ -139,7 +140,12 @@ const servicosPopulares = [
 ];
 
 const { produtos, fetchProdutos } = useEstoque();
-onMounted(() => fetchProdutos());
+const { resumo: resumoAvaliacoes, fetchResumo: fetchResumoAvaliacoes } =
+  useAvaliacoes();
+onMounted(() => {
+  fetchProdutos();
+  fetchResumoAvaliacoes();
+});
 
 const iconeCategoria: Record<string, string> = {
   Alimento: "i-lucide-beef",
@@ -439,7 +445,101 @@ const percentReceita = computed(() =>
     </div>
   </div>
 
-  <!-- ── Row 4: Performance do Mês ── -->
+  <!-- ── Row 4: Satisfação do Cliente ── -->
+  <div
+    class="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm overflow-hidden"
+  >
+    <div
+      class="flex items-center justify-between px-4 py-2.5"
+      style="background-color: #1d9fb6"
+    >
+      <div class="flex items-center gap-2">
+        <UIcon name="i-lucide-smile" class="size-4 text-white" />
+        <h3 class="text-white font-semibold text-sm">
+          Satisfação dos Clientes
+        </h3>
+      </div>
+      <NuxtLink
+        to="/avaliacoes"
+        class="text-white text-xs bg-white/20 rounded-full px-2 py-0.5 font-semibold hover:bg-white/30 transition-colors"
+      >
+        Ver detalhes &rsaquo;
+      </NuxtLink>
+    </div>
+    <div class="p-5">
+      <!-- Sem avaliações ainda -->
+      <div
+        v-if="resumoAvaliacoes.total === 0"
+        class="flex flex-col items-center justify-center py-6 text-center gap-2"
+      >
+        <span class="text-4xl">⭐</span>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          Nenhuma avaliação respondida ainda.<br />
+          As pesquisas são enviadas automaticamente após cada atendimento.
+        </p>
+      </div>
+      <!-- Com avaliações -->
+      <div v-else class="flex items-center gap-8">
+        <!-- Percentual positivo -->
+        <div class="flex flex-col items-center gap-1 shrink-0">
+          <div
+            class="text-4xl font-black"
+            :class="
+              (resumoAvaliacoes.percentualPositivo ?? 0) >= 80
+                ? 'text-emerald-500'
+                : (resumoAvaliacoes.percentualPositivo ?? 0) >= 60
+                  ? 'text-amber-500'
+                  : 'text-red-500'
+            "
+          >
+            {{ resumoAvaliacoes.percentualPositivo }}%
+          </div>
+          <span
+            class="text-xs text-gray-500 dark:text-gray-400 text-center max-w-22 leading-tight"
+          >
+            clientes satisfeitos
+          </span>
+        </div>
+
+        <div class="flex-1 flex flex-col gap-3 min-w-0">
+          <!-- Barra de satisfação -->
+          <div
+            class="w-full h-3 bg-gray-100 dark:bg-neutral-700 rounded-full overflow-hidden"
+          >
+            <div
+              class="h-full rounded-full transition-all"
+              :class="
+                (resumoAvaliacoes.percentualPositivo ?? 0) >= 80
+                  ? 'bg-emerald-400'
+                  : (resumoAvaliacoes.percentualPositivo ?? 0) >= 60
+                    ? 'bg-amber-400'
+                    : 'bg-red-400'
+              "
+              :style="{
+                width: (resumoAvaliacoes.percentualPositivo ?? 0) + '%',
+              }"
+            />
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-gray-400">
+            <span
+              >Média:
+              <strong class="text-gray-700 dark:text-gray-200">
+                {{ resumoAvaliacoes.mediaNota }}
+                <UIcon
+                  name="i-lucide-star"
+                  class="size-3 text-amber-400 inline"
+                />
+              </strong>
+            </span>
+            <span>{{ resumoAvaliacoes.total }} avaliação(ões)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Row 5: Performance do Mês ── -->
   <div
     class="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm overflow-hidden"
   >

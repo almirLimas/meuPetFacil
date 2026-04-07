@@ -57,6 +57,7 @@ const menuItems = [
   { label: "Estoque", icon: "i-lucide-package", to: "/estoque" },
   { label: "Financeiro", icon: "i-lucide-wallet", to: "/financeiro" },
   { label: "Relatórios", icon: "i-lucide-bar-chart-2", to: "/relatorios" },
+  { label: "Avaliações", icon: "i-lucide-star", to: "/avaliacoes" },
   {
     label: "Primeiros passos",
     icon: "i-lucide-rocket",

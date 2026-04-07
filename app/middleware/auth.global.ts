@@ -18,7 +18,12 @@ const renovacaoRoutes = new Set([
 export default defineNuxtRouteMiddleware(async (to) => {
   const auth = useAuthStore();
 
-  if (publicRoutes.has(to.path) || to.path.startsWith("/criar-conta")) return;
+  if (
+    publicRoutes.has(to.path) ||
+    to.path.startsWith("/criar-conta") ||
+    to.path.startsWith("/avaliar")
+  )
+    return;
 
   // Restaura o usuário a partir do cookie de token (após reload/navegação direta)
   await auth.inicializar();
