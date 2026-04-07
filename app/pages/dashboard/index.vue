@@ -71,6 +71,7 @@ const stats = computed(() => [
 
 const agendaItems = computed(() =>
   agendamentos.value
+    .filter((a) => a.dataHora.slice(0, 10) === today)
     .sort((a, b) => a.dataHora.localeCompare(b.dataHora))
     .slice(0, 5)
     .map((a) => ({
@@ -651,11 +652,6 @@ const percentReceita = computed(() =>
             class="block text-center text-xs font-semibold py-2 rounded-xl text-white transition-opacity hover:opacity-90"
             style="background-color: #f07030"
             >Ver Financeiro Completo</NuxtLink
-          >
-          <NuxtLink
-            to="/configuracoes/whatsapp"
-            class="block text-center text-xs font-semibold py-2 rounded-xl border-2 border-gray-200 dark:border-neutral-600 text-gray-600 dark:text-gray-300 hover:border-orange-400 hover:text-orange-500 transition-colors"
-            >Enviar Promoção via WhatsApp</NuxtLink
           >
         </div>
       </div>
