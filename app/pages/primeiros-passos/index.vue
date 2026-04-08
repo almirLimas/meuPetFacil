@@ -75,12 +75,28 @@ useBreadcrumb().set([{ label: "Primeiros passos" }]);
               </UButton>
             </div>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-              Se o seu petshop busca o pet na casa do cliente (taxidog), defina
-              o valor fixo da taxa em
-              <strong>Configurações → Taxa de Busca</strong>. Esse valor será
-              somado automaticamente ao serviço nos agendamentos marcados como
-              "Petshop busca".
+              Se o seu petshop busca o pet na casa do cliente (taxidog), acesse
+              <strong>Configurações → Perfil</strong> e preencha o campo
+              <strong>Taxa de Busca (R$)</strong> com o valor cobrado por busca.
+              A partir disso:
             </p>
+            <ul
+              class="mt-1.5 text-sm text-gray-500 dark:text-gray-400 list-disc list-inside space-y-1"
+            >
+              <li>
+                Ao criar um agendamento, marque a opção
+                <strong>"Petshop busca"</strong> e o valor da taxa será somado
+                automaticamente ao total do serviço.
+              </li>
+              <li>
+                O lançamento financeiro gerado já incluirá a taxa de busca no
+                valor total.
+              </li>
+              <li>
+                Se não cobrar taxa de busca, basta deixar o campo em branco ou
+                zerado.
+              </li>
+            </ul>
           </div>
         </div>
       </UCard>
@@ -113,6 +129,34 @@ useBreadcrumb().set([{ label: "Primeiros passos" }]);
               endereço. Você também pode cadastrar os pets de cada cliente
               diretamente no cadastro.
             </p>
+            <p
+              class="mt-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
+            >
+              Cliente mensalista
+            </p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Se um cliente paga um valor fixo por mês (ex: banho toda semana
+              por R$ 120/mês), ative o campo
+              <strong>"Cliente mensalista"</strong> já no primeiro passo do
+              cadastro:
+            </p>
+            <ul
+              class="mt-1.5 text-sm text-gray-500 dark:text-gray-400 list-disc list-inside space-y-1"
+            >
+              <li>
+                Informe o <strong>valor mensal</strong> combinado e o
+                <strong>dia do vencimento</strong> (ex: todo dia 10).
+              </li>
+              <li>
+                O sistema registrará esse cliente como mensalista e exibirá essa
+                informação no perfil dele.
+              </li>
+              <li>
+                Os agendamentos do mensalista são criados normalmente; o
+                controle de pagamento mensal é feito na aba
+                <strong>Financeiro</strong>.
+              </li>
+            </ul>
           </div>
         </div>
       </UCard>
