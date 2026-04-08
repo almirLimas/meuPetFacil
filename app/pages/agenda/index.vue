@@ -344,11 +344,18 @@ const carregarDadosModal = async () => {
 };
 
 const abrirModal = async () => {
-  // Verifica rapidamente se há serviços cadastrados antes de abrir
+  // Verifica se há serviços e clientes cadastrados antes de abrir
   try {
-    const resp = await apiFetch<{ id: string }[]>("/servicos?ativos=true");
-    const lista = Array.isArray(resp) ? resp : [];
-    if (lista.length === 0) {
+    const [servicosResp, clientesResp] = await Promise.all([
+      apiFetch<{ id: string }[]>("/servicos?ativos=true"),
+      apiFetch<{ data: { id: string }[] }>("/clientes?limit=1"),
+    ]);
+
+    const semServicos =
+      (Array.isArray(servicosResp) ? servicosResp : []).length === 0;
+    const semClientes = (clientesResp?.data ?? []).length === 0;
+
+    if (semServicos) {
       toast.add({
         title: "Nenhum serviço cadastrado",
         description:
@@ -357,7 +364,27 @@ const abrirModal = async () => {
         actions: [
           {
             label: "Cadastrar serviço",
-            onClick: () => navigateTo("/servicos"),
+            onClick: () => {
+              navigateTo("/servicos");
+            },
+          },
+        ],
+      });
+      return;
+    }
+
+    if (semClientes) {
+      toast.add({
+        title: "Nenhum cliente cadastrado",
+        description:
+          "Cadastre pelo menos um cliente antes de criar um agendamento.",
+        color: "warning",
+        actions: [
+          {
+            label: "Cadastrar cliente",
+            onClick: () => {
+              navigateTo("/cadastro-cliente");
+            },
           },
         ],
       });
@@ -400,6 +427,26 @@ watch(
 const isEditModalOpen = ref(false);
 const editandoId = ref<string | null>(null);
 const salvandoEdicao = ref(false);
+
+// Refs para confirmar hora nos modais
+const horaNovoInputRef = ref<{ inputRef?: HTMLInputElement } | null>(null);
+const horaEditInputRef = ref<{ inputRef?: HTMLInputElement } | null>(null);
+
+const confirmarHoraNovo = () => {
+  const el = horaNovoInputRef.value?.inputRef;
+  if (el) {
+    el.blur();
+    novoForm.hora = el.value;
+  }
+};
+
+const confirmarHoraEdit = () => {
+  const el = horaEditInputRef.value?.inputRef;
+  if (el) {
+    el.blur();
+    editForm.hora = el.value;
+  }
+};
 
 const editForm = reactive({
   data: "",
@@ -943,7 +990,25 @@ const salvarAgendamento = async () => {
                 <UInput v-model="novoForm.data" type="date" class="w-full" />
               </UFormField>
               <UFormField label="Hora *">
-                <UInput v-model="novoForm.hora" type="time" class="w-full" />
+                <div class="flex gap-1.5 w-full">
+                  <UInput
+                    ref="horaNovoInputRef"
+                    v-model="novoForm.hora"
+                    type="time"
+                    class="flex-1"
+                    @change="
+                      (e: Event) =>
+                        (novoForm.hora = (e.target as HTMLInputElement).value)
+                    "
+                  />
+                  <UButton
+                    icon="i-lucide-check"
+                    color="secondary"
+                    variant="soft"
+                    title="Confirmar hora"
+                    @click="confirmarHoraNovo"
+                  />
+                </div>
               </UFormField>
             </div>
 
@@ -1094,7 +1159,25 @@ const salvarAgendamento = async () => {
                 <UInput v-model="editForm.data" type="date" class="w-full" />
               </UFormField>
               <UFormField label="Hora *">
-                <UInput v-model="editForm.hora" type="time" class="w-full" />
+                <div class="flex gap-1.5 w-full">
+                  <UInput
+                    ref="horaEditInputRef"
+                    v-model="editForm.hora"
+                    type="time"
+                    class="flex-1"
+                    @change="
+                      (e: Event) =>
+                        (editForm.hora = (e.target as HTMLInputElement).value)
+                    "
+                  />
+                  <UButton
+                    icon="i-lucide-check"
+                    color="secondary"
+                    variant="soft"
+                    title="Confirmar hora"
+                    @click="confirmarHoraEdit"
+                  />
+                </div>
               </UFormField>
             </div>
 

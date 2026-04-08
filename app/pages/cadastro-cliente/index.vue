@@ -120,8 +120,10 @@ const submitForm = async () => {
     <!-- Cabeçalho -->
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-xl font-bold text-gray-800">Cadastro de Cliente</h1>
-        <p class="text-sm text-gray-500">
+        <h1 class="text-xl font-bold text-gray-800 dark:text-gray-100">
+          Cadastro de Cliente
+        </h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
           Preencha os dados para registrar um novo cliente
         </p>
       </div>
@@ -135,7 +137,7 @@ const submitForm = async () => {
     </div>
 
     <!-- Card do formulário -->
-    <UCard class="bg-white! ring-0 shadow-sm">
+    <UCard class="ring-0 shadow-sm">
       <template #header>
         <UStepper
           :items="stepperItemsComputed"

@@ -127,14 +127,16 @@ const submitForm = async () => {
 
 <template>
   <div class="min-h-screen flex items-center justify-center px-4 py-10">
-    <UCard class="w-full max-w-xl shadow-lg bg-white! ring-0">
+    <UCard class="w-full max-w-xl shadow-lg ring-0">
       <!-- Cabeçalho com logo -->
       <template #header>
         <div class="flex flex-col items-center gap-4 pt-2 pb-1">
           <AppMascot :size="180" />
           <div class="text-center">
-            <h1 class="text-xl font-bold text-gray-800">Criar conta</h1>
-            <p class="text-sm text-gray-500 mt-0.5">
+            <h1 class="text-xl font-bold text-gray-800 dark:text-gray-100">
+              Criar conta
+            </h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
               14 dias grátis — cancele quando quiser
             </p>
           </div>

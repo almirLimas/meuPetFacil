@@ -127,7 +127,7 @@ const dadosFields = computed(() => {
 <template>
   <div v-if="cliente" class="flex flex-col gap-4">
     <!-- Header card -->
-    <UCard class="bg-white! ring-0 shadow-sm">
+    <UCard class="ring-0 shadow-sm">
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <!-- Avatar -->
         <div
@@ -140,7 +140,9 @@ const dadosFields = computed(() => {
         <!-- Info -->
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-3 flex-wrap">
-            <h1 class="text-xl font-bold text-gray-800">{{ cliente.nome }}</h1>
+            <h1 class="text-xl font-bold text-gray-800 dark:text-gray-100">
+              {{ cliente.nome }}
+            </h1>
             <UBadge
               :color="cliente.status === 'Ativo' ? 'success' : 'neutral'"
               variant="soft"
@@ -150,7 +152,7 @@ const dadosFields = computed(() => {
             </UBadge>
           </div>
           <div
-            class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500 mt-1"
+            class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400 mt-1"
           >
             <span class="flex items-center gap-1">
               <UIcon name="i-lucide-mail" class="text-xs" />
@@ -195,7 +197,7 @@ const dadosFields = computed(() => {
         <!-- Card mensalidade -->
         <UCard
           v-if="cliente.mensalista"
-          class="bg-white! ring-0 shadow-sm mt-2 border border-orange-200"
+          class="ring-0 shadow-sm mt-2 border border-orange-200 dark:border-orange-800"
         >
           <div
             class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
@@ -210,19 +212,22 @@ const dadosFields = computed(() => {
                 />
               </div>
               <div>
-                <p class="text-sm font-semibold text-gray-800">
+                <p
+                  class="text-sm font-semibold text-gray-800 dark:text-gray-100"
+                >
                   Plano Mensalista
                 </p>
-                <p class="text-sm text-gray-500">
+                <p class="text-sm text-gray-500 dark:text-gray-400">
                   Valor:
-                  <span class="font-medium text-gray-800"
+                  <span class="font-medium text-gray-800 dark:text-gray-100"
                     >R$ {{ Number(cliente.valorMensal ?? 0).toFixed(2) }}</span
                   >
                   <span v-if="cliente.diaVencimento">
                     · Vencimento dia
-                    <span class="font-medium text-gray-800">{{
-                      cliente.diaVencimento
-                    }}</span></span
+                    <span
+                      class="font-medium text-gray-800 dark:text-gray-100"
+                      >{{ cliente.diaVencimento }}</span
+                    ></span
                   >
                 </p>
               </div>
@@ -240,7 +245,10 @@ const dadosFields = computed(() => {
               >
                 {{ jaPageuEsseMes ? "Pago este mês" : "Confirmar pagamento" }}
               </UButton>
-              <p v-if="jaPageuEsseMes" class="text-xs text-gray-400">
+              <p
+                v-if="jaPageuEsseMes"
+                class="text-xs text-gray-400 dark:text-gray-500"
+              >
                 Pago em
                 {{
                   new Date(cliente.ultimaMensalidadePaga!).toLocaleDateString(
@@ -252,15 +260,17 @@ const dadosFields = computed(() => {
           </div>
         </UCard>
 
-        <UCard class="bg-white! ring-0 shadow-sm mt-2">
+        <UCard class="ring-0 shadow-sm mt-2">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
             <div v-for="field in dadosFields" :key="field.label">
               <p
-                class="text-xs text-gray-400 uppercase tracking-wide font-medium"
+                class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide font-medium"
               >
                 {{ field.label }}
               </p>
-              <p class="text-sm text-gray-800 font-medium mt-0.5">
+              <p
+                class="text-sm text-gray-800 dark:text-gray-100 font-medium mt-0.5"
+              >
                 {{ field.value || "—" }}
               </p>
             </div>
@@ -274,7 +284,7 @@ const dadosFields = computed(() => {
           <!-- Empty state -->
           <div
             v-if="(cliente.pets ?? []).length === 0"
-            class="flex flex-col items-center justify-center gap-2 py-12 text-center text-gray-400 bg-white rounded-xl border border-gray-100"
+            class="flex flex-col items-center justify-center gap-2 py-12 text-center text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700"
           >
             <UIcon name="i-lucide-paw-print" class="text-5xl" />
             <p class="text-sm font-medium">Nenhum pet cadastrado</p>
@@ -286,7 +296,7 @@ const dadosFields = computed(() => {
             <UCard
               v-for="pet in cliente.pets ?? []"
               :key="pet.id"
-              class="bg-white! ring-0 shadow-sm"
+              class="ring-0 shadow-sm"
             >
               <div class="flex items-start gap-3">
                 <div
@@ -296,8 +306,12 @@ const dadosFields = computed(() => {
                   <UIcon name="i-lucide-paw-print" class="text-[#E85A8A]" />
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="font-semibold text-gray-800">{{ pet.nome }}</p>
-                  <p class="text-sm text-gray-500">{{ pet.raca }}</p>
+                  <p class="font-semibold text-gray-800 dark:text-gray-100">
+                    {{ pet.nome }}
+                  </p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ pet.raca }}
+                  </p>
                   <div class="flex flex-wrap gap-2 mt-2">
                     <UBadge
                       v-if="pet.especie"
@@ -334,7 +348,7 @@ const dadosFields = computed(() => {
                   </div>
                   <p
                     v-if="pet.observacoes"
-                    class="text-xs text-gray-400 mt-2 italic"
+                    class="text-xs text-gray-400 dark:text-gray-500 mt-2 italic"
                   >
                     {{ pet.observacoes }}
                   </p>
@@ -365,7 +379,7 @@ const dadosFields = computed(() => {
   <!-- Não encontrado -->
   <div
     v-else
-    class="flex flex-col items-center justify-center py-20 text-gray-400"
+    class="flex flex-col items-center justify-center py-20 text-gray-400 dark:text-gray-500"
   >
     <UIcon name="i-lucide-user-x" class="text-5xl mb-4" />
     <p class="text-lg font-medium">Cliente não encontrado</p>

@@ -38,12 +38,12 @@ async function handleSubmit() {
 
 <template>
   <div class="min-h-screen flex items-center justify-center px-4">
-    <UCard class="w-full max-w-sm shadow-lg bg-white! ring-0">
+    <UCard class="w-full max-w-sm shadow-lg ring-0">
       <div class="flex flex-col items-center gap-6 py-4">
         <AppMascot :size="180" />
 
         <div class="w-full text-center">
-          <h1 class="text-xl font-semibold text-gray-800">
+          <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-100">
             Esqueceu sua senha?
           </h1>
           <p class="text-sm text-gray-500 mt-1">

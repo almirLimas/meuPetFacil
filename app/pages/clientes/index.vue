@@ -9,6 +9,10 @@ import { useClienteStore } from "~/stores/cliente";
 const table = useTemplateRef("table");
 const clienteStore = useClienteStore();
 
+const onSelectRow = (_e: Event, row: { original: { id: string } }) => {
+  navigateTo(`/clientes/${row.original.id}`);
+};
+
 // -- Dados da API -------------------------------------------------------------
 const { pending } = await useAsyncData("clientes", () => clienteStore.listar());
 const clientes = computed(() => clienteStore.clientes);
@@ -75,7 +79,9 @@ const avatarColors = [
 ];
 
 const getAvatarColor = (id: string) => {
-  const hash = id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const hash = id
+    .split("")
+    .reduce((acc, c) => acc + (c.codePointAt(0) ?? 0), 0);
   return avatarColors[hash % avatarColors.length];
 };
 </script>
@@ -85,8 +91,10 @@ const getAvatarColor = (id: string) => {
     <!-- Cabeçalho -->
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-xl font-bold text-gray-800">Clientes</h1>
-        <p class="text-sm text-gray-500">
+        <h1 class="text-xl font-bold text-gray-800 dark:text-gray-100">
+          Clientes
+        </h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
           {{ clientes.length }} clientes cadastrados
         </p>
       </div>
@@ -149,10 +157,7 @@ const getAvatarColor = (id: string) => {
             tr: 'hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer',
             th: 'whitespace-nowrap',
           }"
-          @select="
-            (_e: MouseEvent, row: { original: { id: string } }) =>
-              navigateTo(`/clientes/${row.original.id}`)
-          "
+          @select="onSelectRow"
         >
           <!-- Coluna nome com avatar -->
           <template #nome-cell="{ row }">
@@ -170,7 +175,7 @@ const getAvatarColor = (id: string) => {
                     .toUpperCase()
                 }}
               </div>
-              <span class="font-medium text-gray-800">{{
+              <span class="font-medium text-gray-800 dark:text-gray-100">{{
                 row.original.nome
               }}</span>
               <UBadge

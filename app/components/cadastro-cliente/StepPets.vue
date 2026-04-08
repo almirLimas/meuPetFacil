@@ -145,7 +145,7 @@ defineExpose({
       <div
         v-for="(pet, idx) in pets"
         :key="idx"
-        class="flex items-center justify-between p-4 rounded-xl border border-gray-200 bg-gray-50"
+        class="flex items-center justify-between p-4 rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800"
       >
         <div class="flex items-center gap-3">
           <div
@@ -155,9 +155,11 @@ defineExpose({
             <UIcon name="i-lucide-paw-print" class="text-[#E85A8A] text-base" />
           </div>
           <div>
-            <p class="font-semibold text-gray-800 text-sm">{{ pet.nome }}</p>
+            <p class="font-semibold text-gray-800 dark:text-gray-100 text-sm">
+              {{ pet.nome }}
+            </p>
             <div
-              class="flex items-center gap-1.5 text-xs text-gray-500 flex-wrap mt-0.5"
+              class="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 flex-wrap mt-0.5"
             >
               <span>{{ pet.raca }}</span>
               <span v-if="pet.especie">· {{ pet.especie }}</span>
@@ -222,9 +224,9 @@ defineExpose({
     <!-- Formulário inline de adição -->
     <div
       v-if="showForm"
-      class="rounded-xl border border-gray-200 p-4 flex flex-col gap-4 bg-white"
+      class="rounded-xl border border-gray-200 dark:border-neutral-700 p-4 flex flex-col gap-4 bg-white dark:bg-neutral-800"
     >
-      <p class="text-sm font-semibold text-gray-700">
+      <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">
         {{ editandoIdx !== null ? "Editar pet" : "Novo pet" }}
       </p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -140,8 +140,10 @@ const salvar = async () => {
           @click="navigateTo(`/clientes/${pet.clienteId}`)"
         />
         <div>
-          <h1 class="text-lg font-bold text-gray-800">Editar pet</h1>
-          <p class="text-sm text-gray-500">{{ pet.nome }}</p>
+          <h1 class="text-lg font-bold text-gray-800 dark:text-gray-100">
+            Editar pet
+          </h1>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{{ pet.nome }}</p>
         </div>
       </div>
       <UButton
@@ -155,7 +157,7 @@ const salvar = async () => {
     </div>
 
     <!-- Form -->
-    <UCard class="bg-white! ring-0 shadow-sm">
+    <UCard class="ring-0 shadow-sm">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Espécie -->
         <UFormField label="Espécie" name="especie">

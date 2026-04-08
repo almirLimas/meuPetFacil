@@ -307,8 +307,12 @@ const salvar = async () => {
           @click="navigateTo(`/clientes/${id}`)"
         />
         <div>
-          <h1 class="text-lg font-bold text-gray-800">Editar cliente</h1>
-          <p class="text-sm text-gray-500">{{ cliente.nome }}</p>
+          <h1 class="text-lg font-bold text-gray-800 dark:text-gray-100">
+            Editar cliente
+          </h1>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            {{ cliente.nome }}
+          </p>
         </div>
       </div>
       <UButton
@@ -324,19 +328,19 @@ const salvar = async () => {
     <!-- Tabs com steps reutilizados -->
     <UTabs v-model="tabIndex" :items="tabItems" class="w-full">
       <template #dados>
-        <UCard class="bg-white! ring-0 shadow-sm mt-2">
+        <UCard class="ring-0 shadow-sm mt-2">
           <CadastroClienteStepDadosPessoais v-model="state" />
         </UCard>
       </template>
 
       <template #endereco>
-        <UCard class="bg-white! ring-0 shadow-sm mt-2">
+        <UCard class="ring-0 shadow-sm mt-2">
           <CadastroClienteStepEndereco v-model="state" />
         </UCard>
       </template>
 
       <template #info>
-        <UCard class="bg-white! ring-0 shadow-sm mt-2">
+        <UCard class="ring-0 shadow-sm mt-2">
           <CadastroClienteStepInformacoes v-model="state" />
         </UCard>
       </template>

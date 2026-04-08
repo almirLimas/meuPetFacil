@@ -46,7 +46,7 @@ async function handleLogin() {
 
 <template>
   <div class="min-h-screen flex items-center justify-center px-4">
-    <UCard class="w-full max-w-sm shadow-lg bg-white! ring-0">
+    <UCard class="w-full max-w-sm shadow-lg ring-0">
       <div class="flex flex-col items-center gap-6 py-4">
         <AppMascot :size="250" />
 
