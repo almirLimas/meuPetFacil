@@ -14,7 +14,10 @@ const {
 } = useFinanceiro();
 
 // ── Filtros ──────────────────────────────────────────────────────────────────
-const hoje = new Date().toISOString().slice(0, 10);
+const hoje = (() => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+})();
 const filtroData = ref(hoje);
 const filtroTipo = ref<TipoLancamento | "">("");
 
@@ -331,7 +334,11 @@ const fmtData = (d: string) =>
                       class="text-xs text-gray-400 mt-0.5"
                     >
                       {{ item.agendamento.pet.nome }} ·
-                      {{ item.agendamento.servico.nome }}
+                      {{
+                        item.agendamento.servicos
+                          .map((s) => s.servico.nome)
+                          .join(", ")
+                      }}
                     </p>
                   </div>
                 </div>

@@ -17,16 +17,22 @@ export interface Agendamento {
   observacoes?: string | null;
   clienteId: string;
   petId: string;
-  servicoId: string;
   cliente: { id: string; nome: string; telefonePrincipal: string };
   pet: { id: string; nome: string; especie?: string };
-  servico: { id: string; nome: string; preco: number; duracaoMinutos?: number };
+  servicos: Array<{
+    servico: {
+      id: string;
+      nome: string;
+      preco: number;
+      duracaoMinutos?: number;
+    };
+  }>;
 }
 
 export interface CreateAgendamentoPayload {
   clienteId: string;
   petId: string;
-  servicoId: string;
+  servicoIds: string[];
   dataHora: string;
   modalidade: ModalidadeAgendamento;
   taxaBusca?: number;

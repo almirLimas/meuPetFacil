@@ -12,7 +12,10 @@ const { agendamentos, fetchByDate } = useAgenda();
 const clienteStore = useClienteStore();
 const { resumo, fetchResumoMes } = useFinanceiro();
 
-const today = new Date().toISOString().slice(0, 10);
+const today = (() => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+})();
 
 // Carrega agendamentos de hoje, clientes e resumo financeiro em paralelo
 await Promise.all([
@@ -71,7 +74,6 @@ const stats = computed(() => [
 
 const agendaItems = computed(() =>
   agendamentos.value
-    .filter((a) => a.dataHora.slice(0, 10) === today)
     .sort((a, b) => a.dataHora.localeCompare(b.dataHora))
     .slice(0, 5)
     .map((a) => ({
@@ -79,7 +81,7 @@ const agendaItems = computed(() =>
         hour: "2-digit",
         minute: "2-digit",
       }),
-      service: a.servico.nome,
+      service: (a.servicos ?? []).map((s) => s.servico.nome).join(", "),
       pet: a.pet.nome,
       status: a.status as StatusAgendamento,
       passado:
@@ -87,6 +89,8 @@ const agendaItems = computed(() =>
         new Date(a.dataHora) < new Date(),
     })),
 );
+
+onMounted(() => fetchByDate(today));
 
 const statusBadge: Record<
   StatusAgendamento | "AguardandoAcao",
@@ -236,6 +240,13 @@ const percentReceita = computed(() =>
         </div>
       </div>
       <div class="p-4 flex flex-col gap-3 flex-1">
+        <div
+          v-if="agendaItems.length === 0"
+          class="flex flex-col items-center justify-center py-6 gap-1 text-gray-400"
+        >
+          <UIcon name="i-lucide-calendar-x" class="text-3xl" />
+          <p class="text-xs">Nenhum agendamento para hoje</p>
+        </div>
         <div
           v-for="item in agendaItems"
           :key="item.time + item.pet"

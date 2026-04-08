@@ -19,7 +19,7 @@ export interface Lancamento {
   agendamento?: {
     id: string;
     pet: { nome: string };
-    servico: { nome: string };
+    servicos: Array<{ servico: { nome: string } }>;
   };
   createdAt: string;
   updatedAt: string;

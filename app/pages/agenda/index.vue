@@ -16,7 +16,10 @@ const toast = useToast();
 const auth = useAuthStore();
 
 // -- Data selecionada ---------------------------------------------------------
-const today = new Date().toISOString().slice(0, 10);
+const today = (() => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+})();
 const selectedDate = ref(today);
 
 const selectedDateFormatted = computed(() =>
@@ -31,13 +34,13 @@ const selectedDateFormatted = computed(() =>
 const prevDay = () => {
   const d = new Date(selectedDate.value + "T00:00:00");
   d.setDate(d.getDate() - 1);
-  selectedDate.value = d.toISOString().slice(0, 10);
+  selectedDate.value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
 const nextDay = () => {
   const d = new Date(selectedDate.value + "T00:00:00");
   d.setDate(d.getDate() + 1);
-  selectedDate.value = d.toISOString().slice(0, 10);
+  selectedDate.value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
 watch(selectedDate, (date) => fetchByDate(date), { immediate: true });
@@ -62,7 +65,7 @@ const agendamentosDoDia = computed(() => {
         !q ||
         a.pet.nome.toLowerCase().includes(q) ||
         a.cliente.nome.toLowerCase().includes(q) ||
-        a.servico.nome.toLowerCase().includes(q);
+        a.servicos.some((s) => s.servico.nome.toLowerCase().includes(q));
       const matchStatus =
         filtroStatus.value === "Todos" || a.status === filtroStatus.value;
       return matchBusca && matchStatus;
@@ -281,7 +284,7 @@ const servicosLoading = ref(false);
 const novoForm = reactive({
   data: today,
   hora: "",
-  servicoId: "",
+  servicoIds: [] as string[],
   clienteId: "",
   petId: "",
   modalidade: "ClienteTraz" as ModalidadeAgendamento,
@@ -307,7 +310,7 @@ watch(
 const carregarDadosModal = async () => {
   novoForm.data = selectedDate.value;
   novoForm.hora = "";
-  novoForm.servicoId = "";
+  novoForm.servicoIds = [];
   novoForm.clienteId = "";
   novoForm.petId = "";
   novoForm.modalidade = "ClienteTraz";
@@ -401,7 +404,7 @@ const salvandoEdicao = ref(false);
 const editForm = reactive({
   data: "",
   hora: "",
-  servicoId: "",
+  servicoIds: [] as string[],
   status: "Agendado" as StatusAgendamento,
   modalidade: "ClienteTraz" as ModalidadeAgendamento,
   observacoes: "",
@@ -410,12 +413,12 @@ const editForm = reactive({
 const abrirEditar = async (ag: (typeof agendamentos.value)[0]) => {
   editandoId.value = ag.id;
   const dt = new Date(ag.dataHora);
-  editForm.data = dt.toISOString().slice(0, 10);
+  editForm.data = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
   editForm.hora = dt.toLocaleTimeString("pt-BR", {
     hour: "2-digit",
     minute: "2-digit",
   });
-  editForm.servicoId = ag.servico.id;
+  editForm.servicoIds = ag.servicos.map((s) => s.servico.id);
   editForm.status = ag.status;
   editForm.modalidade = ag.modalidade;
   editForm.observacoes = ag.observacoes ?? "";
@@ -440,7 +443,7 @@ const salvarEdicao = async () => {
     !editandoId.value ||
     !editForm.data ||
     !editForm.hora ||
-    !editForm.servicoId
+    !editForm.servicoIds.length
   ) {
     toast.add({
       title: "Preencha todos os campos obrigatórios",
@@ -454,7 +457,7 @@ const salvarEdicao = async () => {
       `${editForm.data}T${editForm.hora}`,
     ).toISOString();
     await update(editandoId.value, {
-      servicoId: editForm.servicoId,
+      servicoIds: editForm.servicoIds,
       status: editForm.status,
       dataHora,
       modalidade: editForm.modalidade,
@@ -473,7 +476,7 @@ const salvarAgendamento = async () => {
   if (
     !novoForm.data ||
     !novoForm.hora ||
-    !novoForm.servicoId ||
+    !novoForm.servicoIds.length ||
     !novoForm.clienteId ||
     !novoForm.petId
   ) {
@@ -492,7 +495,7 @@ const salvarAgendamento = async () => {
     await create({
       clienteId: novoForm.clienteId,
       petId: novoForm.petId,
-      servicoId: novoForm.servicoId,
+      servicoIds: novoForm.servicoIds,
       dataHora,
       modalidade: novoForm.modalidade,
       taxaBusca: novoForm.taxaBusca ? Number(novoForm.taxaBusca) : undefined,
@@ -741,14 +744,25 @@ const salvarAgendamento = async () => {
 
           <!-- Info -->
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
-              {{ item.servico.nome }} &mdash; {{ item.pet.nome }}
+            <div class="flex flex-wrap items-center gap-1 mb-0.5">
               <span
-                v-if="item.pet.especie"
-                class="text-xs font-normal text-gray-400"
-                >({{ item.pet.especie }})</span
+                v-for="s in item.servicos"
+                :key="s.servico.id"
+                class="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300"
               >
-            </p>
+                {{ s.servico.nome }}
+              </span>
+              <span
+                class="text-sm font-semibold text-gray-800 dark:text-gray-100"
+              >
+                &mdash; {{ item.pet.nome }}
+                <span
+                  v-if="item.pet.especie"
+                  class="text-xs font-normal text-gray-400"
+                  >({{ item.pet.especie }})</span
+                >
+              </span>
+            </div>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
               <UIcon name="i-lucide-user" class="inline size-3 mr-0.5" />
               {{ item.cliente.nome }}
@@ -933,13 +947,14 @@ const salvarAgendamento = async () => {
               </UFormField>
             </div>
 
-            <UFormField label="Serviço *">
+            <UFormField label="Serviços *">
               <USelect
-                v-model="novoForm.servicoId"
+                v-model="novoForm.servicoIds"
                 :items="servicos"
                 :loading="servicosLoading"
-                placeholder="Selecione o serviço"
+                placeholder="Selecione os serviços"
                 class="w-full"
+                multiple
               />
             </UFormField>
 
@@ -1083,13 +1098,14 @@ const salvarAgendamento = async () => {
               </UFormField>
             </div>
 
-            <UFormField label="Serviço *">
+            <UFormField label="Serviços *">
               <USelect
-                v-model="editForm.servicoId"
+                v-model="editForm.servicoIds"
                 :items="servicos"
                 :loading="servicosLoading"
-                placeholder="Selecione o serviço"
+                placeholder="Selecione os serviços"
                 class="w-full"
+                multiple
               />
             </UFormField>
 

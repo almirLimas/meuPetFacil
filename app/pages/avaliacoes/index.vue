@@ -15,7 +15,7 @@ interface AvaliacaoItem {
   cliente: { id: string; nome: string };
   agendamento: {
     dataHora: string;
-    servico: { nome: string };
+    servicos: Array<{ servico: { nome: string } }>;
     pet: { nome: string };
   };
 }
@@ -141,7 +141,10 @@ function corNota(n: number): string {
               {{ a.cliente.nome }}
             </p>
             <p class="text-xs text-gray-400 truncate">
-              {{ a.agendamento.servico.nome }} — {{ a.agendamento.pet.nome }}
+              {{
+                a.agendamento.servicos.map((s) => s.servico.nome).join(", ")
+              }}
+              — {{ a.agendamento.pet.nome }}
             </p>
           </div>
 

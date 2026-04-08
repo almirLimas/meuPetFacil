@@ -125,7 +125,7 @@ function formatarData(dataHora: string) {
               <p class="text-sm font-medium text-gray-800 truncate">
                 {{ ag.pet.nome }}
                 <span class="text-gray-400 font-normal">·</span>
-                {{ ag.servico.nome }}
+                {{ ag.servicos.map((s) => s.servico.nome).join(", ") }}
               </p>
               <p class="text-xs text-gray-500 mt-0.5">
                 {{ ag.cliente.nome }} ·

@@ -45,7 +45,7 @@ export const useAgenda = () => {
   const update = async (
     id: string,
     payload: {
-      servicoId?: string;
+      servicoIds?: string[];
       status?: StatusAgendamento;
       dataHora?: string;
       modalidade?: string;
