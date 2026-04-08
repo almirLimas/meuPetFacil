@@ -50,6 +50,42 @@ const initials = computed(
       .toUpperCase() ?? "",
 );
 
+// -- Mensalidade -------------------------------------------------------------
+const loadingPagamento = ref(false);
+const toast = useToast();
+
+const jaPageuEsseMes = computed(() => {
+  const ultima = cliente.value?.ultimaMensalidadePaga;
+  if (!ultima) return false;
+  const d = new Date(ultima);
+  const agora = new Date();
+  return (
+    d.getFullYear() === agora.getFullYear() && d.getMonth() === agora.getMonth()
+  );
+});
+
+async function confirmarMensalidade() {
+  loadingPagamento.value = true;
+  try {
+    const { apiFetch } = useApi();
+    await apiFetch(`/clientes/${id}/pagar-mensalidade`, { method: "POST" });
+    // Recarrega o cliente para atualizar ultimaMensalidadePaga
+    await clienteStore.buscarUm(id);
+    toast.add({
+      title: "Mensalidade confirmada!",
+      description: `Lançamento de R$ ${Number(cliente.value?.valorMensal ?? 0).toFixed(2)} adicionado ao faturamento.`,
+      color: "success",
+    });
+  } catch {
+    toast.add({
+      title: "Mensalidade já confirmada neste mês",
+      color: "warning",
+    });
+  } finally {
+    loadingPagamento.value = false;
+  }
+}
+
 // -- Tabs ---------------------------------------------------------------------
 const tabItems = [
   { label: "Dados", icon: "i-lucide-user", slot: "dados" as const },
@@ -132,7 +168,7 @@ const dadosFields = computed(() => {
         </div>
 
         <!-- Actions -->
-        <div class="flex gap-2 shrink-0">
+        <div class="flex gap-2 shrink-0 flex-wrap">
           <UButton
             color="neutral"
             variant="outline"
@@ -156,6 +192,66 @@ const dadosFields = computed(() => {
     <UTabs :items="tabItems" class="w-full">
       <!-- Aba Dados -->
       <template #dados>
+        <!-- Card mensalidade -->
+        <UCard
+          v-if="cliente.mensalista"
+          class="bg-white! ring-0 shadow-sm mt-2 border border-orange-200"
+        >
+          <div
+            class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+          >
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0"
+              >
+                <UIcon
+                  name="i-lucide-calendar-check"
+                  class="text-orange-500 text-lg"
+                />
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-800">
+                  Plano Mensalista
+                </p>
+                <p class="text-sm text-gray-500">
+                  Valor:
+                  <span class="font-medium text-gray-800"
+                    >R$ {{ Number(cliente.valorMensal ?? 0).toFixed(2) }}</span
+                  >
+                  <span v-if="cliente.diaVencimento">
+                    · Vencimento dia
+                    <span class="font-medium text-gray-800">{{
+                      cliente.diaVencimento
+                    }}</span></span
+                  >
+                </p>
+              </div>
+            </div>
+            <div class="flex flex-col items-end gap-1">
+              <UButton
+                :color="jaPageuEsseMes ? 'neutral' : 'secondary'"
+                :variant="jaPageuEsseMes ? 'soft' : 'solid'"
+                :leading-icon="
+                  jaPageuEsseMes ? 'i-lucide-check' : 'i-lucide-circle-check'
+                "
+                :loading="loadingPagamento"
+                :disabled="jaPageuEsseMes"
+                @click="confirmarMensalidade"
+              >
+                {{ jaPageuEsseMes ? "Pago este mês" : "Confirmar pagamento" }}
+              </UButton>
+              <p v-if="jaPageuEsseMes" class="text-xs text-gray-400">
+                Pago em
+                {{
+                  new Date(cliente.ultimaMensalidadePaga!).toLocaleDateString(
+                    "pt-BR",
+                  )
+                }}
+              </p>
+            </div>
+          </div>
+        </UCard>
+
         <UCard class="bg-white! ring-0 shadow-sm mt-2">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
             <div v-for="field in dadosFields" :key="field.label">

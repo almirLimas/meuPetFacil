@@ -83,6 +83,9 @@ const state = reactive({
   dataNascimento: "",
   comoConheceu: "",
   observacoes: "",
+  mensalista: false,
+  valorMensal: null as number | null,
+  diaVencimento: null as number | null,
   status: "Ativo",
   pets: [] as Pet[],
 });
@@ -187,6 +190,8 @@ const salvar = async () => {
       tenantId: _tenantId,
       // @ts-expect-error campos extras do backend
       agendamentos: _agendamentos,
+      // @ts-expect-error campos extras do backend
+      ultimaMensalidadePaga: _ultimaMensalidadePaga,
       ...clienteData
     } = state as typeof state & {
       id?: string;

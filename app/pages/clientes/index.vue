@@ -57,6 +57,12 @@ const columns: TableColumn<Cliente>[] = [
 // -- Paginação e filtro -------------------------------------------------------
 const pagination = ref({ pageIndex: 0, pageSize: 8 });
 const globalFilter = ref("");
+const soMensalistas = ref(false);
+
+const clientesFiltrados = computed(() => {
+  if (!soMensalistas.value) return clientes.value;
+  return clientes.value.filter((c) => c.mensalista);
+});
 
 // -- Cores dos avatares -------------------------------------------------------
 const avatarColors = [
@@ -106,10 +112,22 @@ const getAvatarColor = (id: string) => {
           class="max-w-sm w-full"
           @update:model-value="pagination.pageIndex = 0"
         />
+        <UButton
+          :color="soMensalistas ? 'secondary' : 'neutral'"
+          :variant="soMensalistas ? 'solid' : 'outline'"
+          size="sm"
+          leading-icon="i-lucide-calendar-check"
+          @click="
+            soMensalistas = !soMensalistas;
+            pagination.pageIndex = 0;
+          "
+        >
+          Mensalistas
+        </UButton>
         <UBadge color="neutral" variant="soft" class="ml-auto">
           {{
             table?.tableApi?.getFilteredRowModel().rows.length ??
-            clientes.length
+            clientesFiltrados.length
           }}
           resultado(s)
         </UBadge>
@@ -121,16 +139,20 @@ const getAvatarColor = (id: string) => {
           ref="table"
           v-model:pagination="pagination"
           v-model:global-filter="globalFilter"
-          :data="clientes"
+          :data="clientesFiltrados"
           :columns="columns"
           :loading="pending"
           :pagination-options="{
             getPaginationRowModel: getPaginationRowModel(),
           }"
           :ui="{
-            tr: 'hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors',
+            tr: 'hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer',
             th: 'whitespace-nowrap',
           }"
+          @select="
+            (_e: MouseEvent, row: { original: { id: string } }) =>
+              navigateTo(`/clientes/${row.original.id}`)
+          "
         >
           <!-- Coluna nome com avatar -->
           <template #nome-cell="{ row }">
@@ -151,6 +173,15 @@ const getAvatarColor = (id: string) => {
               <span class="font-medium text-gray-800">{{
                 row.original.nome
               }}</span>
+              <UBadge
+                v-if="row.original.mensalista"
+                color="secondary"
+                variant="outline"
+                size="sm"
+                leading-icon="i-lucide-calendar-check"
+              >
+                Mensalista
+              </UBadge>
             </div>
           </template>
 

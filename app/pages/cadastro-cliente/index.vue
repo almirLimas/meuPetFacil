@@ -29,6 +29,9 @@ const state = reactive<ClienteFormState>({
   dataNascimento: "",
   comoConheceu: "",
   observacoes: "",
+  mensalista: false,
+  valorMensal: null,
+  diaVencimento: null,
   status: "Ativo",
   pets: [] as PetFormState[],
 });

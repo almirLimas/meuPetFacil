@@ -16,6 +16,9 @@ export interface ClienteFormState {
   dataNascimento: string;
   comoConheceu: string;
   observacoes: string;
+  mensalista?: boolean;
+  valorMensal?: number | null;
+  diaVencimento?: number | null;
   status: string;
   pets: PetFormState[];
 }
@@ -25,6 +28,7 @@ export interface Cliente extends Omit<ClienteFormState, "pets"> {
   codigo: number;
   createdAt: string;
   updatedAt?: string;
+  ultimaMensalidadePaga?: string | null;
   pets: Pet[];
   _count?: { pets: number };
 }
