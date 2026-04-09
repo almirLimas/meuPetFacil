@@ -666,7 +666,10 @@ const planos = [
           >
             <div class="flex items-center gap-3">
               <div class="p-2 rounded-xl bg-sky-50">
-                <UIcon name="i-lucide-calendar-check" class="size-5 text-sky-500" />
+                <UIcon
+                  name="i-lucide-calendar-check"
+                  class="size-5 text-sky-500"
+                />
               </div>
               <h3 class="font-semibold text-gray-800">Agenda do Dia</h3>
             </div>
@@ -682,7 +685,10 @@ const planos = [
           >
             <div class="flex items-center gap-3">
               <div class="p-2 rounded-xl bg-sky-50">
-                <UIcon name="i-lucide-plus-circle" class="size-5 text-sky-500" />
+                <UIcon
+                  name="i-lucide-plus-circle"
+                  class="size-5 text-sky-500"
+                />
               </div>
               <h3 class="font-semibold text-gray-800">Agendar em Segundos</h3>
             </div>
@@ -733,13 +739,18 @@ const planos = [
                 <UIcon name="i-lucide-star" class="size-5 text-orange-500" />
               </div>
               <div class="flex items-center gap-2">
-                <h3 class="font-semibold text-gray-800">Avaliações dos Clientes</h3>
-                <span class="px-2 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wide">⭐ Plus</span>
+                <h3 class="font-semibold text-gray-800">
+                  Avaliações dos Clientes
+                </h3>
+                <span
+                  class="px-2 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wide"
+                  >⭐ Plus</span
+                >
               </div>
             </div>
             <p class="text-sm text-gray-500 leading-relaxed">
-              Receba avaliações automáticas após cada atendimento. Veja nota
-              por nota, por serviço e por pet — sem pedir nada ao cliente.
+              Receba avaliações automáticas após cada atendimento. Veja nota por
+              nota, por serviço e por pet — sem pedir nada ao cliente.
             </p>
           </div>
 
@@ -752,13 +763,18 @@ const planos = [
                 <UIcon name="i-lucide-smile" class="size-5 text-orange-500" />
               </div>
               <div class="flex items-center gap-2">
-                <h3 class="font-semibold text-gray-800">Painel de Satisfação</h3>
-                <span class="px-2 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wide">⭐ Plus</span>
+                <h3 class="font-semibold text-gray-800">
+                  Painel de Satisfação
+                </h3>
+                <span
+                  class="px-2 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wide"
+                  >⭐ Plus</span
+                >
               </div>
             </div>
             <p class="text-sm text-gray-500 leading-relaxed">
-              Nota média e índice de satisfação direto no painel. Saiba se
-              seus clientes estão felizes sem precisar perguntar um por um.
+              Nota média e índice de satisfação direto no painel. Saiba se seus
+              clientes estão felizes sem precisar perguntar um por um.
             </p>
           </div>
         </div>
