@@ -1,6 +1,7 @@
 ﻿<script setup lang="ts">
 useBreadcrumb().set([{ label: "Serviços" }]);
 
+import { z } from "zod";
 import type { Servico, CategoriaServico, PorteServico } from "~/types/servico";
 
 const {
@@ -159,6 +160,17 @@ const CATEGORIAS_SELECT: { label: string; value: CategoriaServico }[] = [
   { label: "Outro", value: "Outro" },
 ];
 
+const schemaServico = z.object({
+  nome: z.string().min(1, "Nome é obrigatório"),
+  preco: z
+    .number({ error: "Preço é obrigatório" })
+    .min(0.01, "Preço deve ser maior que zero"),
+  duracaoMinutos: z
+    .number({ error: "Duração é obrigatória" })
+    .min(1, "Duração deve ser maior que zero"),
+});
+const formServicoRef = ref();
+
 const form = reactive({
   nome: "",
   categoria: "Banho" as CategoriaServico,
@@ -195,14 +207,6 @@ const abrirEditar = (s: Servico) => {
 };
 
 const salvar = async () => {
-  if (!form.nome || !form.preco || !form.duracaoMinutos) {
-    toast.add({
-      title: "Preencha todos os campos obrigatórios",
-      color: "error",
-    });
-    return;
-  }
-
   loadingSalvar.value = true;
   try {
     const payload = {
@@ -521,8 +525,14 @@ const excluir = async (id: string) => {
             </div>
           </template>
 
-          <div class="flex flex-col gap-3">
-            <UFormField label="Nome do serviço *">
+          <UForm
+            :schema="schemaServico"
+            :state="form"
+            ref="formServicoRef"
+            class="flex flex-col gap-3"
+            @submit="salvar"
+          >
+            <UFormField name="nome" label="Nome do serviço *">
               <UInput
                 v-model="form.nome"
                 placeholder="Ex: Banho e Tosa"
@@ -552,7 +562,7 @@ const excluir = async (id: string) => {
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-              <UFormField label="Duração (minutos) *">
+              <UFormField name="duracaoMinutos" label="Duração (minutos) *">
                 <UInput
                   v-model.number="form.duracaoMinutos"
                   type="number"
@@ -561,7 +571,7 @@ const excluir = async (id: string) => {
                   class="w-full"
                 />
               </UFormField>
-              <UFormField label="Preço (R$) *">
+              <UFormField name="preco" label="Preço (R$) *">
                 <UInput
                   v-model.number="form.preco"
                   type="number"
@@ -581,7 +591,7 @@ const excluir = async (id: string) => {
                 class="w-full"
               />
             </UFormField>
-          </div>
+          </UForm>
 
           <template #footer>
             <div class="flex justify-end gap-2">
@@ -592,7 +602,7 @@ const excluir = async (id: string) => {
               >
                 Cancelar
               </UButton>
-              <UButton color="secondary" @click="salvar">
+              <UButton color="secondary" @click="formServicoRef?.submit()">
                 {{ editando ? "Salvar alterações" : "Criar serviço" }}
               </UButton>
             </div>

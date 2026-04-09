@@ -235,6 +235,67 @@ useBreadcrumb().set([{ label: "Primeiros passos" }]);
           <div class="flex flex-col gap-1 flex-1">
             <div class="flex items-center justify-between gap-2 flex-wrap">
               <p class="font-semibold text-gray-800 dark:text-gray-100">
+                Use o PDV para registrar vendas no balcão
+              </p>
+              <UButton
+                size="xs"
+                color="secondary"
+                variant="soft"
+                to="/pdv"
+                trailing-icon="i-lucide-arrow-right"
+              >
+                Ir para Vendas
+              </UButton>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              O Ponto de Venda permite registrar vendas rápidas de produtos e
+              serviços diretamente no balcão, sem precisar criar um agendamento.
+              Veja como funciona:
+            </p>
+            <ul
+              class="mt-1.5 text-sm text-gray-500 dark:text-gray-400 list-disc list-inside space-y-1"
+            >
+              <li>
+                Selecione <strong>Produto</strong> ou <strong>Serviço</strong> e
+                busque pelo nome ou código de barras.
+              </li>
+              <li>
+                Clique no item (ou pressione <strong>Enter</strong> se houver
+                apenas um resultado) para adicioná-lo ao carrinho.
+              </li>
+              <li>
+                Ajuste as quantidades com os botões <strong>+</strong> /
+                <strong>−</strong> e aplique desconto se necessário.
+              </li>
+              <li>
+                Escolha a forma de pagamento (Dinheiro, Cartão, PIX, Fiado ou
+                Outro). Para dinheiro, informe o valor recebido e o sistema
+                calcula o troco automaticamente.
+              </li>
+              <li>
+                Clique em <strong>Confirmar Venda</strong>. A venda é registrada
+                e aparece no histórico à direita.
+              </li>
+              <li>
+                Para cancelar uma venda já registrada, clique no botão
+                <strong>×</strong> ao lado dela no histórico.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </UCard>
+
+      <!-- 7 -->
+      <UCard class="ring-0 shadow-sm">
+        <div class="flex gap-4">
+          <div
+            class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
+          >
+            7
+          </div>
+          <div class="flex flex-col gap-1 flex-1">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <p class="font-semibold text-gray-800 dark:text-gray-100">
                 Acompanhe o financeiro
               </p>
               <UButton
@@ -255,13 +316,13 @@ useBreadcrumb().set([{ label: "Primeiros passos" }]);
         </div>
       </UCard>
 
-      <!-- 7 -->
+      <!-- 8 -->
       <UCard class="ring-0 shadow-sm">
         <div class="flex gap-4">
           <div
             class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
           >
-            7
+            8
           </div>
           <div class="flex flex-col gap-1 flex-1">
             <div class="flex items-center justify-between gap-2 flex-wrap">

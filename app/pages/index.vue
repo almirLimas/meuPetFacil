@@ -61,6 +61,12 @@ const features = [
       "E-mails automáticos para clientes que não voltam há 30 dias — sem precisar fazer nada.",
   },
   {
+    icone: "i-lucide-shopping-cart",
+    titulo: "Ponto de Venda (PDV)",
+    descricao:
+      "Registre vendas no balcão com suporte a leitor de código de barras, múltiplas formas de pagamento e troco automático.",
+  },
+  {
     icone: "i-lucide-package",
     titulo: "Controle de Estoque",
     descricao: "Produtos e acessórios sem perder vendas.",
@@ -106,6 +112,46 @@ const planos = [
     ],
   },
 ];
+
+// ─── Typewriter ────────────────────────────────────────────────────────────────
+const phrases = [
+  "simples assim.",
+  "do jeito certo.",
+  "sem papel, sem bagunça.",
+  "com mais faturamento.",
+];
+const typedText = ref("");
+
+onMounted(() => {
+  let phraseIdx = 0;
+  let charIdx = 0;
+  let deleting = false;
+
+  const tick = () => {
+    const current = phrases[phraseIdx]!;
+    if (!deleting) {
+      charIdx++;
+      typedText.value = current.slice(0, charIdx);
+      if (charIdx === current.length) {
+        deleting = true;
+        setTimeout(tick, 1800);
+        return;
+      }
+    } else {
+      charIdx--;
+      typedText.value = current.slice(0, charIdx);
+      if (charIdx === 0) {
+        deleting = false;
+        phraseIdx = (phraseIdx + 1) % phrases.length;
+        setTimeout(tick, 400);
+        return;
+      }
+    }
+    setTimeout(tick, deleting ? 45 : 80);
+  };
+
+  tick();
+});
 </script>
 
 <template>
@@ -169,10 +215,23 @@ const planos = [
       >
         <div class="text-white pb-16 pt-4 flex flex-col gap-6">
           <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
-            Pet shop <span class="text-orange-300">organizado</span><br />
-            e com mais <span class="text-orange-300">faturamento</span>
+            Gerencie seu pet shop<br />
+            <span class="text-orange-300"
+              >{{ typedText }}<span class="typewriter-cursor">|</span></span
+            >
           </h1>
           <ul class="flex flex-col gap-3">
+            <li class="flex items-center gap-3 text-lg">
+              <div
+                class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
+              >
+                <UIcon
+                  name="i-lucide-shopping-cart"
+                  class="size-3.5 text-white"
+                />
+              </div>
+              Ponto de Venda com leitor de código de barras
+            </li>
             <li class="flex items-center gap-3 text-lg">
               <div
                 class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
@@ -468,10 +527,10 @@ const planos = [
       <div class="max-w-6xl mx-auto">
         <div class="text-center mb-12">
           <h2 class="text-3xl font-bold text-gray-900">
-            Tudo que seu petshop precisa
+            Tudo que o sistema oferece
           </h2>
           <p class="text-gray-500 mt-2">
-            Sem planilha. Sem papel. Sem dor de cabeça.
+            Cada funcionalidade pensada para o seu petshop.
           </p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -637,145 +696,6 @@ const planos = [
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FUNCIONALIDADES DO SISTEMA -->
-    <section class="py-20 px-6 bg-gray-50" id="preview">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-14">
-          <span
-            class="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-600 text-xs font-semibold mb-3 uppercase tracking-wide"
-            >Tudo que o sistema oferece</span
-          >
-          <h2 class="text-3xl font-bold text-gray-900">
-            Cada funcionalidade pensada para o seu petshop
-          </h2>
-          <p class="text-gray-500 mt-2 max-w-xl mx-auto">
-            Cada detalhe pensado para o dono de petshop que quer gastar tempo
-            com os pets, não com burocracia.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Agenda do Dia -->
-          <div
-            class="flex flex-col rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 px-6 py-5 gap-3"
-          >
-            <div class="flex items-center gap-3">
-              <div class="p-2 rounded-xl bg-sky-50">
-                <UIcon
-                  name="i-lucide-calendar-check"
-                  class="size-5 text-sky-500"
-                />
-              </div>
-              <h3 class="font-semibold text-gray-800">Agenda do Dia</h3>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">
-              Veja todos os atendimentos, filtre por status e saiba em tempo
-              real quem chegou, quem foi atendido e quem não compareceu.
-            </p>
-          </div>
-
-          <!-- Agendar em Segundos -->
-          <div
-            class="flex flex-col rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 px-6 py-5 gap-3"
-          >
-            <div class="flex items-center gap-3">
-              <div class="p-2 rounded-xl bg-sky-50">
-                <UIcon
-                  name="i-lucide-plus-circle"
-                  class="size-5 text-sky-500"
-                />
-              </div>
-              <h3 class="font-semibold text-gray-800">Agendar em Segundos</h3>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">
-              Selecione o serviço, o pet, a data e se o cliente traz ou o
-              petshop busca. Rápido, sem complicação.
-            </p>
-          </div>
-
-          <!-- Catálogo de Serviços -->
-          <div
-            class="flex flex-col rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 px-6 py-5 gap-3"
-          >
-            <div class="flex items-center gap-3">
-              <div class="p-2 rounded-xl bg-sky-50">
-                <UIcon name="i-lucide-scissors" class="size-5 text-sky-500" />
-              </div>
-              <h3 class="font-semibold text-gray-800">Catálogo de Serviços</h3>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">
-              Liste todos os serviços com preço, duração e porte. Filtre por
-              categoria e mantenha tudo atualizado com facilidade.
-            </p>
-          </div>
-
-          <!-- Cadastro de Serviço -->
-          <div
-            class="flex flex-col rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 px-6 py-5 gap-3"
-          >
-            <div class="flex items-center gap-3">
-              <div class="p-2 rounded-xl bg-sky-50">
-                <UIcon name="i-lucide-tag" class="size-5 text-sky-500" />
-              </div>
-              <h3 class="font-semibold text-gray-800">Cadastro de Serviço</h3>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">
-              Nome, categoria, porte e duração em um único formulário. Crie
-              serviços personalizados para qualquer tipo de atendimento.
-            </p>
-          </div>
-
-          <!-- Avaliações dos Clientes (Plus) -->
-          <div
-            class="flex flex-col rounded-2xl border-2 border-orange-300 bg-white shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 px-6 py-5 gap-3"
-          >
-            <div class="flex items-center gap-3">
-              <div class="p-2 rounded-xl bg-orange-50">
-                <UIcon name="i-lucide-star" class="size-5 text-orange-500" />
-              </div>
-              <div class="flex items-center gap-2">
-                <h3 class="font-semibold text-gray-800">
-                  Avaliações dos Clientes
-                </h3>
-                <span
-                  class="px-2 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wide"
-                  >⭐ Plus</span
-                >
-              </div>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">
-              Receba avaliações automáticas após cada atendimento. Veja nota por
-              nota, por serviço e por pet — sem pedir nada ao cliente.
-            </p>
-          </div>
-
-          <!-- Painel de Satisfação (Plus) -->
-          <div
-            class="flex flex-col rounded-2xl border-2 border-orange-300 bg-white shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 px-6 py-5 gap-3"
-          >
-            <div class="flex items-center gap-3">
-              <div class="p-2 rounded-xl bg-orange-50">
-                <UIcon name="i-lucide-smile" class="size-5 text-orange-500" />
-              </div>
-              <div class="flex items-center gap-2">
-                <h3 class="font-semibold text-gray-800">
-                  Painel de Satisfação
-                </h3>
-                <span
-                  class="px-2 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wide"
-                  >⭐ Plus</span
-                >
-              </div>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">
-              Nota média e índice de satisfação direto no painel. Saiba se seus
-              clientes estão felizes sem precisar perguntar um por um.
-            </p>
           </div>
         </div>
       </div>
@@ -1074,3 +994,21 @@ const planos = [
     </footer>
   </div>
 </template>
+
+<style scoped>
+.typewriter-cursor {
+  display: inline-block;
+  font-weight: 300;
+  animation: blink 0.7s step-end infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+</style>

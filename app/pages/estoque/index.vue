@@ -1,6 +1,7 @@
 ﻿<script setup lang="ts">
 useBreadcrumb().set([{ label: "Estoque" }]);
 
+import { z } from "zod";
 import type {
   Produto,
   CategoriaEstoque,
@@ -125,10 +126,21 @@ const CATEGORIAS_SELECT: { label: string; value: CategoriaEstoque }[] = [
 
 const UNIDADES = ["un.", "kg", "g", "ml", "L", "cx", "pct"];
 
+const schemaProduto = z.object({
+  nome: z.string().min(1, "Nome é obrigatório"),
+  precoCompra: z
+    .number({ error: "Preço de compra é obrigatório" })
+    .min(0.01, "Preço de compra deve ser maior que zero"),
+});
+
+const formProdutoRef = ref();
+
 const formProduto = reactive({
   nome: "",
   categoria: "Higiene" as CategoriaEstoque,
   unidade: "un.",
+  codigoBarras: "",
+  marca: "",
   quantidadeAtual: 0,
   estoqueMinimo: 5,
   precoCompra: 0,
@@ -142,6 +154,8 @@ const abrirNovoProduto = () => {
     nome: "",
     categoria: "Higiene",
     unidade: "un.",
+    codigoBarras: "",
+    marca: "",
     quantidadeAtual: 0,
     estoqueMinimo: 5,
     precoCompra: 0,
@@ -157,6 +171,8 @@ const abrirEditarProduto = (p: Produto) => {
     nome: p.nome,
     categoria: p.categoria,
     unidade: p.unidade ?? "un.",
+    codigoBarras: p.codigoBarras ?? "",
+    marca: p.marca ?? "",
     quantidadeAtual: p.quantidadeAtual,
     estoqueMinimo: p.estoqueMinimo,
     precoCompra: Number(p.precoCompra),
@@ -167,17 +183,14 @@ const abrirEditarProduto = (p: Produto) => {
 };
 
 const salvarProduto = async () => {
-  if (!formProduto.nome || !formProduto.precoCompra) {
-    toast.add({ title: "Preencha nome e preço de compra", color: "error" });
-    return;
-  }
-
   savingProduto.value = true;
   try {
     const payload = {
       nome: formProduto.nome,
       categoria: formProduto.categoria,
       unidade: formProduto.unidade || undefined,
+      codigoBarras: formProduto.codigoBarras || undefined,
+      marca: formProduto.marca || undefined,
       estoqueMinimo: formProduto.estoqueMinimo,
       precoCompra: formProduto.precoCompra,
       precoVenda: formProduto.precoVenda || undefined,
@@ -613,11 +626,35 @@ const abrirHistorico = async (p: Produto) => {
             </div>
           </template>
 
-          <div class="flex flex-col gap-3">
-            <UFormField label="Nome do produto *">
+          <UForm
+            :schema="schemaProduto"
+            :state="formProduto"
+            ref="formProdutoRef"
+            class="flex flex-col gap-3"
+            @submit="salvarProduto"
+          >
+            <UFormField name="nome" label="Nome do produto *">
               <UInput
                 v-model="formProduto.nome"
                 placeholder="Ex: Shampoo Neutro"
+                class="w-full"
+              />
+            </UFormField>
+
+            <UFormField label="Código de Barras">
+              <UInput
+                v-model="formProduto.codigoBarras"
+                placeholder="Aponte o leitor ou digite o código"
+                icon="i-lucide-scan-barcode"
+                class="w-full"
+              />
+            </UFormField>
+
+            <UFormField label="Marca">
+              <UInput
+                v-model="formProduto.marca"
+                placeholder="Ex: Petlab, Bravecto..."
+                icon="i-lucide-tag"
                 class="w-full"
               />
             </UFormField>
@@ -664,7 +701,7 @@ const abrirHistorico = async (p: Produto) => {
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-              <UFormField label="Preço de compra (R$) *">
+              <UFormField name="precoCompra" label="Preço de compra (R$) *">
                 <UInput
                   v-model.number="formProduto.precoCompra"
                   type="number"
@@ -692,7 +729,7 @@ const abrirHistorico = async (p: Produto) => {
                 class="w-full"
               />
             </UFormField>
-          </div>
+          </UForm>
 
           <template #footer>
             <div class="flex justify-end gap-2">
@@ -705,7 +742,7 @@ const abrirHistorico = async (p: Produto) => {
               <UButton
                 color="secondary"
                 :loading="savingProduto"
-                @click="salvarProduto"
+                @click="formProdutoRef?.submit()"
               >
                 {{
                   editandoProduto ? "Salvar alterações" : "Cadastrar produto"

@@ -55,6 +55,7 @@ const menuItems = [
   { label: "Agenda", icon: "i-lucide-calendar", to: "/agenda" },
   { label: "Serviços", icon: "i-lucide-briefcase", to: "/servicos" },
   { label: "Estoque", icon: "i-lucide-package", to: "/estoque" },
+  { label: "Vendas", icon: "i-lucide-shopping-cart", to: "/pdv" },
   { label: "Financeiro", icon: "i-lucide-wallet", to: "/financeiro" },
   { label: "Relatórios", icon: "i-lucide-bar-chart-2", to: "/relatorios" },
   { label: "Avaliações", icon: "i-lucide-star", to: "/avaliacoes" },
