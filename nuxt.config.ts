@@ -6,7 +6,10 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: "pt-BR" },
-      link: [{ rel: "icon", type: "image/png", href: "/logo_aninpet.png" }],
+      link: [
+        { rel: "icon", type: "image/png", href: "/logo_aninpet.png" },
+        { rel: "canonical", href: "https://www.aninpet.com.br" },
+      ],
       meta: [{ name: "theme-color", content: "#1d9fb6" }],
       script: [
         {

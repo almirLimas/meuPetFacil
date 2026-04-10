@@ -7,11 +7,37 @@ useHead({
       type: "application/ld+json",
       innerHTML: JSON.stringify({
         "@context": "https://schema.org",
-        "@type": "Organization",
+        "@type": "SoftwareApplication",
         name: "AninPet",
         url: "https://www.aninpet.com.br",
         logo: "https://www.aninpet.com.br/logo_aninpet.png",
-        sameAs: [],
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web",
+        offers: [
+          {
+            "@type": "Offer",
+            name: "Básico",
+            price: "79.00",
+            priceCurrency: "BRL",
+            description:
+              "Sistema para pet shop com agenda, clientes, financeiro e relatórios.",
+          },
+          {
+            "@type": "Offer",
+            name: "Plus",
+            price: "109.00",
+            priceCurrency: "BRL",
+            description:
+              "Sistema para pet shop com lembretes automáticos, avaliação de clientes e metas.",
+          },
+        ],
+        description:
+          "Sistema para pet shop com agenda de agendamentos, controle financeiro, ponto de venda, controle de estoque, lembretes automáticos por e-mail e avaliação de clientes.",
+        publisher: {
+          "@type": "Organization",
+          name: "AninPet",
+          url: "https://www.aninpet.com.br",
+        },
       }),
     },
   ],
@@ -36,6 +62,7 @@ useSeoMeta({
   twitterDescription:
     "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Lembretes automáticos por e-mail, controle financeiro e muito mais. Experimente grátis por 14 dias.",
   twitterImage: "https://www.aninpet.com.br/logo_aninpet.png",
+  articleModifiedTime: "2026-04-10",
 });
 
 const features = [
@@ -215,8 +242,8 @@ onMounted(() => {
       >
         <div class="text-white pb-16 pt-4 flex flex-col gap-6">
           <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
-            Simples, intuitivo e pronto<br />
-            <span class="text-orange-300">para o seu dia a dia.</span>
+            Sistema para Pet Shop<br />
+            <span class="text-orange-300">simples, intuitivo e completo.</span>
           </h1>
           <ul class="flex flex-col gap-3">
             <li class="flex items-center gap-3 text-lg">
