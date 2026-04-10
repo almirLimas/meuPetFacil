@@ -372,7 +372,7 @@ const formaOptions: { label: string; value: FormaPagamento }[] = [
             <button
               v-for="p in produtosFiltrados"
               :key="p.id"
-              class="w-full flex items-center justify-between px-3 py-2 hover:bg-gray-50 dark:hover:bg-neutral-700 text-left text-sm transition-colors"
+              class="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-50 dark:hover:bg-neutral-700 text-left text-sm transition-colors"
               :disabled="!p.precoVenda || p.quantidadeAtual === 0"
               :class="{
                 'opacity-40 cursor-not-allowed':
@@ -380,13 +380,21 @@ const formaOptions: { label: string; value: FormaPagamento }[] = [
               }"
               @click="adicionarProduto(p)"
             >
+              <div
+                class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                style="background: #fff7ed"
+              >
+                <UIcon
+                  name="i-lucide-package"
+                  class="size-3.5"
+                  style="color: #f97316"
+                />
+              </div>
               <span
-                class="font-medium text-gray-800 dark:text-gray-100 truncate"
+                class="font-medium text-gray-800 dark:text-gray-100 truncate flex-1"
                 >{{ p.nome }}</span
               >
-              <span
-                class="text-xs text-gray-500 dark:text-gray-400 ml-2 shrink-0"
-              >
+              <span class="text-xs text-gray-500 dark:text-gray-400 shrink-0">
                 {{ p.precoVenda ? fmt(Number(p.precoVenda)) : "sem preço" }} ·
                 estoque: {{ p.quantidadeAtual }}
               </span>
@@ -402,17 +410,26 @@ const formaOptions: { label: string; value: FormaPagamento }[] = [
             <button
               v-for="s in servicosFiltrados"
               :key="s.id"
-              class="w-full flex items-center justify-between px-3 py-2 hover:bg-gray-50 dark:hover:bg-neutral-700 text-left text-sm transition-colors"
+              class="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-50 dark:hover:bg-neutral-700 text-left text-sm transition-colors"
               @click="adicionarServico(s)"
             >
+              <div
+                class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                style="background: #f0fdff"
+              >
+                <UIcon
+                  name="i-lucide-scissors"
+                  class="size-3.5"
+                  style="color: #0891b2"
+                />
+              </div>
               <span
-                class="font-medium text-gray-800 dark:text-gray-100 truncate"
+                class="font-medium text-gray-800 dark:text-gray-100 truncate flex-1"
                 >{{ s.nome }}</span
               >
-              <span
-                class="text-xs text-gray-500 dark:text-gray-400 ml-2 shrink-0"
-                >{{ fmt(Number(s.preco)) }}</span
-              >
+              <span class="text-xs text-gray-500 dark:text-gray-400 shrink-0">{{
+                fmt(Number(s.preco))
+              }}</span>
             </button>
             <p
               v-if="servicosFiltrados.length === 0"
@@ -436,6 +453,26 @@ const formaOptions: { label: string; value: FormaPagamento }[] = [
             :key="idx"
             class="flex items-center gap-2 bg-gray-50 dark:bg-neutral-700 rounded-xl px-3 py-2"
           >
+            <div
+              class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+              :style="
+                item.tipo === 'Produto'
+                  ? 'background:#fff7ed'
+                  : 'background:#f0fdff'
+              "
+            >
+              <UIcon
+                :name="
+                  item.tipo === 'Produto'
+                    ? 'i-lucide-package'
+                    : 'i-lucide-scissors'
+                "
+                class="size-4"
+                :style="
+                  item.tipo === 'Produto' ? 'color:#f97316' : 'color:#0891b2'
+                "
+              />
+            </div>
             <div class="flex-1 min-w-0">
               <p
                 class="text-sm font-medium text-gray-800 dark:text-gray-100 truncate"

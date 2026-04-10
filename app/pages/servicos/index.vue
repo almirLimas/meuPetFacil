@@ -65,47 +65,55 @@ const resumo = computed(() => ({
 // -- Helpers -----------------------------------------------------------------
 const categoriaConfig: Record<
   CategoriaServico,
-  { label: string; bg: string; text: string }
+  { label: string; bg: string; text: string; icon: string }
 > = {
   Banho: {
     label: "Banho",
     bg: "bg-blue-100 dark:bg-blue-900/40",
     text: "text-blue-600 dark:text-blue-400",
+    icon: "i-lucide-droplets",
   },
   Tosa: {
     label: "Tosa",
     bg: "bg-pink-100 dark:bg-pink-900/40",
     text: "text-pink-600 dark:text-pink-400",
+    icon: "i-lucide-scissors",
   },
   Consulta: {
     label: "Consulta",
     bg: "bg-green-100 dark:bg-green-900/40",
     text: "text-green-600 dark:text-green-400",
+    icon: "i-lucide-stethoscope",
   },
   Vacina: {
     label: "Vacina",
     bg: "bg-teal-100 dark:bg-teal-900/40",
     text: "text-teal-600 dark:text-teal-400",
+    icon: "i-lucide-syringe",
   },
   Internacao: {
     label: "Internação",
     bg: "bg-yellow-100 dark:bg-yellow-900/40",
     text: "text-yellow-600 dark:text-yellow-400",
+    icon: "i-lucide-bed",
   },
   Cirurgia: {
     label: "Cirurgia",
     bg: "bg-red-100 dark:bg-red-900/40",
     text: "text-red-600 dark:text-red-400",
+    icon: "i-lucide-activity",
   },
   Exame: {
     label: "Exame",
     bg: "bg-orange-100 dark:bg-orange-900/40",
     text: "text-orange-600 dark:text-orange-400",
+    icon: "i-lucide-microscope",
   },
   Outro: {
     label: "Outro",
     bg: "bg-gray-100 dark:bg-neutral-700",
     text: "text-gray-500 dark:text-gray-400",
+    icon: "i-lucide-paw-print",
   },
 };
 
@@ -429,12 +437,26 @@ const excluir = async (id: string) => {
               :class="{ 'opacity-50': !s.ativo }"
             >
               <td class="px-4 py-3">
-                <p class="font-semibold text-gray-800 dark:text-gray-100">
-                  {{ s.nome }}
-                </p>
-                <p v-if="s.descricao" class="text-xs text-gray-400 mt-0.5">
-                  {{ s.descricao }}
-                </p>
+                <div class="flex items-center gap-2">
+                  <div
+                    class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                    :class="categoriaConfig[s.categoria].bg"
+                  >
+                    <UIcon
+                      :name="categoriaConfig[s.categoria].icon"
+                      class="size-4"
+                      :class="categoriaConfig[s.categoria].text"
+                    />
+                  </div>
+                  <div>
+                    <p class="font-semibold text-gray-800 dark:text-gray-100">
+                      {{ s.nome }}
+                    </p>
+                    <p v-if="s.descricao" class="text-xs text-gray-400 mt-0.5">
+                      {{ s.descricao }}
+                    </p>
+                  </div>
+                </div>
               </td>
               <td class="px-4 py-3 hidden sm:table-cell">
                 <span
