@@ -215,10 +215,8 @@ onMounted(() => {
       >
         <div class="text-white pb-16 pt-4 flex flex-col gap-6">
           <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
-            Gerencie seu pet shop<br />
-            <span class="text-orange-300"
-              >{{ typedText }}<span class="typewriter-cursor">|</span></span
-            >
+            Simples, intuitivo e pronto<br />
+            <span class="text-orange-300">para o seu dia a dia.</span>
           </h1>
           <ul class="flex flex-col gap-3">
             <li class="flex items-center gap-3 text-lg">
@@ -346,7 +344,6 @@ onMounted(() => {
                   <div
                     class="flex-1 p-1.5 grid grid-cols-2 gap-1.5 content-start"
                   >
-                    <!-- Card Clientes -->
                     <div
                       class="bg-white rounded-xl p-1.5 shadow-sm flex items-center gap-1.5"
                     >
@@ -367,7 +364,6 @@ onMounted(() => {
                         </div>
                       </div>
                     </div>
-                    <!-- Card Receita -->
                     <div
                       class="bg-white rounded-xl p-1.5 shadow-sm flex items-center gap-1.5"
                     >
@@ -391,7 +387,6 @@ onMounted(() => {
                         </div>
                       </div>
                     </div>
-                    <!-- Card Pets -->
                     <div
                       class="bg-white rounded-xl p-1.5 shadow-sm flex items-center gap-1.5"
                     >
@@ -410,7 +405,6 @@ onMounted(() => {
                         <div class="text-[9px] font-bold text-gray-700">89</div>
                       </div>
                     </div>
-                    <!-- Card Agenda -->
                     <div class="bg-white rounded-xl p-1.5 shadow-sm">
                       <div class="text-[6px] text-gray-400 mb-1">
                         Agenda hoje
@@ -438,7 +432,6 @@ onMounted(() => {
               class="absolute -right-8 bottom-4 w-24 bg-gray-800 rounded-2xl p-1.5 shadow-2xl border-2 border-gray-700"
             >
               <div class="bg-[#f8f8f5] rounded-xl overflow-hidden h-40">
-                <!-- Header mobile -->
                 <div
                   class="bg-white h-6 border-b border-gray-100 flex items-center justify-between px-1.5"
                 >
@@ -453,7 +446,6 @@ onMounted(() => {
                     AL
                   </div>
                 </div>
-                <!-- Mobile content -->
                 <div class="p-1.5 space-y-1.5">
                   <div class="grid grid-cols-2 gap-1">
                     <div class="bg-white rounded-lg p-1 shadow-sm">
@@ -701,34 +693,192 @@ onMounted(() => {
       </div>
     </section>
 
-    <!-- DEMO VIDEO -->
-    <section class="py-16 px-6 bg-gray-50">
-      <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-10">
-          <h2 class="text-3xl font-bold text-gray-900">
-            Veja o sistema em ação
+    <!-- PDV SHOWCASE -->
+    <section class="pdv-section py-20 px-6 overflow-hidden">
+      <!-- decorative blobs -->
+      <div class="pdv-blob pdv-blob--1"></div>
+      <div class="pdv-blob pdv-blob--2"></div>
+
+      <div
+        class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10"
+      >
+        <!-- Left: copy -->
+        <div class="flex flex-col gap-6">
+          <div
+            class="inline-flex items-center gap-2 bg-orange-100 text-orange-600 text-xs font-bold px-3 py-1.5 rounded-full w-fit"
+          >
+            <UIcon name="i-lucide-shopping-cart" class="size-3.5" />
+            Ponto de Venda
+          </div>
+          <h2
+            class="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight"
+          >
+            Feche vendas em segundos,<br />
+            <span style="color: #1d9fb6">sem complicação.</span>
           </h2>
-          <p class="text-gray-500 mt-2">
-            Do cadastro ao agendamento em poucos segundos.
+          <p class="text-gray-500 text-lg leading-relaxed">
+            Busque produtos pelo nome ou código de barras, adicione serviços ao
+            carrinho e finalize com qualquer forma de pagamento — tudo em uma
+            tela só.
           </p>
+          <ul class="flex flex-col gap-3">
+            <li class="flex items-center gap-3 text-gray-700">
+              <div
+                class="w-8 h-8 rounded-xl bg-sky-50 flex items-center justify-center shrink-0"
+              >
+                <UIcon name="i-lucide-barcode" class="size-4 text-sky-500" />
+              </div>
+              <span class="text-sm font-medium"
+                >Leitor de código de barras integrado</span
+              >
+            </li>
+            <li class="flex items-center gap-3 text-gray-700">
+              <div
+                class="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0"
+              >
+                <UIcon
+                  name="i-lucide-credit-card"
+                  class="size-4 text-emerald-500"
+                />
+              </div>
+              <span class="text-sm font-medium"
+                >Dinheiro, Cartão, PIX e mais</span
+              >
+            </li>
+            <li class="flex items-center gap-3 text-gray-700">
+              <div
+                class="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center shrink-0"
+              >
+                <UIcon name="i-lucide-package" class="size-4 text-orange-500" />
+              </div>
+              <span class="text-sm font-medium"
+                >Estoque atualizado automaticamente</span
+              >
+            </li>
+            <li class="flex items-center gap-3 text-gray-700">
+              <div
+                class="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center shrink-0"
+              >
+                <UIcon
+                  name="i-lucide-scissors"
+                  class="size-4 text-purple-500"
+                />
+              </div>
+              <span class="text-sm font-medium"
+                >Produtos e serviços no mesmo carrinho</span
+              >
+            </li>
+          </ul>
         </div>
-        <div
-          class="rounded-2xl overflow-hidden shadow-2xl border border-gray-200 bg-gray-800"
-        >
-          <!-- Browser bar -->
-          <div class="flex items-center gap-1.5 px-4 py-2.5 bg-gray-800">
-            <div class="w-3 h-3 rounded-full bg-red-400"></div>
-            <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-            <div class="w-3 h-3 rounded-full bg-green-400"></div>
-            <div
-              class="ml-3 flex-1 bg-gray-700 rounded-md h-5 flex items-center px-3"
-            >
-              <span class="text-gray-400 text-xs">aninpet.com.br</span>
+
+        <!-- Right: illustrated PDV mockup -->
+        <div class="pdv-mockup-wrap">
+          <!-- floating badges -->
+          <div class="pdv-float-badge pdv-float-badge--sale">
+            <span class="text-lg">✅</span>
+            <div>
+              <p class="text-[10px] text-gray-500 leading-none">
+                Venda concluída
+              </p>
+              <p class="text-xs font-bold text-gray-800">R$ 87,00</p>
             </div>
           </div>
-          <video autoplay loop muted playsinline class="w-full block">
-            <source src="/demo.mp4" type="video/mp4" />
-          </video>
+          <div class="pdv-float-badge pdv-float-badge--change">
+            <span class="text-lg">💸</span>
+            <div>
+              <p class="text-[10px] text-gray-500 leading-none">Troco</p>
+              <p class="text-xs font-bold text-emerald-600">R$ 13,00</p>
+            </div>
+          </div>
+
+          <!-- PDV card -->
+          <div class="pdv-card">
+            <!-- header -->
+            <div class="pdv-card__header">
+              <UIcon name="i-lucide-shopping-cart" class="size-4 text-white" />
+              <span>Carrinho</span>
+              <span class="pdv-card__pill">3 itens</span>
+            </div>
+
+            <!-- items -->
+            <div class="pdv-card__body">
+              <!-- item 1 -->
+              <div class="pdv-item">
+                <div class="pdv-item__icon" style="background: #fef3c7">
+                  <span class="text-base">🐾</span>
+                </div>
+                <div class="pdv-item__info">
+                  <p class="pdv-item__name">Banho & Tosa</p>
+                  <p class="pdv-item__sub">Serviço · R$ 45,00</p>
+                </div>
+                <div class="pdv-item__qty">
+                  <button class="pdv-qty-btn">−</button>
+                  <span>1</span>
+                  <button class="pdv-qty-btn">+</button>
+                </div>
+                <p class="pdv-item__total">R$ 45,00</p>
+              </div>
+              <!-- item 2 -->
+              <div class="pdv-item">
+                <div class="pdv-item__icon" style="background: #dbeafe">
+                  <span class="text-base">🧴</span>
+                </div>
+                <div class="pdv-item__info">
+                  <p class="pdv-item__name">Shampoo Pet 500ml</p>
+                  <p class="pdv-item__sub">Produto · R$ 28,00</p>
+                </div>
+                <div class="pdv-item__qty">
+                  <button class="pdv-qty-btn">−</button>
+                  <span>1</span>
+                  <button class="pdv-qty-btn">+</button>
+                </div>
+                <p class="pdv-item__total">R$ 28,00</p>
+              </div>
+              <!-- item 3 -->
+              <div class="pdv-item">
+                <div class="pdv-item__icon" style="background: #dcfce7">
+                  <span class="text-base">🦴</span>
+                </div>
+                <div class="pdv-item__info">
+                  <p class="pdv-item__name">Petisco Natural</p>
+                  <p class="pdv-item__sub">Produto · R$ 14,00</p>
+                </div>
+                <div class="pdv-item__qty">
+                  <button class="pdv-qty-btn">−</button>
+                  <span>1</span>
+                  <button class="pdv-qty-btn">+</button>
+                </div>
+                <p class="pdv-item__total">R$ 14,00</p>
+              </div>
+            </div>
+
+            <!-- totals -->
+            <div class="pdv-card__totals">
+              <div class="pdv-total-row">
+                <span class="text-gray-500">Subtotal</span>
+                <span class="text-gray-700 font-medium">R$ 87,00</span>
+              </div>
+              <div class="pdv-total-row pdv-total-row--big">
+                <span>Total</span>
+                <span style="color: #1d9fb6">R$ 87,00</span>
+              </div>
+            </div>
+
+            <!-- payment -->
+            <div class="pdv-card__payment">
+              <button class="pdv-pay-btn pdv-pay-btn--active">
+                💵 Dinheiro
+              </button>
+              <button class="pdv-pay-btn">💳 Cartão</button>
+              <button class="pdv-pay-btn">⚡ PIX</button>
+            </div>
+
+            <!-- confirm -->
+            <button class="pdv-confirm-btn">
+              <UIcon name="i-lucide-check" class="size-4" />
+              Confirmar Venda
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -1010,5 +1160,421 @@ onMounted(() => {
   50% {
     opacity: 0;
   }
+}
+
+/* ── PDV Showcase section ── */
+.pdv-section {
+  background: linear-gradient(135deg, #f0fdff 0%, #fff7ed 60%, #f0fdf4 100%);
+  position: relative;
+}
+
+.pdv-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  pointer-events: none;
+  opacity: 0.45;
+}
+.pdv-blob--1 {
+  width: 380px;
+  height: 380px;
+  background: #bae6fd;
+  top: -80px;
+  left: -80px;
+}
+.pdv-blob--2 {
+  width: 300px;
+  height: 300px;
+  background: #fed7aa;
+  bottom: -60px;
+  right: -40px;
+}
+
+/* wrap */
+.pdv-mockup-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* floating badges */
+.pdv-float-badge {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fff;
+  border-radius: 1rem;
+  padding: 0.5rem 0.85rem;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  white-space: nowrap;
+}
+.pdv-float-badge--sale {
+  top: -1rem;
+  right: -0.5rem;
+  animation: pdvFloat1 4s ease-in-out infinite;
+}
+.pdv-float-badge--change {
+  bottom: -1rem;
+  left: -0.5rem;
+  animation: pdvFloat2 5s ease-in-out infinite;
+}
+@keyframes pdvFloat1 {
+  0%,
+  100% {
+    transform: translateY(0) rotate(2deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
+}
+@keyframes pdvFloat2 {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.5deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-1.5deg);
+  }
+}
+
+/* main card */
+.pdv-card {
+  width: 100%;
+  max-width: 22rem;
+  background: #fff;
+  border-radius: 1.5rem;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.12),
+    0 0 0 1.5px rgba(29, 159, 182, 0.15);
+  overflow: hidden;
+  transform: perspective(900px) rotateY(-4deg) rotateX(2deg);
+  transition: transform 0.4s ease;
+}
+.pdv-card:hover {
+  transform: perspective(900px) rotateY(0deg) rotateX(0deg);
+}
+
+.pdv-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.1rem;
+  background: linear-gradient(90deg, #1d9fb6, #0ea5c9);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+.pdv-card__pill {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 9999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.pdv-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.6rem 0.75rem;
+}
+
+.pdv-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: #f9fafb;
+  border-radius: 0.85rem;
+  padding: 0.55rem 0.7rem;
+}
+.pdv-item__icon {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+.pdv-item__info {
+  flex: 1;
+  min-width: 0;
+}
+.pdv-item__name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pdv-item__sub {
+  font-size: 0.6rem;
+  color: #9ca3af;
+}
+.pdv-item__qty {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #374151;
+}
+.pdv-qty-btn {
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 0.4rem;
+  background: #e5e7eb;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.pdv-item__total {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1d9fb6;
+  white-space: nowrap;
+}
+
+.pdv-card__totals {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.7rem 1.1rem;
+  border-top: 1.5px dashed #e5e7eb;
+}
+.pdv-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+.pdv-total-row--big {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.pdv-card__payment {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0 1.1rem 0.6rem;
+}
+.pdv-pay-btn {
+  flex: 1;
+  padding: 0.35rem 0;
+  border-radius: 0.6rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1.5px solid transparent;
+  cursor: default;
+}
+.pdv-pay-btn--active {
+  background: #e0f9ff;
+  color: #0e7490;
+  border-color: #1d9fb6;
+}
+
+.pdv-confirm-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: calc(100% - 2.2rem);
+  margin: 0 1.1rem 1rem;
+  padding: 0.7rem;
+  border-radius: 0.85rem;
+  background: linear-gradient(90deg, #f97316, #fb923c);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);
+  cursor: default;
+}
+
+.hero-screenshot-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  animation: heroFloat 4s ease-in-out infinite;
+}
+
+@keyframes heroFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Glow behind the browser */
+.hero-glow {
+  position: absolute;
+  inset: -20px;
+  border-radius: 2rem;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(29, 159, 182, 0.45) 0%,
+    rgba(245, 130, 32, 0.18) 55%,
+    transparent 80%
+  );
+  filter: blur(28px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Browser chrome */
+.hero-browser {
+  position: relative;
+  z-index: 1;
+  width: 22rem;
+  background: #1e1e2e;
+  border-radius: 0.75rem 0.75rem 0 0;
+  overflow: hidden;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+@media (min-width: 640px) {
+  .hero-browser {
+    width: 28rem;
+  }
+}
+
+.hero-browser__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.75rem;
+  background: #2a2a3e;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hero-dot {
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 9999px;
+}
+
+.hero-browser__url {
+  flex: 1;
+  margin-left: 0.5rem;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 0.35rem;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  max-width: 14rem;
+}
+
+.hero-browser__screen {
+  width: 100%;
+  height: 14rem;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .hero-browser__screen {
+    height: 17rem;
+  }
+}
+
+/* Floating stat badges */
+.hero-badge {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 0.9rem;
+  padding: 0.5rem 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+}
+
+.hero-badge--clients {
+  top: 3.5rem;
+  left: -3.5rem;
+  animation: badgeFloat1 5s ease-in-out infinite;
+}
+
+.hero-badge--revenue {
+  bottom: 4rem;
+  left: -3rem;
+  animation: badgeFloat2 5.5s ease-in-out infinite;
+}
+
+.hero-badge--rating {
+  top: 1rem;
+  right: -3rem;
+  animation: badgeFloat3 4.5s ease-in-out infinite;
+}
+
+@keyframes badgeFloat1 {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-1deg);
+  }
+}
+@keyframes badgeFloat2 {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(1.5deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1.5deg);
+  }
+}
+@keyframes badgeFloat3 {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(-0.5deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-0.5deg);
+  }
+}
+
+.hero-badge__icon {
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hero-badge__label {
+  font-size: 0.6rem;
+  color: #6b7280;
+  line-height: 1;
+  margin-bottom: 0.1rem;
+}
+
+.hero-badge__value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1;
 }
 </style>
