@@ -1188,6 +1188,7 @@ const salvarAgendamento = async () => {
                 v-model="novoForm.enderecoBusca"
                 placeholder="Rua, número - bairro - cidade"
                 class="w-full"
+                disabled
               />
               <template #help>
                 <span class="text-[11px] text-gray-400"
