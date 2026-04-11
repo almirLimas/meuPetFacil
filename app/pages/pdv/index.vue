@@ -224,12 +224,28 @@ const labelForma: Record<FormaPagamento, string> = {
   Outro: "Outro",
 };
 
-const formaOptions: { label: string; value: FormaPagamento }[] = [
-  { label: "Dinheiro", value: "Dinheiro" },
-  { label: "Cartão", value: "Cartao" },
-  { label: "PIX", value: "Pix" },
-  { label: "Outro", value: "Outro" },
+const formaOptions: {
+  label: string;
+  value: FormaPagamento;
+  shortcut: string;
+  key: string;
+}[] = [
+  { label: "Dinheiro", value: "Dinheiro", shortcut: "F1", key: "F1" },
+  { label: "Cartão", value: "Cartao", shortcut: "F2", key: "F2" },
+  { label: "PIX", value: "Pix", shortcut: "F3", key: "F3" },
+  { label: "Outro", value: "Outro", shortcut: "F4", key: "F4" },
 ];
+
+const onKeydown = (e: KeyboardEvent) => {
+  const found = formaOptions.find((o) => o.key === e.key);
+  if (found) {
+    e.preventDefault();
+    formaPagamento.value = found.value;
+  }
+};
+
+onMounted(() => document.addEventListener("keydown", onKeydown));
+onUnmounted(() => document.removeEventListener("keydown", onKeydown));
 </script>
 
 <template>
@@ -547,13 +563,26 @@ const formaOptions: { label: string; value: FormaPagamento }[] = [
 
         <!-- Forma de pagamento + valor pago -->
         <div class="flex flex-col gap-2">
-          <USelect
-            v-model="formaPagamento"
-            :items="formaOptions"
-            value-key="value"
-            label-key="label"
-            placeholder="Forma de pagamento"
-          />
+          <div class="grid grid-cols-4 gap-1.5">
+            <button
+              v-for="opt in formaOptions"
+              :key="opt.value"
+              type="button"
+              class="flex flex-col items-center justify-center gap-0.5 px-2 py-2 rounded-xl border-2 text-xs font-semibold transition-all focus:outline-none"
+              :class="
+                formaPagamento === opt.value
+                  ? 'border-secondary-400 bg-secondary-50 dark:bg-secondary-900/20 text-secondary-600 dark:text-secondary-400'
+                  : 'border-gray-200 dark:border-neutral-600 text-gray-500 dark:text-gray-400 hover:border-gray-300'
+              "
+              @click="formaPagamento = opt.value"
+            >
+              <span>{{ opt.label }}</span>
+              <kbd
+                class="text-[11px] font-bold font-mono px-1.5 py-0.5 rounded border border-gray-300 dark:border-neutral-500 bg-white dark:bg-neutral-700 text-gray-600 dark:text-gray-200 shadow-sm"
+                >{{ opt.shortcut }}</kbd
+              >
+            </button>
+          </div>
           <UInput
             v-if="formaPagamento === 'Dinheiro'"
             v-model="valorPago"

@@ -50,6 +50,7 @@ export const useAgenda = () => {
       dataHora?: string;
       modalidade?: string;
       taxaBusca?: number;
+      enderecoBusca?: string;
       observacoes?: string;
     },
   ) => {

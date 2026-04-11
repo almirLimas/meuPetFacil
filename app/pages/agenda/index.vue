@@ -289,20 +289,55 @@ const novoForm = reactive({
   petId: "",
   modalidade: "ClienteTraz" as ModalidadeAgendamento,
   taxaBusca: "",
+  enderecoBusca: "",
   observacoes: "",
 });
 
-// Auto-preenche taxa de busca ao mudar modalidade
+const clienteSelecionadoEndereco = ref<{
+  rua?: string | null;
+  numero?: string | null;
+  complemento?: string | null;
+  bairro?: string | null;
+  cidade?: string | null;
+  estado?: string | null;
+} | null>(null);
+
+function formatarEndereco(c: {
+  rua?: string | null;
+  numero?: string | null;
+  complemento?: string | null;
+  bairro?: string | null;
+  cidade?: string | null;
+  estado?: string | null;
+}): string {
+  const partes = [
+    c.rua && c.numero ? `${c.rua}, ${c.numero}` : (c.rua ?? ""),
+    c.complemento ?? "",
+    c.bairro ?? "",
+    c.cidade && c.estado ? `${c.cidade}/${c.estado}` : (c.cidade ?? ""),
+  ].filter(Boolean);
+  return partes.join(" - ");
+}
+
+// Auto-preenche taxa de busca e endereço ao mudar modalidade
 watch(
   () => novoForm.modalidade,
   (modalidade) => {
-    if (modalidade === "PetshopBusca" && novoForm.taxaBusca === "") {
-      const taxa = auth.usuario?.taxaBusca;
-      if (taxa != null && taxa > 0) {
-        novoForm.taxaBusca = String(taxa);
+    if (modalidade === "PetshopBusca") {
+      if (novoForm.taxaBusca === "") {
+        const taxa = auth.usuario?.taxaBusca;
+        if (taxa != null && taxa > 0) {
+          novoForm.taxaBusca = String(taxa);
+        }
+      }
+      if (!novoForm.enderecoBusca && clienteSelecionadoEndereco.value) {
+        novoForm.enderecoBusca = formatarEndereco(
+          clienteSelecionadoEndereco.value,
+        );
       }
     } else if (modalidade === "ClienteTraz") {
       novoForm.taxaBusca = "";
+      novoForm.enderecoBusca = "";
     }
   },
 );
@@ -315,7 +350,9 @@ const carregarDadosModal = async () => {
   novoForm.petId = "";
   novoForm.modalidade = "ClienteTraz";
   novoForm.taxaBusca = "";
+  novoForm.enderecoBusca = "";
   novoForm.observacoes = "";
+  clienteSelecionadoEndereco.value = null;
   petsDoCliente.value = [];
 
   clientesLoading.value = true;
@@ -410,13 +447,35 @@ watch(
 
     petsLoading.value = true;
     try {
-      const cliente = await apiFetch<{ pets: Pet[] }>(`/clientes/${id}`);
+      const cliente = await apiFetch<{
+        pets: Pet[];
+        rua?: string | null;
+        numero?: string | null;
+        complemento?: string | null;
+        bairro?: string | null;
+        cidade?: string | null;
+        estado?: string | null;
+      }>(`/clientes/${id}`);
       petsDoCliente.value = (cliente.pets ?? []).map((p) => ({
         label: `${p.nome}${p.especie ? ` (${p.especie})` : ""}`,
         value: p.id,
       }));
+      clienteSelecionadoEndereco.value = {
+        rua: cliente.rua,
+        numero: cliente.numero,
+        complemento: cliente.complemento,
+        bairro: cliente.bairro,
+        cidade: cliente.cidade,
+        estado: cliente.estado,
+      };
+      if (novoForm.modalidade === "PetshopBusca" && !novoForm.enderecoBusca) {
+        novoForm.enderecoBusca = formatarEndereco(
+          clienteSelecionadoEndereco.value,
+        );
+      }
     } catch {
       petsDoCliente.value = [];
+      clienteSelecionadoEndereco.value = null;
     } finally {
       petsLoading.value = false;
     }
@@ -454,6 +513,7 @@ const editForm = reactive({
   servicoIds: [] as string[],
   status: "Agendado" as StatusAgendamento,
   modalidade: "ClienteTraz" as ModalidadeAgendamento,
+  enderecoBusca: "",
   observacoes: "",
 });
 
@@ -468,6 +528,7 @@ const abrirEditar = async (ag: (typeof agendamentos.value)[0]) => {
   editForm.servicoIds = ag.servicos.map((s) => s.servico.id);
   editForm.status = ag.status;
   editForm.modalidade = ag.modalidade;
+  editForm.enderecoBusca = ag.enderecoBusca ?? "";
   editForm.observacoes = ag.observacoes ?? "";
 
   // garante que lista de serviços está carregada
@@ -508,6 +569,7 @@ const salvarEdicao = async () => {
       status: editForm.status,
       dataHora,
       modalidade: editForm.modalidade,
+      enderecoBusca: editForm.enderecoBusca || undefined,
       observacoes: editForm.observacoes || undefined,
     });
     isEditModalOpen.value = false;
@@ -546,6 +608,7 @@ const salvarAgendamento = async () => {
       dataHora,
       modalidade: novoForm.modalidade,
       taxaBusca: novoForm.taxaBusca ? Number(novoForm.taxaBusca) : undefined,
+      enderecoBusca: novoForm.enderecoBusca || undefined,
       observacoes: novoForm.observacoes || undefined,
     });
 
@@ -841,6 +904,13 @@ const salvarAgendamento = async () => {
               </span>
             </p>
             <p
+              v-if="item.modalidade === 'PetshopBusca' && item.enderecoBusca"
+              class="text-xs text-amber-600 dark:text-amber-400 mt-0.5"
+            >
+              <UIcon name="i-lucide-map-pin" class="inline size-3 mr-0.5" />
+              {{ item.enderecoBusca }}
+            </p>
+            <p
               v-if="item.observacoes"
               class="text-xs text-gray-400 mt-0.5 italic"
             >
@@ -1109,6 +1179,22 @@ const salvarAgendamento = async () => {
                 >
               </template>
             </UFormField>
+
+            <UFormField
+              v-if="novoForm.modalidade === 'PetshopBusca'"
+              label="Endereço de busca"
+            >
+              <UInput
+                v-model="novoForm.enderecoBusca"
+                placeholder="Rua, número - bairro - cidade"
+                class="w-full"
+              />
+              <template #help>
+                <span class="text-[11px] text-gray-400"
+                  >Preenchido automaticamente com o endereço do cliente.</span
+                >
+              </template>
+            </UFormField>
           </div>
 
           <template #footer>
@@ -1228,6 +1314,17 @@ const salvarAgendamento = async () => {
                 v-model="editForm.observacoes"
                 placeholder="Observações opcionais..."
                 :rows="2"
+                class="w-full"
+              />
+            </UFormField>
+
+            <UFormField
+              v-if="editForm.modalidade === 'PetshopBusca'"
+              label="Endereço de busca"
+            >
+              <UInput
+                v-model="editForm.enderecoBusca"
+                placeholder="Rua, número - bairro - cidade"
                 class="w-full"
               />
             </UFormField>

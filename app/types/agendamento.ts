@@ -14,6 +14,7 @@ export interface Agendamento {
   status: StatusAgendamento;
   modalidade: ModalidadeAgendamento;
   taxaBusca?: number | null;
+  enderecoBusca?: string | null;
   observacoes?: string | null;
   clienteId: string;
   petId: string;
@@ -36,5 +37,6 @@ export interface CreateAgendamentoPayload {
   dataHora: string;
   modalidade: ModalidadeAgendamento;
   taxaBusca?: number;
+  enderecoBusca?: string;
   observacoes?: string;
 }
