@@ -245,7 +245,9 @@ onMounted(() => {
         <div class="text-white pb-16 pt-4 flex flex-col gap-6">
           <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
             Chega de sistemas complicados.<br />
-            <span class="text-orange-300">Simples, intuitivo e fácil de usar.</span>
+            <span class="text-orange-300"
+              >Simples, intuitivo e fácil de usar.</span
+            >
           </h1>
           <ul class="flex flex-col gap-3">
             <li class="flex items-center gap-3 text-lg">
