@@ -1,5 +1,18 @@
 <script setup lang="ts">
 definePageMeta({ layout: false, colorMode: "light" });
+
+onMounted(() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const _gtag = (window as any).gtag;
+  if (typeof _gtag === "function") {
+    _gtag("event", "conversion", {
+      send_to: "AW-18059774716/NRYsCLX9xZQcEPyVyaND",
+      value: 1.0,
+      currency: "BRL",
+      transaction_id: crypto.randomUUID(),
+    });
+  }
+});
 </script>
 
 <template>

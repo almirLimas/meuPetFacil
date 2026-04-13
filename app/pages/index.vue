@@ -117,6 +117,7 @@ const planos = [
       "Agenda de agendamentos",
       "Cadastro de clientes e pets",
       "Controle de serviços",
+      "Ponto de Venda (PDV) com leitor de código de barras",
       "Financeiro",
       "Relatórios essenciais",
     ],
@@ -131,6 +132,7 @@ const planos = [
       "Para petshops que querem fidelizar clientes no piloto automático.",
     recursos: [
       "Tudo do Básico",
+      "PDV com múltiplas formas de pagamento e troco automático",
       "Lembrete automático por e-mail para clientes inativos",
       "Avaliação automática após cada atendimento",
       "Painel de satisfação dos clientes (nota média e % satisfeitos)",
@@ -242,8 +244,8 @@ onMounted(() => {
       >
         <div class="text-white pb-16 pt-4 flex flex-col gap-6">
           <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
-            Sistema para Pet Shop<br />
-            <span class="text-orange-300">simples, intuitivo e completo.</span>
+            Chega de sistemas complicados.<br />
+            <span class="text-orange-300">Simples, intuitivo e fácil de usar.</span>
           </h1>
           <ul class="flex flex-col gap-3">
             <li class="flex items-center gap-3 text-lg">
