@@ -2,6 +2,7 @@
 definePageMeta({ layout: "landing" });
 
 useHead({
+  link: [{ rel: "canonical", href: "https://www.aninpet.com.br" }],
   script: [
     {
       type: "application/ld+json",
@@ -62,7 +63,8 @@ useSeoMeta({
   twitterDescription:
     "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Lembretes automáticos por e-mail, controle financeiro e muito mais. Experimente grátis por 14 dias.",
   twitterImage: "https://www.aninpet.com.br/logo_aninpet.png",
-  articleModifiedTime: "2026-04-10",
+  robots: "index, follow",
+  articleModifiedTime: "2026-04-14",
 });
 
 const features = [
@@ -533,7 +535,7 @@ onMounted(() => {
           viewBox="0 0 1440 48"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          class="absolute bottom-0 w-full"
+          class="absolute bottom-0 w-full h-full"
           preserveAspectRatio="none"
         >
           <path

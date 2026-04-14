@@ -10,8 +10,11 @@ Disallow: /vacinas
 Disallow: /relatorios
 Disallow: /configuracoes
 Disallow: /primeiros-passos
+Disallow: /login
+Disallow: /criar-conta/sucesso
+Disallow: /criar-conta/pagamento-falhou
+Disallow: /criar-conta/pagamento-pix
 Allow: /
-Allow: /login
 Allow: /criar-conta
 
 Sitemap: https://www.aninpet.com.br/sitemap.xml

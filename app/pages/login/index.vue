@@ -7,6 +7,10 @@ definePageMeta({
   colorMode: "light",
 });
 
+useSeoMeta({
+  robots: "noindex, nofollow",
+});
+
 const auth = useAuthStore();
 
 const schema = z.object({

@@ -9,6 +9,14 @@ definePageMeta({
   colorMode: "light",
 });
 
+useSeoMeta({
+  robots: "index, follow",
+});
+
+useHead({
+  link: [{ rel: "canonical", href: "https://www.aninpet.com.br/criar-conta" }],
+});
+
 const auth = useAuthStore();
 const toast = useToast();
 
