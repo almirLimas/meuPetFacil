@@ -247,7 +247,7 @@ onMounted(() => {
         <div class="text-white pb-16 pt-4 flex flex-col gap-6">
           <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
             <span class="text-orange-300"
-              >Simples, intuitivo e fácil de usar.</span
+              >Menos planilha, mais tempo com quem importa.</span
             >
           </h1>
           <ul class="flex flex-col gap-3">
