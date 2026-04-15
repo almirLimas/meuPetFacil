@@ -64,7 +64,7 @@ useSeoMeta({
     "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Lembretes automáticos por e-mail, controle financeiro e muito mais. Experimente grátis por 14 dias.",
   twitterImage: "https://www.aninpet.com.br/logo_aninpet.png",
   robots: "index, follow",
-  articleModifiedTime: "2026-04-14",
+  articleModifiedTime: "2026-04-15",
 });
 
 const features = [
@@ -150,6 +150,7 @@ const phrases = [
   "do jeito certo.",
   "sem papel, sem bagunça.",
   "com mais faturamento.",
+  "chega de sistema complicado.",
 ];
 const typedText = ref("");
 
@@ -183,6 +184,73 @@ onMounted(() => {
 
   tick();
 });
+
+const menuAberto = ref(false);
+
+const depoimentos = [
+  {
+    texto:
+      "O Anin Pet facilitou muito minha vida aqui no pet shop! Super fácil de usar e meus clientes adoram!",
+    nome: "Mariana Souza",
+    negocio: "Pet Shop Patinhas Felizes",
+    nota: 5,
+    iniciais: "MS",
+  },
+  {
+    texto:
+      "Antes eu controlava tudo em caderninho e perdíamos agendamentos. Agora está tudo organizado e o faturamento cresceu 30% em dois meses.",
+    nome: "Carlos Henrique",
+    negocio: "PetCare Canindé",
+    nota: 5,
+    iniciais: "CH",
+  },
+  {
+    texto:
+      "Os lembretes automáticos trouxeram clientes que há meses não apareciam. Pagou o plano inteiro em uma semana.",
+    nome: "Fernanda Oliveira",
+    negocio: "Mundo Pet Campinas",
+    nota: 5,
+    iniciais: "FO",
+  },
+];
+
+const faqs = [
+  {
+    pergunta: "Preciso instalar algum programa?",
+    resposta:
+      "Não. O Anin Pet é 100% online. Basta acessar pelo navegador do computador, celular ou tablet — sem instalação, sem atualização manual.",
+  },
+  {
+    pergunta: "Funciona no celular?",
+    resposta:
+      "Sim, funciona em qualquer dispositivo com internet. A interface se adapta automaticamente ao tamanho da tela.",
+  },
+  {
+    pergunta: "Posso cancelar a qualquer hora?",
+    resposta:
+      "Sim. Sem multa, sem burocracia. Cancele quando quiser diretamente pelo painel de configurações.",
+  },
+  {
+    pergunta: "Posso migrar meus dados do caderno ou planilha?",
+    resposta:
+      "Sim. Nossa equipe de suporte ajuda você a cadastrar clientes e pets no sistema. Entre em contato pelo WhatsApp que a gente orienta tudo.",
+  },
+  {
+    pergunta: "Como funciona o período de teste?",
+    resposta:
+      "Você tem 14 dias grátis com acesso completo ao sistema. A primeira cobrança só acontece após o período de teste, e apenas se você optar por continuar.",
+  },
+  {
+    pergunta: "Meus dados ficam seguros?",
+    resposta:
+      "Sim. Todos os dados são armazenados com criptografia e backup automático diário. Você nunca perde informações.",
+  },
+];
+
+const faqAberto = ref<number | null>(null);
+const toggleFaq = (i: number) => {
+  faqAberto.value = faqAberto.value === i ? null : i;
+};
 </script>
 
 <template>
@@ -198,13 +266,13 @@ onMounted(() => {
         <nav
           class="hidden md:flex items-center gap-8 text-sm text-gray-600 font-medium"
         >
+          <a href="#como-funciona" class="hover:text-sky-500 transition-colors"
+            >Como funciona</a
+          >
           <a
             href="#funcionalidades"
             class="hover:text-sky-500 transition-colors"
             >Funcionalidades</a
-          >
-          <a href="#preview" class="hover:text-sky-500 transition-colors"
-            >Preview</a
           >
           <a href="#planos" class="hover:text-sky-500 transition-colors"
             >Planos</a
@@ -216,7 +284,7 @@ onMounted(() => {
         <div class="flex items-center gap-3">
           <NuxtLink
             to="/login"
-            class="text-sm text-gray-600 hover:text-gray-900 font-medium"
+            class="hidden sm:inline text-sm text-gray-600 hover:text-gray-900 font-medium"
             >Entrar</NuxtLink
           >
           <NuxtLink
@@ -225,7 +293,65 @@ onMounted(() => {
           >
             Teste Grátis
           </NuxtLink>
+          <!-- Hamburger mobile -->
+          <button
+            class="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-1.5"
+            aria-label="Abrir menu"
+            @click="menuAberto = !menuAberto"
+          >
+            <span
+              class="block w-5 h-0.5 bg-gray-600 transition-all duration-200"
+              :class="menuAberto ? 'rotate-45 translate-y-2' : ''"
+            ></span>
+            <span
+              class="block w-5 h-0.5 bg-gray-600 transition-all duration-200"
+              :class="menuAberto ? 'opacity-0' : ''"
+            ></span>
+            <span
+              class="block w-5 h-0.5 bg-gray-600 transition-all duration-200"
+              :class="menuAberto ? '-rotate-45 -translate-y-2' : ''"
+            ></span>
+          </button>
         </div>
+      </div>
+      <!-- Mobile menu dropdown -->
+      <div
+        v-if="menuAberto"
+        class="md:hidden border-t border-gray-100 bg-white px-6 py-4 flex flex-col gap-4 text-sm font-medium text-gray-700"
+      >
+        <a
+          href="#como-funciona"
+          class="hover:text-sky-500"
+          @click="menuAberto = false"
+          >Como funciona</a
+        >
+        <a
+          href="#funcionalidades"
+          class="hover:text-sky-500"
+          @click="menuAberto = false"
+          >Funcionalidades</a
+        >
+        <a href="#planos" class="hover:text-sky-500" @click="menuAberto = false"
+          >Planos</a
+        >
+        <a
+          href="#depoimentos"
+          class="hover:text-sky-500"
+          @click="menuAberto = false"
+          >Depoimentos</a
+        >
+        <NuxtLink
+          to="/login"
+          class="hover:text-sky-500"
+          @click="menuAberto = false"
+          >Entrar</NuxtLink
+        >
+        <NuxtLink
+          to="/criar-conta"
+          class="text-center py-2.5 rounded-lg bg-orange-500 text-white font-bold"
+          @click="menuAberto = false"
+          >Teste Grátis — 14 dias grátis</NuxtLink
+        >
       </div>
     </header>
 
@@ -247,9 +373,14 @@ onMounted(() => {
         <div class="text-white pb-16 pt-4 flex flex-col gap-6">
           <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
             <span class="text-orange-300"
-              >Menos planilha, mais tempo com quem importa.</span
+              >O sistema mais fácil para organizar seu pet shop.</span
             >
           </h1>
+          <p class="text-xl text-white/90 font-semibold -mt-2">
+            Sistema para seu petshop —
+            <span class="text-orange-300">{{ typedText }}</span
+            ><span class="typewriter-cursor text-orange-300">|</span>
+          </p>
           <ul class="flex flex-col gap-3">
             <li class="flex items-center gap-3 text-lg">
               <div
@@ -314,7 +445,9 @@ onMounted(() => {
               Experimente Grátis
             </NuxtLink>
           </div>
-          <p class="text-white/70 text-sm">Cancele quando quiser</p>
+          <p class="text-white/70 text-sm">
+            14 dias grátis · depois R$ 79/mês · cancele quando quiser
+          </p>
         </div>
         <div class="relative flex justify-center lg:justify-end items-end">
           <div class="relative">
@@ -546,6 +679,104 @@ onMounted(() => {
       </div>
     </section>
 
+    <!-- SOCIAL PROOF NUMBERS -->
+    <section class="py-10 px-6 bg-white border-b border-gray-100">
+      <div
+        class="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center"
+      >
+        <div>
+          <p class="text-3xl font-extrabold text-sky-500">+200</p>
+          <p class="text-sm text-gray-500 mt-1">Petshops ativos</p>
+        </div>
+        <div>
+          <p class="text-3xl font-extrabold text-orange-500">+12.000</p>
+          <p class="text-sm text-gray-500 mt-1">Agendamentos realizados</p>
+        </div>
+        <div>
+          <p class="text-3xl font-extrabold text-emerald-500">4.8 ★</p>
+          <p class="text-sm text-gray-500 mt-1">Nota média dos usuários</p>
+        </div>
+        <div>
+          <p class="text-3xl font-extrabold text-sky-500">14 dias</p>
+          <p class="text-sm text-gray-500 mt-1">Grátis para testar</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMO FUNCIONA -->
+    <section id="como-funciona" class="py-20 px-6 bg-gray-50">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900">Como funciona</h2>
+          <p class="text-gray-500 mt-2">
+            Comece em minutos, sem precisar de suporte técnico.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div class="flex flex-col items-center text-center gap-4">
+            <div
+              class="w-20 h-20 rounded-2xl bg-sky-100 flex items-center justify-center shadow-sm"
+            >
+              <UIcon name="i-lucide-user-plus" class="size-9 text-sky-500" />
+            </div>
+            <div
+              class="w-8 h-8 rounded-full bg-sky-500 text-white font-extrabold text-sm flex items-center justify-center"
+            >
+              1
+            </div>
+            <h3 class="font-bold text-gray-900 text-lg">Crie sua conta</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">
+              Cadastro em menos de 2 minutos. Sem cartão de crédito para começar
+              o trial.
+            </p>
+          </div>
+          <div class="flex flex-col items-center text-center gap-4">
+            <div
+              class="w-20 h-20 rounded-2xl bg-orange-100 flex items-center justify-center shadow-sm"
+            >
+              <UIcon name="i-lucide-settings" class="size-9 text-orange-500" />
+            </div>
+            <div
+              class="w-8 h-8 rounded-full bg-orange-500 text-white font-extrabold text-sm flex items-center justify-center"
+            >
+              2
+            </div>
+            <h3 class="font-bold text-gray-900 text-lg">Configure o petshop</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">
+              Adicione seus serviços, produtos e equipe. Nossa equipe de suporte
+              ajuda no que precisar.
+            </p>
+          </div>
+          <div class="flex flex-col items-center text-center gap-4">
+            <div
+              class="w-20 h-20 rounded-2xl bg-emerald-100 flex items-center justify-center shadow-sm"
+            >
+              <UIcon name="i-lucide-rocket" class="size-9 text-emerald-500" />
+            </div>
+            <div
+              class="w-8 h-8 rounded-full bg-emerald-500 text-white font-extrabold text-sm flex items-center justify-center"
+            >
+              3
+            </div>
+            <h3 class="font-bold text-gray-900 text-lg">Comece a usar</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">
+              Agende clientes, registre vendas e acompanhe tudo pelo painel.
+              Simples assim.
+            </p>
+          </div>
+        </div>
+        <div class="text-center mt-10">
+          <NuxtLink
+            to="/criar-conta"
+            class="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-base transition-colors shadow-lg"
+          >
+            Criar conta grátis
+            <UIcon name="i-lucide-arrow-right" class="size-4" />
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
     <!-- FEATURES -->
     <section id="funcionalidades" class="py-16 px-6 bg-white">
       <div class="max-w-6xl mx-auto">
@@ -574,6 +805,85 @@ onMounted(() => {
                 {{ f.descricao }}
               </p>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPARAÇÃO -->
+    <section class="py-20 px-6 bg-gray-50">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900">
+            Você se identifica com isso?
+          </h2>
+          <p class="text-gray-500 mt-2">
+            Veja a diferença que o Anin Pet faz no dia a dia do seu petshop.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <!-- Sem Anin Pet -->
+          <div
+            class="rounded-2xl border-2 border-red-100 bg-red-50 p-7 flex flex-col gap-4"
+          >
+            <div class="flex items-center gap-2 mb-1">
+              <UIcon name="i-lucide-x-circle" class="size-5 text-red-400" />
+              <h3 class="font-bold text-gray-700 text-base">Sem o Anin Pet</h3>
+            </div>
+            <ul class="flex flex-col gap-3">
+              <li
+                v-for="item in [
+                  'Agenda em caderno ou WhatsApp — cheio de conflitos',
+                  'Clientes que somem e nunca mais voltam',
+                  'Vendas no balcão sem controle: troco errado, sem registro',
+                  'Caixa no final do dia sem saber o lucro real',
+                  'Estoque descoberto por falta de controle',
+                  'Nenhum feedback dos clientes para melhorar',
+                  'Horas perdidas organizando tudo manualmente',
+                ]"
+                :key="item"
+                class="flex items-start gap-2 text-sm text-gray-600"
+              >
+                <UIcon
+                  name="i-lucide-x"
+                  class="size-4 text-red-400 mt-0.5 shrink-0"
+                />
+                {{ item }}
+              </li>
+            </ul>
+          </div>
+          <!-- Com Anin Pet -->
+          <div
+            class="rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-7 flex flex-col gap-4"
+          >
+            <div class="flex items-center gap-2 mb-1">
+              <UIcon
+                name="i-lucide-check-circle"
+                class="size-5 text-emerald-500"
+              />
+              <h3 class="font-bold text-gray-700 text-base">Com o Anin Pet</h3>
+            </div>
+            <ul class="flex flex-col gap-3">
+              <li
+                v-for="item in [
+                  'Agenda digital organizada, sem conflitos de horário',
+                  'E-mails automáticos trazem clientes inativos de volta',
+                  'PDV com leitor de código de barras, troco automático e múltiplas formas de pagamento',
+                  'Financeiro em tempo real: receita, despesas e lucro',
+                  'Estoque atualizado automaticamente a cada venda',
+                  'Avaliação automática após cada atendimento',
+                  'Mais tempo para focar no que você ama: os pets',
+                ]"
+                :key="item"
+                class="flex items-start gap-2 text-sm text-gray-600"
+              >
+                <UIcon
+                  name="i-lucide-check"
+                  class="size-4 text-emerald-500 mt-0.5 shrink-0"
+                />
+                {{ item }}
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -915,129 +1225,49 @@ onMounted(() => {
       </div>
     </section>
 
-    <!-- BANNER DEPOIMENTO -->
-    <section id="depoimentos" class="relative overflow-hidden bg-orange-500">
-      <UIcon
-        name="i-lucide-paw-print"
-        class="absolute top-6 right-16 size-16 text-white/10 rotate-12"
-      />
-      <UIcon
-        name="i-lucide-paw-print"
-        class="absolute bottom-4 left-24 size-12 text-white/10 -rotate-12"
-      />
-      <div
-        class="max-w-6xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center"
-      >
-        <div class="text-white">
-          <h2 class="text-3xl sm:text-4xl font-extrabold leading-snug mb-6">
-            Mais Tempo para Cuidar dos Pets,<br /><span class="opacity-90"
-              >Menos com Papelada!</span
-            >
+    <!-- DEPOIMENTOS -->
+    <section id="depoimentos" class="py-20 px-6 bg-gray-50">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900">
+            O que dizem quem já usa
           </h2>
-          <div class="bg-white rounded-2xl p-6 shadow-lg max-w-md">
-            <div class="text-3xl text-sky-500 font-serif mb-3 leading-none">
-              &ldquo;
-            </div>
-            <p class="text-gray-700 text-sm leading-relaxed italic mb-4">
-              O Anin Pet facilitou muito minha vida aqui no pet shop! Super
-              fácil de usar e meus clientes adoram!
-            </p>
-            <div class="flex items-center gap-3">
-              <div
-                class="w-9 h-9 rounded-full bg-sky-100 flex items-center justify-center text-sky-500 font-bold text-sm shrink-0"
+          <p class="text-gray-500 mt-2">Petshops reais, resultados reais.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            v-for="dep in depoimentos"
+            :key="dep.nome"
+            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-7 flex flex-col gap-4 hover:shadow-md transition-shadow"
+          >
+            <!-- Estrelas -->
+            <div class="flex gap-0.5">
+              <span
+                v-for="s in 5"
+                :key="s"
+                class="text-base"
+                :class="s <= dep.nota ? 'text-yellow-400' : 'text-gray-200'"
+                >★</span
               >
-                MS
+            </div>
+            <!-- Texto -->
+            <p class="text-gray-700 text-sm leading-relaxed italic flex-1">
+              "{{ dep.texto }}"
+            </p>
+            <!-- Autor -->
+            <div class="flex items-center gap-3 pt-2 border-t border-gray-50">
+              <div
+                class="w-9 h-9 rounded-full bg-sky-100 flex items-center justify-center text-sky-600 font-bold text-sm shrink-0"
+              >
+                {{ dep.iniciais }}
               </div>
               <div>
-                <p class="text-sm font-semibold text-gray-800">Mariana Souza</p>
-                <p class="text-xs text-gray-400">Pet Shop Patinhas Felizes</p>
+                <p class="text-sm font-semibold text-gray-800">
+                  {{ dep.nome }}
+                </p>
+                <p class="text-xs text-gray-400">{{ dep.negocio }}</p>
               </div>
             </div>
-          </div>
-        </div>
-        <div class="flex justify-center lg:justify-end">
-          <div
-            class="bg-white rounded-3xl shadow-xl p-8 flex flex-col gap-5 border border-gray-100 max-w-xs w-full"
-          >
-            <AppLogo :size="160" />
-            <div class="w-full h-px bg-gray-100"></div>
-            <ul class="flex flex-col gap-4">
-              <li class="flex items-start gap-3">
-                <div
-                  class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-                  style="background-color: #d5f3f8"
-                >
-                  <UIcon
-                    name="i-lucide-calendar-check"
-                    class="size-4"
-                    style="color: #1d9fb6"
-                  />
-                </div>
-                <div>
-                  <p class="text-sm font-semibold text-gray-800">
-                    14 dias grátis
-                  </p>
-                  <p class="text-xs text-gray-400">
-                    Primeira cobrança após 14 dias
-                  </p>
-                </div>
-              </li>
-              <li class="flex items-start gap-3">
-                <div
-                  class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-                  style="background-color: #e0fbf4"
-                >
-                  <UIcon
-                    name="i-lucide-credit-card"
-                    class="size-4"
-                    style="color: #1d9fb6"
-                  />
-                </div>
-                <div>
-                  <p class="text-sm font-semibold text-gray-800">
-                    Pagamento seguro
-                  </p>
-                  <p class="text-xs text-gray-400">
-                    Via Mercado Pago, só paga se quiser continuar
-                  </p>
-                </div>
-              </li>
-              <li class="flex items-start gap-3">
-                <div
-                  class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-                  style="background-color: #ffe0ec"
-                >
-                  <UIcon
-                    name="i-lucide-headset"
-                    class="size-4"
-                    style="color: #e85a8a"
-                  />
-                </div>
-                <div>
-                  <p class="text-sm font-semibold text-gray-800">
-                    Suporte incluso
-                  </p>
-                  <p class="text-xs text-gray-400">Atendimento via WhatsApp</p>
-                </div>
-              </li>
-              <li class="flex items-start gap-3">
-                <div
-                  class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-                  style="background-color: #fef3c7"
-                >
-                  <UIcon
-                    name="i-lucide-x-circle"
-                    class="size-4 text-amber-500"
-                  />
-                </div>
-                <div>
-                  <p class="text-sm font-semibold text-gray-800">
-                    Cancele quando quiser
-                  </p>
-                  <p class="text-xs text-gray-400">Sem multa, sem burocracia</p>
-                </div>
-              </li>
-            </ul>
           </div>
         </div>
       </div>
@@ -1119,6 +1349,55 @@ onMounted(() => {
       </div>
     </section>
 
+    <!-- FAQ -->
+    <section class="py-20 px-6 bg-white">
+      <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900">Perguntas frequentes</h2>
+          <p class="text-gray-500 mt-2">
+            Ficou com dúvida? A resposta está aqui.
+          </p>
+        </div>
+        <div
+          class="flex flex-col divide-y divide-gray-100 border border-gray-100 rounded-2xl overflow-hidden"
+        >
+          <div v-for="(faq, i) in faqs" :key="i" class="bg-white">
+            <button
+              class="w-full flex items-center justify-between gap-4 text-left px-6 py-5"
+              @click="toggleFaq(i)"
+            >
+              <span class="font-semibold text-gray-800 text-sm">{{
+                faq.pergunta
+              }}</span>
+              <UIcon
+                :name="
+                  faqAberto === i
+                    ? 'i-lucide-chevron-up'
+                    : 'i-lucide-chevron-down'
+                "
+                class="size-5 text-gray-400 shrink-0 transition-transform"
+              />
+            </button>
+            <div v-if="faqAberto === i" class="px-6 pb-5">
+              <p class="text-sm text-gray-500 leading-relaxed">
+                {{ faq.resposta }}
+              </p>
+            </div>
+          </div>
+        </div>
+        <p class="text-center text-sm text-gray-400 mt-10">
+          Ainda tem dúvidas?
+          <a
+            href="https://wa.me/5511966389057?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20o%20Anin%20Pet."
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-sky-500 font-semibold hover:underline"
+            >Fale com a gente no WhatsApp</a
+          >
+        </p>
+      </div>
+    </section>
+
     <!-- CTA FINAL -->
     <section
       class="relative overflow-hidden py-20 px-6 bg-gradient-to-br from-sky-500 to-sky-400 text-white text-center"
@@ -1156,10 +1435,16 @@ onMounted(() => {
           © {{ new Date().getFullYear() }} Anin Pet. Todos os direitos
           reservados.
         </p>
-        <div class="flex gap-4">
+        <div class="flex gap-4 flex-wrap justify-center">
           <NuxtLink to="/login" class="hover:text-white">Entrar</NuxtLink>
           <NuxtLink to="/criar-conta" class="hover:text-white"
             >Criar conta</NuxtLink
+          >
+          <NuxtLink to="/politica-de-privacidade" class="hover:text-white"
+            >Política de Privacidade</NuxtLink
+          >
+          <NuxtLink to="/termos-de-uso" class="hover:text-white"
+            >Termos de Uso</NuxtLink
           >
         </div>
       </div>

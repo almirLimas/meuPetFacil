@@ -1,10 +1,66 @@
+<script setup lang="ts">
+const cookiesAceitos = useCookie("cookies_aceitos", {
+  maxAge: 60 * 60 * 24 * 365,
+  sameSite: "lax",
+});
+const mostrarBanner = ref(!cookiesAceitos.value);
+
+const aceitarCookies = () => {
+  cookiesAceitos.value = "1";
+  mostrarBanner.value = false;
+};
+</script>
+
 <template>
   <div class="min-h-screen bg-white">
     <slot />
 
+    <!-- Banner de Cookies -->
+    <Transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="translate-y-4 opacity-0"
+      enter-to-class="translate-y-0 opacity-100"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="translate-y-0 opacity-100"
+      leave-to-class="translate-y-4 opacity-0"
+    >
+      <div
+        v-if="mostrarBanner"
+        class="fixed bottom-0 left-0 right-0 z-40 bg-gray-900 text-white px-5 py-4 shadow-2xl"
+      >
+        <div
+          class="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-4"
+        >
+          <p class="text-sm text-gray-300 flex-1 leading-relaxed">
+            🍪 Usamos cookies para melhorar sua experiência no site. Ao
+            continuar navegando, você concorda com nossa
+            <NuxtLink
+              to="/politica-de-privacidade"
+              class="text-sky-400 hover:underline font-medium"
+              >Política de Privacidade</NuxtLink
+            >.
+          </p>
+          <div class="flex items-center gap-3 shrink-0">
+            <button
+              class="text-xs text-gray-400 hover:text-white underline"
+              @click="mostrarBanner = false"
+            >
+              Recusar
+            </button>
+            <button
+              class="px-5 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold transition-colors"
+              @click="aceitarCookies"
+            >
+              Aceitar
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Botão flutuante WhatsApp -->
     <a
-      href="https://wa.me/5511966389057?text=Ol%C3%A1!%20Tenho%20interesse%20no%20AninPet%20e%20gostaria%20de%20tirar%20algumas%20d%C3%BAvidas."
+      href="https://wa.me/5511966389057?text=Ol%C3%A1!%20Tenho%20interesse%20no%20Anin%20Pet%20e%20gostaria%20de%20tirar%20algumas%20d%C3%BAvidas."
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Falar no WhatsApp"
