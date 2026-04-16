@@ -13,6 +13,7 @@ const { apiFetch } = useApi();
 const { agendamentos, loading, fetchByDate, create, update, updateStatus } =
   useAgenda();
 const toast = useToast();
+const { abrirAssistente } = useAssistente();
 const auth = useAuthStore();
 
 // -- Data selecionada ---------------------------------------------------------
@@ -1055,6 +1056,27 @@ const salvarAgendamento = async () => {
           </template>
 
           <div class="flex flex-col gap-3">
+            <!-- Banner IA -->
+            <div
+              class="flex items-center gap-2 px-3 py-2 rounded-lg bg-sky-50 dark:bg-sky-950 border border-sky-200 dark:border-sky-800 text-xs text-sky-700 dark:text-sky-300"
+            >
+              <img
+                src="/anin.png"
+                alt="Anin"
+                class="size-4 object-contain shrink-0"
+              />
+              <span>Prefere que a <strong>Anin</strong> agende pra você?</span>
+              <button
+                class="ml-auto font-medium underline underline-offset-2 hover:text-sky-900 dark:hover:text-sky-100 transition-colors"
+                @click="
+                  isModalOpen = false;
+                  abrirAssistente();
+                "
+              >
+                Abrir chat
+              </button>
+            </div>
+
             <div class="grid grid-cols-2 gap-3">
               <UFormField label="Data *">
                 <UInput v-model="novoForm.data" type="date" class="w-full" />

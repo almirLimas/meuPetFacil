@@ -67,7 +67,7 @@ defineExpose({
             <span
               class="text-xs font-semibold text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full whitespace-nowrap"
             >
-              🎁 14 dias grátis
+              🎁 7 dias grátis
             </span>
             <div
               v-if="state.plano === plano.key"
@@ -85,12 +85,21 @@ defineExpose({
             :key="modulo"
             class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
             :class="
-              state.plano === plano.key
-                ? 'bg-secondary-100 text-secondary-700'
-                : 'bg-gray-100 text-gray-600'
+              modulo === 'ia_anin'
+                ? 'bg-sky-100 text-sky-700 font-semibold'
+                : state.plano === plano.key
+                  ? 'bg-secondary-100 text-secondary-700'
+                  : 'bg-gray-100 text-gray-600'
             "
           >
+            <img
+              v-if="modulo === 'ia_anin'"
+              src="/anin.png"
+              class="w-3.5 h-3.5 object-contain"
+              alt="IA"
+            />
             <UIcon
+              v-else
               name="i-lucide-check-circle-2"
               class="text-green-500 text-xs"
             />
@@ -102,8 +111,7 @@ defineExpose({
 
     <!-- Nota informativa -->
     <p class="text-xs text-center text-gray-400">
-      Cartão necessário para ativar. A primeira cobrança ocorre somente após os
-      14 dias.
+      7 dias grátis. A primeira cobrança ocorre somente após o período de teste.
     </p>
   </div>
 </template>

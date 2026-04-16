@@ -11,6 +11,7 @@ import { useClienteStore } from "~/stores/cliente";
 
 const clienteStore = useClienteStore();
 const toast = useToast();
+const { abrirAssistente } = useAssistente();
 
 // -- Estado compartilhado entre os steps --------------------------------------
 const state = reactive<ClienteFormState>({
@@ -134,6 +135,20 @@ const submitForm = async () => {
       >
         Voltar para clientes
       </UButton>
+    </div>
+
+    <!-- Banner IA -->
+    <div
+      class="flex items-center gap-2 px-3 py-2 rounded-lg bg-sky-50 dark:bg-sky-950 border border-sky-200 dark:border-sky-800 text-sm text-sky-700 dark:text-sky-300"
+    >
+      <img src="/anin.png" alt="Anin" class="size-5 object-contain shrink-0" />
+      <span>Prefere que a <strong>Anin</strong> faça o cadastro pra você?</span>
+      <button
+        class="ml-auto font-medium underline underline-offset-2 hover:text-sky-900 dark:hover:text-sky-100 transition-colors"
+        @click="abrirAssistente()"
+      >
+        Abrir chat
+      </button>
     </div>
 
     <!-- Card do formulário -->

@@ -112,7 +112,7 @@ const statusConfig = computed(() => {
       let pendenteDesc: string;
       if (!expirou) {
         pendenteDesc =
-          "Seu checkout foi iniciado. Conclua o cadastro do cartão no Mercado Pago para garantir o acesso após os 14 dias.";
+          "Seu checkout foi iniciado. Conclua o cadastro do cartão no Mercado Pago para garantir o acesso após os 7 dias.";
       } else if (checkoutIniciado) {
         pendenteDesc =
           'Você não concluiu o cadastro do cartão no Mercado Pago. Clique em "Assinar agora" para finalizar.';

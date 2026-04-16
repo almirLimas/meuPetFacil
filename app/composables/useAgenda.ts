@@ -9,8 +9,10 @@ export const useAgenda = () => {
 
   const agendamentos = useState<Agendamento[]>("agenda", () => []);
   const loading = ref(false);
+  const ultimaData = useState<string>("agenda-ultima-data", () => "");
 
   const fetchByDate = async (date: string) => {
+    ultimaData.value = date;
     loading.value = true;
     try {
       agendamentos.value = await apiFetch<Agendamento[]>(
@@ -63,5 +65,17 @@ export const useAgenda = () => {
     return updated;
   };
 
-  return { agendamentos, loading, fetchByDate, create, update, updateStatus };
+  const refresh = () => {
+    if (ultimaData.value) return fetchByDate(ultimaData.value);
+  };
+
+  return {
+    agendamentos,
+    loading,
+    fetchByDate,
+    refresh,
+    create,
+    update,
+    updateStatus,
+  };
 };

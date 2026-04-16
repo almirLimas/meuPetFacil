@@ -557,7 +557,7 @@ const abrirHistorico = async (p: Produto) => {
               <td
                 class="px-4 py-3 text-gray-700 dark:text-gray-300 hidden lg:table-cell"
               >
-                {{ p.precoVenda ? formatPreco(p.precoVenda) : "—" }}
+                {{ p.precoVenda ? formatPreco(Number(p.precoVenda)) : "—" }}
               </td>
               <td class="px-4 py-3">
                 <div class="flex items-center gap-1 justify-end">

@@ -48,11 +48,11 @@ useSeoMeta({
   title:
     "AninPet — Sistema para Pet Shop que quer organizar a agenda e aumentar o faturamento",
   description:
-    "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Lembretes automáticos por e-mail, controle financeiro e muito mais. Experimente grátis por 14 dias.",
+    "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Lembretes automáticos por e-mail, controle financeiro e muito mais. Experimente grátis por 7 dias.",
   ogTitle:
     "AninPet — Sistema para Pet Shop que quer organizar a agenda e aumentar o faturamento",
   ogDescription:
-    "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Lembretes automáticos por e-mail, controle financeiro e muito mais. Experimente grátis por 14 dias.",
+    "Sistema para pet shop que quer organizar a agenda e aumentar o faturamento. Lembretes automáticos por e-mail, controle financeiro e muito mais. Experimente grátis por 7 dias.",
   ogImage: "https://www.aninpet.com.br/logo_aninpet.png",
   ogUrl: "https://www.aninpet.com.br",
   ogType: "website",
@@ -66,6 +66,57 @@ useSeoMeta({
   robots: "index, follow",
   articleModifiedTime: "2026-04-15",
 });
+
+const iaCapabilities = [
+  {
+    icon: "i-lucide-user-plus",
+    color: "bg-sky-50 text-sky-600",
+    title: "Cadastrar cliente e pet",
+    desc: '"Cadastra um novo cliente chamado João..."',
+  },
+  {
+    icon: "i-lucide-calendar-plus",
+    color: "bg-orange-50 text-orange-600",
+    title: "Criar agendamento",
+    desc: '"Agenda uma tosa pra amanhã às 10h..."',
+  },
+  {
+    icon: "i-lucide-check-circle",
+    color: "bg-emerald-50 text-emerald-600",
+    title: "Concluir atendimento",
+    desc: '"Conclui o agendamento do Bidu"',
+  },
+  {
+    icon: "i-lucide-layout-dashboard",
+    color: "bg-purple-50 text-purple-600",
+    title: "Ver resumo do negócio",
+    desc: '"Como está meu pet shop hoje?"',
+  },
+  {
+    icon: "i-lucide-trending-up",
+    color: "bg-teal-50 text-teal-600",
+    title: "Consultar financeiro",
+    desc: '"Qual foi minha receita esse mês?"',
+  },
+  {
+    icon: "i-lucide-package",
+    color: "bg-yellow-50 text-yellow-700",
+    title: "Verificar estoque",
+    desc: '"Tem shampoo em estoque?"',
+  },
+  {
+    icon: "i-lucide-search",
+    color: "bg-pink-50 text-pink-600",
+    title: "Buscar agendamentos",
+    desc: '"Quem vem hoje?"',
+  },
+  {
+    icon: "i-lucide-star",
+    color: "bg-indigo-50 text-indigo-600",
+    title: "Ver avaliações",
+    desc: '"Como está a satisfação dos clientes?"',
+  },
+];
 
 const features = [
   {
@@ -116,6 +167,7 @@ const planos = [
     badge: null,
     descricao: "Para petshops que querem se organizar e crescer.",
     recursos: [
+      "IA Anin: cadastre, agende e consulte digitando",
       "Agenda de agendamentos",
       "Cadastro de clientes e pets",
       "Controle de serviços",
@@ -133,7 +185,7 @@ const planos = [
     descricao:
       "Para petshops que querem fidelizar clientes no piloto automático.",
     recursos: [
-      "Tudo do Básico",
+      "Tudo do Básico (incluindo IA Anin)",
       "PDV com múltiplas formas de pagamento e troco automático",
       "Lembrete automático por e-mail para clientes inativos",
       "Avaliação automática após cada atendimento",
@@ -146,6 +198,7 @@ const planos = [
 
 // ─── Typewriter ────────────────────────────────────────────────────────────────
 const phrases = [
+  "com IA que trabalha por você.",
   "simples assim.",
   "do jeito certo.",
   "sem papel, sem bagunça.",
@@ -238,7 +291,7 @@ const faqs = [
   {
     pergunta: "Como funciona o período de teste?",
     resposta:
-      "Você tem 14 dias grátis com acesso completo ao sistema. A primeira cobrança só acontece após o período de teste, e apenas se você optar por continuar.",
+      "Você tem 7 dias grátis com acesso completo ao sistema. A primeira cobrança só acontece após o período de teste, e apenas se você optar por continuar.",
   },
   {
     pergunta: "Meus dados ficam seguros?",
@@ -350,7 +403,7 @@ const toggleFaq = (i: number) => {
           to="/criar-conta"
           class="text-center py-2.5 rounded-lg bg-orange-500 text-white font-bold"
           @click="menuAberto = false"
-          >Teste Grátis — 14 dias grátis</NuxtLink
+          >Teste Grátis — 7 dias grátis</NuxtLink
         >
       </div>
     </header>
@@ -373,7 +426,7 @@ const toggleFaq = (i: number) => {
         <div class="text-white pb-16 pt-4 flex flex-col gap-6">
           <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
             <span class="text-orange-300"
-              >O sistema mais fácil para organizar seu pet shop.</span
+              >Use IA para agilizar atendimentos e organizar seu pet shop</span
             >
           </h1>
           <p class="text-xl text-white/90 font-semibold -mt-2">
@@ -382,6 +435,14 @@ const toggleFaq = (i: number) => {
             ><span class="typewriter-cursor text-orange-300">|</span>
           </p>
           <ul class="flex flex-col gap-3">
+            <li class="flex items-center gap-3 text-lg font-semibold">
+              <div
+                class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
+              >
+                <UIcon name="i-lucide-bot" class="size-3.5 text-white" />
+              </div>
+              IA que cadastra, agenda e responde — só digitando
+            </li>
             <li class="flex items-center gap-3 text-lg">
               <div
                 class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
@@ -446,10 +507,18 @@ const toggleFaq = (i: number) => {
             </NuxtLink>
           </div>
           <p class="text-white/70 text-sm">
-            14 dias grátis · depois R$ 79/mês · cancele quando quiser
+            7 dias grátis · depois R$ 79/mês · cancele quando quiser
           </p>
         </div>
-        <div class="relative flex justify-center lg:justify-end items-end">
+        <div
+          class="relative flex flex-col justify-end items-center lg:items-end gap-0"
+        >
+          <!-- Anin mascot -->
+          <img
+            src="/anin.png"
+            alt="Anin — IA do AninPet"
+            class="w-72 sm:w-96 lg:w-[420px] object-contain drop-shadow-2xl relative z-10 -mb-6"
+          />
           <div class="relative">
             <!-- Desktop mockup -->
             <div class="w-80 sm:w-96 bg-gray-800 rounded-t-xl p-2 shadow-2xl">
@@ -697,8 +766,203 @@ const toggleFaq = (i: number) => {
           <p class="text-sm text-gray-500 mt-1">Nota média dos usuários</p>
         </div>
         <div>
-          <p class="text-3xl font-extrabold text-sky-500">14 dias</p>
+          <p class="text-3xl font-extrabold text-sky-500">7 dias</p>
           <p class="text-sm text-gray-500 mt-1">Grátis para testar</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- IA ANIN SECTION -->
+    <section
+      id="ia-anin"
+      class="py-20 px-6 bg-gradient-to-b from-sky-50 to-white overflow-hidden"
+    >
+      <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-14 flex flex-col items-center gap-3">
+          <div
+            class="inline-flex items-center gap-2 bg-sky-100 text-sky-700 text-xs font-bold px-3 py-1.5 rounded-full"
+          >
+            <img src="/anin.png" class="w-4 h-4 object-contain" alt="Anin" />
+            Inteligência Artificial
+          </div>
+          <h2
+            class="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight"
+          >
+            Conheça a <span class="text-sky-500">Anin</span> — sua IA do pet
+            shop
+          </h2>
+          <p class="text-gray-500 text-base max-w-2xl leading-relaxed">
+            Só digitando em linguagem natural, você cadastra clientes, agenda
+            serviços, consulta o financeiro e muito mais — sem navegar por
+            menus.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
+          <!-- Left: capabilities -->
+          <div class="flex flex-col gap-6">
+            <h3 class="text-xl font-bold text-gray-800">
+              O que você pode dizer para a Anin fazer:
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div
+                v-for="cap in iaCapabilities"
+                :key="cap.title"
+                class="flex items-start gap-3 p-4 rounded-xl bg-white border border-gray-100 hover:border-sky-200 hover:shadow-sm transition-all"
+              >
+                <div
+                  :class="[
+                    cap.color,
+                    'w-9 h-9 rounded-lg flex items-center justify-center shrink-0',
+                  ]"
+                >
+                  <UIcon :name="cap.icon" class="size-4" />
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-gray-800">
+                    {{ cap.title }}
+                  </p>
+                  <p class="text-xs text-gray-400 mt-0.5 italic">
+                    {{ cap.desc }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: chat mockup -->
+          <div class="relative">
+            <!-- Mascot above chat -->
+            <div class="flex justify-center mb-4">
+              <img
+                src="/anin.png"
+                alt="Anin"
+                class="w-20 h-20 object-contain drop-shadow-lg"
+              />
+            </div>
+            <!-- Chat window -->
+            <div
+              class="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden"
+            >
+              <!-- Chat header -->
+              <div
+                class="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-sky-500 to-sky-400"
+              >
+                <img
+                  src="/anin.png"
+                  alt="Anin"
+                  class="w-8 h-8 object-contain"
+                />
+                <div>
+                  <p class="text-white font-bold text-sm">Anin</p>
+                  <p class="text-sky-100 text-xs">IA do AninPet · online</p>
+                </div>
+                <div class="ml-auto w-2 h-2 rounded-full bg-emerald-400"></div>
+              </div>
+              <!-- Messages -->
+              <div class="flex flex-col gap-3 p-4 bg-gray-50">
+                <!-- Anin intro -->
+                <div class="flex items-end gap-2">
+                  <img
+                    src="/anin.png"
+                    class="w-7 h-7 object-contain shrink-0"
+                    alt="Anin"
+                  />
+                  <div
+                    class="bg-white rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm max-w-xs"
+                  >
+                    <p class="text-sm text-gray-700">
+                      Olá! Sou a Anin 👋 Como posso ajudar seu pet shop hoje?
+                    </p>
+                  </div>
+                </div>
+                <!-- User -->
+                <div class="flex justify-end">
+                  <div
+                    class="bg-sky-500 rounded-2xl rounded-br-sm px-4 py-3 shadow-sm max-w-xs"
+                  >
+                    <p class="text-sm text-white">Quem vem hoje?</p>
+                  </div>
+                </div>
+                <!-- Anin response -->
+                <div class="flex items-end gap-2">
+                  <img
+                    src="/anin.png"
+                    class="w-7 h-7 object-contain shrink-0"
+                    alt="Anin"
+                  />
+                  <div
+                    class="bg-white rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm max-w-xs"
+                  >
+                    <p class="text-sm font-semibold text-gray-700 mb-1">
+                      Hoje você tem 3 agendamentos:
+                    </p>
+                    <ul class="text-xs text-gray-600 space-y-1">
+                      <li>🕘 09:00 — Bidu (Tosa) · João Silva</li>
+                      <li>🕐 13:00 — Luna (Banho) · Maria Lima</li>
+                      <li>🕓 16:00 — Rex (Tosa) · Carlos Souza</li>
+                    </ul>
+                  </div>
+                </div>
+                <!-- User 2 -->
+                <div class="flex justify-end">
+                  <div
+                    class="bg-sky-500 rounded-2xl rounded-br-sm px-4 py-3 shadow-sm max-w-xs"
+                  >
+                    <p class="text-sm text-white">
+                      Conclui o agendamento do Bidu
+                    </p>
+                  </div>
+                </div>
+                <!-- Anin response 2 -->
+                <div class="flex items-end gap-2">
+                  <img
+                    src="/anin.png"
+                    class="w-7 h-7 object-contain shrink-0"
+                    alt="Anin"
+                  />
+                  <div
+                    class="bg-white rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm max-w-xs"
+                  >
+                    <p class="text-sm text-gray-700">
+                      ✅ Agendamento do <strong>Bidu</strong> marcado como
+                      <span class="text-emerald-600 font-semibold"
+                        >Concluído</span
+                      >!
+                    </p>
+                  </div>
+                </div>
+                <!-- Input bar -->
+                <div class="mt-2">
+                  <div
+                    class="flex items-center gap-2 bg-white rounded-xl border border-gray-200 px-3 py-2"
+                  >
+                    <span class="text-xs text-gray-400 flex-1"
+                      >Digite uma mensagem...</span
+                    >
+                    <button
+                      class="w-7 h-7 bg-sky-500 rounded-lg flex items-center justify-center"
+                    >
+                      <UIcon name="i-lucide-send" class="size-3.5 text-white" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="text-center mt-14">
+          <NuxtLink
+            to="/criar-conta"
+            class="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-bold text-base transition-colors shadow-lg"
+          >
+            Experimente a Anin grátis
+            <UIcon name="i-lucide-arrow-right" class="size-4" />
+          </NuxtLink>
+          <p class="text-gray-400 text-sm mt-3">7 dias grátis · sem cartão</p>
         </div>
       </div>
     </section>
@@ -1281,7 +1545,7 @@ const toggleFaq = (i: number) => {
             Planos simples e transparentes
           </h2>
           <p class="text-gray-500 mt-2">
-            14 dias grátis. Primeira cobrança só após o período de teste.
+            7 dias grátis. Primeira cobrança só após o período de teste.
           </p>
           <p class="text-sm text-gray-400 mt-1">
             Todos os planos incluem suporte via WhatsApp.
@@ -1319,11 +1583,22 @@ const toggleFaq = (i: number) => {
             </div>
             <ul class="flex flex-col gap-3 mb-8 flex-1">
               <li
-                v-for="rec in plano.recursos"
+                v-for="(rec, idx) in plano.recursos"
                 :key="rec"
-                class="flex items-start gap-2 text-sm text-gray-700"
+                class="flex items-start gap-2 text-sm"
+                :class="
+                  idx === 0 ? 'text-sky-600 font-semibold' : 'text-gray-700'
+                "
               >
+                <span v-if="idx === 0" class="shrink-0 mt-0.5">
+                  <img
+                    src="/anin.png"
+                    class="w-4 h-4 object-contain"
+                    alt="IA"
+                  />
+                </span>
                 <UIcon
+                  v-else
                   name="i-lucide-check"
                   class="size-4 text-sky-500 mt-0.5 shrink-0"
                 />
@@ -1344,7 +1619,7 @@ const toggleFaq = (i: number) => {
           </div>
         </div>
         <p class="text-center text-sm text-gray-400 mt-6">
-          14 dias de trial gratuito. Cancele quando quiser.
+          7 dias de trial gratuito. Cancele quando quiser.
         </p>
       </div>
     </section>

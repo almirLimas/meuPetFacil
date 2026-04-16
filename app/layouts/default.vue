@@ -191,7 +191,7 @@ const statusAssinaturaLabel = computed(() => {
       <!-- Backdrop mobile -->
       <div
         v-if="open"
-        class="fixed inset-0 bg-black/40 z-[9998] md:hidden"
+        class="fixed inset-0 bg-black/40 z-9998 md:hidden"
         @click="open = false"
       />
 
@@ -199,7 +199,7 @@ const statusAssinaturaLabel = computed(() => {
       <transition name="sidebar">
         <aside
           v-show="open"
-          class="fixed top-16 left-0 bottom-0 z-[9999] w-56 md:relative md:top-auto md:left-auto md:bottom-auto md:z-auto md:w-44 shrink-0 md:m-4 md:mr-0 bg-white dark:bg-neutral-800 md:rounded-2xl shadow-xl md:shadow-sm py-3 flex flex-col gap-0.5 overflow-y-auto"
+          class="fixed top-16 left-0 bottom-0 z-9999 w-56 md:relative md:top-auto md:left-auto md:bottom-auto md:z-auto md:w-44 shrink-0 md:m-4 md:mr-0 bg-white dark:bg-neutral-800 md:rounded-2xl shadow-xl md:shadow-sm py-3 flex flex-col gap-0.5 overflow-y-auto"
         >
           <!-- Botão fechar (apenas mobile) -->
           <div

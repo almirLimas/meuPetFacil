@@ -32,9 +32,9 @@ defineExpose({
         />
       </div>
       <div>
-        <p class="text-lg font-bold text-gray-800">14 dias grátis!</p>
+        <p class="text-lg font-bold text-gray-800">7 dias grátis!</p>
         <p class="text-sm text-gray-500 mt-1">
-          Explore o sistema por 14 dias. A primeira cobrança ocorre somente após
+          Explore o sistema por 7 dias. A primeira cobrança ocorre somente após
           o período de teste.
         </p>
       </div>
@@ -76,7 +76,7 @@ defineExpose({
         </div>
         <p>
           Hoje — sua conta é criada e você tem
-          <strong>14 dias de acesso total grátis</strong>.
+          <strong>7 dias de acesso total grátis</strong>.
         </p>
       </div>
       <div class="flex items-start gap-3 text-sm text-gray-600">

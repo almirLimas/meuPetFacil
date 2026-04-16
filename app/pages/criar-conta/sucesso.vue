@@ -27,7 +27,7 @@ onMounted(() => {
       <div>
         <h1 class="text-2xl font-bold text-gray-800">Conta criada!</h1>
         <p class="text-gray-500 text-sm mt-2">
-          Você tem <strong>14 dias grátis</strong> para explorar o sistema. A
+          Você tem <strong>7 dias grátis</strong> para explorar o sistema. A
           primeira cobrança ocorre somente após o período de teste.
         </p>
       </div>

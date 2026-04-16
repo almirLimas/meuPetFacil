@@ -8,7 +8,7 @@ import type {
 export const useEstoque = () => {
   const { apiFetch } = useApi();
 
-  const produtos = ref<Produto[]>([]);
+  const produtos = useState<Produto[]>("estoque-produtos", () => []);
   const movimentacoes = ref<Movimentacao[]>([]);
   const loading = ref(false);
 

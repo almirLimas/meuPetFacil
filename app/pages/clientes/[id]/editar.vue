@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as z from "zod";
-import type { Pet } from "~/types/pet";
+import type { Pet, PetFormState } from "~/types/pet";
 import { useClienteStore } from "~/stores/cliente";
 import { useApi } from "~/composables/useApi";
 
@@ -120,9 +120,9 @@ if (petIdQuery) {
   tabIndex.value = PETS_TAB_INDEX;
   // Remove o query param da URL sem recarregar a página
   if (import.meta.client) {
-    const url = new URL(window.location.href);
+    const url = new URL(globalThis.location.href);
     url.searchParams.delete("petId");
-    window.history.replaceState(null, "", url.toString());
+    globalThis.history.replaceState(null, "", url.toString());
   }
   // Aguarda o cliente e o componente montarem antes de chamar editarPet
   watch(
@@ -137,9 +137,7 @@ if (petIdQuery) {
 }
 
 // -- Salvar pet imediato (ao editar pet na aba Pets) -------------------------
-const salvarPetImediato = async (
-  pet: Pet & { tamanho?: string; dataNascimento?: string },
-) => {
+const salvarPetImediato = async (pet: PetFormState & { id?: string }) => {
   await apiFetch(`/pets/${pet.id}`, {
     method: "PATCH",
     body: {
@@ -147,7 +145,7 @@ const salvarPetImediato = async (
       especie: pet.especie,
       raca: pet.raca || undefined,
       sexo: pet.sexo || undefined,
-      porte: pet.tamanho || pet.porte || undefined,
+      porte: pet.tamanho || undefined,
       dataNascimento: pet.dataNascimento || undefined,
       peso: pet.peso ? String(pet.peso) : undefined,
       observacoes: pet.observacoes || undefined,
@@ -184,13 +182,9 @@ const salvar = async () => {
       codigo: _codigo,
       createdAt: _createdAt,
       updatedAt: _updatedAt,
-      // @ts-expect-error campos extras do backend
       _count,
-      // @ts-expect-error campos extras do backend
       tenantId: _tenantId,
-      // @ts-expect-error campos extras do backend
       agendamentos: _agendamentos,
-      // @ts-expect-error campos extras do backend
       ultimaMensalidadePaga: _ultimaMensalidadePaga,
       ...clienteData
     } = state as typeof state & {
@@ -201,6 +195,7 @@ const salvar = async () => {
       _count?: unknown;
       tenantId?: string;
       agendamentos?: unknown;
+      ultimaMensalidadePaga?: string | null;
     };
     await clienteStore.atualizar(id, clienteData);
 
@@ -220,13 +215,8 @@ const salvar = async () => {
             especie: pet.especie,
             raca: pet.raca || undefined,
             sexo: pet.sexo || undefined,
-            porte:
-              (pet as Pet & { tamanho?: string }).tamanho ||
-              pet.porte ||
-              undefined,
-            dataNascimento:
-              (pet as Pet & { dataNascimento?: string }).dataNascimento ||
-              undefined,
+            porte: pet.tamanho || undefined,
+            dataNascimento: pet.dataNascimento || undefined,
             peso: pet.peso ? String(pet.peso) : undefined,
             observacoes: pet.observacoes || undefined,
           },
@@ -241,13 +231,8 @@ const salvar = async () => {
             especie: pet.especie ?? "Outro",
             raca: pet.raca || undefined,
             sexo: pet.sexo || undefined,
-            porte:
-              (pet as Pet & { tamanho?: string }).tamanho ||
-              pet.porte ||
-              undefined,
-            dataNascimento:
-              (pet as Pet & { dataNascimento?: string }).dataNascimento ||
-              undefined,
+            porte: pet.tamanho || undefined,
+            dataNascimento: pet.dataNascimento || undefined,
             peso: pet.peso ? String(pet.peso) : undefined,
             observacoes: pet.observacoes || undefined,
           },
