@@ -828,178 +828,223 @@ const salvarAgendamento = async () => {
       </div>
 
       <!-- Itens -->
-      <div v-else class="divide-y divide-gray-50 dark:divide-neutral-700">
-        <div
-          v-for="item in agendamentosPaginados"
-          :key="item.id"
-          class="flex items-center gap-4 px-4 py-3"
-        >
-          <!-- Hora -->
-          <div class="w-14 shrink-0 text-center">
-            <span class="text-sm font-bold text-gray-700 dark:text-gray-200">
-              {{ formatHora(item.dataHora) }}
-            </span>
-          </div>
-
-          <!-- Ícone -->
-          <div
-            class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-            style="background-color: #e0f2fe"
-          >
-            <UIcon
-              name="i-lucide-scissors"
-              class="size-4"
-              style="color: #0ea5e9"
-            />
-          </div>
-
-          <!-- Info -->
-          <div class="flex-1 min-w-0">
-            <div class="flex flex-wrap items-center gap-1 mb-0.5">
-              <span
-                v-for="s in item.servicos"
-                :key="s.servico.id"
-                class="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300"
+      <div v-else class="overflow-x-auto">
+        <table class="min-w-full text-sm dark:text-gray-200">
+          <thead>
+            <tr class="border-b border-gray-100 dark:border-neutral-700">
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide whitespace-nowrap"
               >
-                {{ s.servico.nome }}
-              </span>
-              <span
-                class="text-sm font-semibold text-gray-800 dark:text-gray-100"
+                Hora
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide whitespace-nowrap"
               >
-                &mdash; {{ item.pet.nome }}
+                Serviço / Pet
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide whitespace-nowrap"
+              >
+                Cliente
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide whitespace-nowrap"
+              >
+                Modalidade
+              </th>
+              <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide whitespace-nowrap"
+              >
+                Status
+              </th>
+              <th
+                class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide whitespace-nowrap"
+              >
+                Ações
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="item in agendamentosPaginados"
+              :key="item.id"
+              class="border-b border-gray-50 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors"
+            >
+              <!-- Hora -->
+              <td class="px-4 py-3 whitespace-nowrap">
                 <span
-                  v-if="item.pet.especie"
-                  class="text-xs font-normal text-gray-400"
-                  >({{ item.pet.especie }})</span
+                  class="text-sm font-bold text-gray-700 dark:text-gray-200"
                 >
-              </span>
-            </div>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-              <UIcon name="i-lucide-user" class="inline size-3 mr-0.5" />
-              {{ item.cliente.nome }}
-              <span class="ml-2">
-                <UIcon name="i-lucide-phone" class="inline size-3 mr-0.5" />
-                {{ item.cliente.telefonePrincipal }}
-              </span>
-              <span
-                class="ml-2 inline-flex items-center gap-0.5 text-xs font-semibold px-1.5 py-0.5 rounded-full"
-                :class="
-                  item.modalidade === 'PetshopBusca'
-                    ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400'
-                    : 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400'
-                "
-              >
-                <UIcon
-                  :name="
-                    item.modalidade === 'PetshopBusca'
-                      ? 'i-lucide-car'
-                      : 'i-lucide-footprints'
+                  {{ formatHora(item.dataHora) }}
+                </span>
+              </td>
+
+              <!-- Serviço / Pet -->
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-2">
+                  <div
+                    class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                    style="background-color: #e0f2fe"
+                  >
+                    <UIcon
+                      name="i-lucide-scissors"
+                      class="size-4"
+                      style="color: #0ea5e9"
+                    />
+                  </div>
+                  <div>
+                    <div class="flex flex-wrap items-center gap-1">
+                      <span
+                        v-for="s in item.servicos"
+                        :key="s.servico.id"
+                        class="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300 whitespace-nowrap"
+                      >
+                        {{ s.servico.nome }}
+                      </span>
+                    </div>
+                    <p
+                      class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 whitespace-nowrap"
+                    >
+                      {{ item.pet.nome }}
+                      <span v-if="item.pet.especie" class="text-gray-400"
+                        >({{ item.pet.especie }})</span
+                      >
+                    </p>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Cliente -->
+              <td class="px-4 py-3 whitespace-nowrap">
+                <p class="text-sm font-medium text-gray-800 dark:text-gray-100">
+                  {{ item.cliente.nome }}
+                </p>
+                <p class="text-xs text-gray-400 mt-0.5">
+                  {{ item.cliente.telefonePrincipal }}
+                </p>
+                <p
+                  v-if="
+                    item.modalidade === 'PetshopBusca' && item.enderecoBusca
                   "
-                  class="inline size-3"
-                />
-                {{
-                  item.modalidade === "PetshopBusca"
-                    ? "Petshop busca"
-                    : "Cliente traz"
-                }}
-              </span>
-            </p>
-            <p
-              v-if="item.modalidade === 'PetshopBusca' && item.enderecoBusca"
-              class="text-xs text-amber-600 dark:text-amber-400 mt-0.5"
-            >
-              <UIcon name="i-lucide-map-pin" class="inline size-3 mr-0.5" />
-              {{ item.enderecoBusca }}
-            </p>
-            <p
-              v-if="item.observacoes"
-              class="text-xs text-gray-400 mt-0.5 italic"
-            >
-              {{ item.observacoes }}
-            </p>
-          </div>
+                  class="text-xs text-amber-600 dark:text-amber-400 mt-0.5 max-w-48 truncate"
+                >
+                  <UIcon
+                    name="i-lucide-map-pin"
+                    class="inline size-3 mr-0.5"
+                  />{{ item.enderecoBusca }}
+                </p>
+                <p
+                  v-if="item.observacoes"
+                  class="text-xs text-gray-400 mt-0.5 italic max-w-48 truncate"
+                >
+                  {{ item.observacoes }}
+                </p>
+              </td>
 
-          <!-- Badge de status -->
-          <span
-            class="text-xs font-semibold px-2.5 py-1 rounded-full shrink-0"
-            :class="[
-              resolverExibicaoStatus(item).bg,
-              resolverExibicaoStatus(item).text,
-            ]"
-          >
-            {{ resolverExibicaoStatus(item).label }}
-          </span>
+              <!-- Modalidade -->
+              <td class="px-4 py-3 whitespace-nowrap">
+                <span
+                  class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full"
+                  :class="
+                    item.modalidade === 'PetshopBusca'
+                      ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400'
+                      : 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400'
+                  "
+                >
+                  <UIcon
+                    :name="
+                      item.modalidade === 'PetshopBusca'
+                        ? 'i-lucide-car'
+                        : 'i-lucide-footprints'
+                    "
+                    class="size-3"
+                  />
+                  {{
+                    item.modalidade === "PetshopBusca"
+                      ? "Petshop busca"
+                      : "Cliente traz"
+                  }}
+                </span>
+              </td>
 
-          <!-- Ações -->
-          <div class="flex items-center gap-1 shrink-0">
-            <!-- Concluir -->
-            <UButton
-              v-if="
-                !['Concluido', 'Cancelado', 'NaoCompareceu'].includes(
-                  item.status,
-                )
-              "
-              icon="i-lucide-check-check"
-              color="neutral"
-              variant="ghost"
-              size="xs"
-              title="Concluir agendamento"
-              :loading="alterandoStatus === item.id"
-              @click="pedirConcluir(item.id)"
-            />
+              <!-- Status -->
+              <td class="px-4 py-3 whitespace-nowrap">
+                <span
+                  class="text-xs font-semibold px-2.5 py-1 rounded-full"
+                  :class="[
+                    resolverExibicaoStatus(item).bg,
+                    resolverExibicaoStatus(item).text,
+                  ]"
+                >
+                  {{ resolverExibicaoStatus(item).label }}
+                </span>
+              </td>
 
-            <!-- Editar -->
-            <UButton
-              icon="i-lucide-pencil"
-              color="neutral"
-              variant="ghost"
-              size="xs"
-              title="Editar agendamento"
-              @click="abrirEditar(item)"
-            />
-
-            <!-- Não Compareceu -->
-            <UButton
-              v-if="
-                !['Concluido', 'Cancelado', 'NaoCompareceu'].includes(
-                  item.status,
-                )
-              "
-              icon="i-lucide-user-x"
-              color="neutral"
-              variant="ghost"
-              size="xs"
-              title="Não Compareceu"
-              @click="pedirNaoCompareceu(item.id)"
-            />
-
-            <!-- Cancelar -->
-            <UButton
-              v-if="!['Cancelado', 'NaoCompareceu'].includes(item.status)"
-              icon="i-lucide-x-circle"
-              color="neutral"
-              variant="ghost"
-              size="xs"
-              title="Cancelar"
-              @click="pedirCancelamento(item.id)"
-            />
-
-            <!-- Excluir (só para agendamentos não finalizados) -->
-            <UButton
-              v-if="
-                !['Concluido', 'Cancelado', 'NaoCompareceu'].includes(
-                  item.status,
-                )
-              "
-              icon="i-lucide-trash-2"
-              color="neutral"
-              variant="ghost"
-              size="xs"
-              title="Excluir agendamento"
-              @click="pedirExcluir(item.id)"
-            />
-          </div>
-        </div>
+              <!-- Ações -->
+              <td class="px-4 py-3 whitespace-nowrap">
+                <div class="flex items-center gap-1 justify-end">
+                  <UButton
+                    v-if="
+                      !['Concluido', 'Cancelado', 'NaoCompareceu'].includes(
+                        item.status,
+                      )
+                    "
+                    icon="i-lucide-check-check"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    title="Concluir agendamento"
+                    :loading="alterandoStatus === item.id"
+                    @click="pedirConcluir(item.id)"
+                  />
+                  <UButton
+                    icon="i-lucide-pencil"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    title="Editar agendamento"
+                    @click="abrirEditar(item)"
+                  />
+                  <UButton
+                    v-if="
+                      !['Concluido', 'Cancelado', 'NaoCompareceu'].includes(
+                        item.status,
+                      )
+                    "
+                    icon="i-lucide-user-x"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    title="Não Compareceu"
+                    @click="pedirNaoCompareceu(item.id)"
+                  />
+                  <UButton
+                    v-if="!['Cancelado', 'NaoCompareceu'].includes(item.status)"
+                    icon="i-lucide-x-circle"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    title="Cancelar"
+                    @click="pedirCancelamento(item.id)"
+                  />
+                  <UButton
+                    v-if="
+                      !['Concluido', 'Cancelado', 'NaoCompareceu'].includes(
+                        item.status,
+                      )
+                    "
+                    icon="i-lucide-trash-2"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    title="Excluir agendamento"
+                    @click="pedirExcluir(item.id)"
+                  />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       <!-- Paginação -->
       <div

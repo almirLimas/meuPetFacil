@@ -46,7 +46,7 @@ watch(mensagens, async () => {
   <Transition name="chat-panel">
     <div
       v-if="aberto"
-      class="fixed bottom-6 right-6 z-50 flex flex-col w-90 max-w-[calc(100vw-2rem)] h-130 max-h-[calc(100vh-6rem)] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+      class="flex fixed z-50 flex-col bg-white dark:bg-gray-900 overflow-hidden inset-0 rounded-none sm:inset-auto sm:bottom-6 sm:right-6 sm:w-90 sm:max-w-[calc(100vw-2rem)] sm:h-130 sm:max-h-[calc(100vh-6rem)] sm:rounded-2xl sm:shadow-2xl sm:border sm:border-gray-200 dark:sm:border-gray-700"
     >
       <!-- Header -->
       <div
@@ -195,15 +195,17 @@ watch(mensagens, async () => {
   <Transition name="fab">
     <button
       v-if="!aberto"
-      class="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 rounded-2xl px-3 py-2 hover:shadow-2xl hover:scale-105 transition-all group"
+      class="fixed bottom-6 right-4 sm:right-6 z-50 flex items-center gap-2 bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 transition-all group size-12 rounded-full p-0 justify-center sm:size-auto sm:rounded-2xl sm:px-3 sm:py-2 hover:shadow-2xl hover:scale-105"
       @click="abrirAssistente"
     >
+      <!-- Ícone circular em mobile -->
       <img
         src="/anin.png"
         alt="Anin"
-        class="size-16 object-contain group-hover:scale-110 transition-transform"
+        class="size-8 sm:size-16 object-contain group-hover:scale-110 transition-transform"
       />
-      <div class="text-left pr-1">
+      <!-- Texto só em desktop -->
+      <div class="hidden sm:block text-left pr-1">
         <p
           class="text-xs font-bold text-gray-800 dark:text-gray-100 leading-tight"
         >
