@@ -82,12 +82,46 @@ const servicosFiltrados = computed(() => {
     .slice(0, 8);
 });
 
+// ─── Granel ──────────────────────────────────────────────────────────────────
+const granelModal = ref(false);
+const granelProduto = ref<Produto | null>(null);
+const granelValor = ref("");
+
+const granelQuantidade = computed(() => {
+  const v = Number(granelValor.value);
+  if (!v || !granelProduto.value?.precoVenda) return 0;
+  return Math.round((v / Number(granelProduto.value.precoVenda)) * 1000) / 1000;
+});
+
+const confirmarGranel = () => {
+  const p = granelProduto.value;
+  const qty = granelQuantidade.value;
+  if (!p || !p.precoVenda || qty <= 0) return;
+  itens.value.push({
+    tipo: "Produto",
+    nome: p.nome,
+    quantidade: qty,
+    precoUnitario: Number(p.precoVenda),
+    produtoId: p.id,
+  });
+  granelModal.value = false;
+  granelValor.value = "";
+  granelProduto.value = null;
+  busca.value = "";
+};
+
 const adicionarProduto = (p: Produto) => {
   if (!p.precoVenda) {
     toast.add({
       title: "Produto sem preço de venda definido",
       color: "warning",
     });
+    return;
+  }
+  if (p.granel) {
+    granelProduto.value = p;
+    granelValor.value = "";
+    granelModal.value = true;
     return;
   }
   const existente = itens.value.find((i) => i.produtoId === p.id);
@@ -141,12 +175,37 @@ const removerItem = (idx: number) => {
   itens.value.splice(idx, 1);
 };
 
+// -- Confirmação remover item --------------------------------------------------
+const isModalRemoverItem = ref(false);
+const itemParaRemover = ref<number | null>(null);
+
+const pedirRemoverItem = (idx: number) => {
+  itemParaRemover.value = idx;
+  isModalRemoverItem.value = true;
+};
+
+const confirmarRemoverItem = () => {
+  if (itemParaRemover.value !== null) {
+    removerItem(itemParaRemover.value);
+    itemParaRemover.value = null;
+  }
+  isModalRemoverItem.value = false;
+};
+
 const limparCarrinho = () => {
   itens.value = [];
   desconto.value = "";
   valorPago.value = "";
   observacoes.value = "";
   formaPagamento.value = "Dinheiro";
+};
+
+// -- Confirmação limpar carrinho -----------------------------------------------
+const isModalLimpar = ref(false);
+
+const confirmarLimpar = () => {
+  limparCarrinho();
+  isModalLimpar.value = false;
 };
 
 // ─── Fechar venda ─────────────────────────────────────────────────────────────
@@ -343,7 +402,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
 
         <!-- Tipo de item + busca -->
         <div class="flex gap-2">
-          <UButtonGroup class="shrink-0">
+          <div class="flex shrink-0 gap-2">
             <UButton
               :color="tipoBusca === 'produto' ? 'secondary' : 'neutral'"
               :variant="tipoBusca === 'produto' ? 'solid' : 'outline'"
@@ -364,7 +423,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
                 busca = '';
               "
             />
-          </UButtonGroup>
+          </div>
           <UInput
             v-model="busca"
             placeholder="Buscar por nome ou código de barras..."
@@ -457,17 +516,28 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
         </div>
 
         <!-- Itens no carrinho -->
-        <div class="flex flex-col gap-2 min-h-30">
+        <div
+          class="bg-gray-100 dark:bg-neutral-900 rounded-xl p-3 flex flex-col gap-2 min-h-30"
+        >
+          <p
+            class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+          >
+            Lista de cobrança
+            <span v-if="itens.length > 0" class="ml-1 text-primary-500"
+              >· {{ itens.length }}
+              {{ itens.length === 1 ? "item" : "itens" }}</span
+            >
+          </p>
           <p
             v-if="itens.length === 0"
-            class="text-center text-sm text-gray-400 dark:text-gray-500 py-6"
+            class="text-center text-sm text-gray-400 dark:text-gray-500 py-4"
           >
             Nenhum item adicionado
           </p>
           <div
             v-for="(item, idx) in itens"
             :key="idx"
-            class="flex items-center gap-2 bg-gray-50 dark:bg-neutral-700 rounded-xl px-3 py-2"
+            class="flex items-center gap-2 bg-white dark:bg-neutral-800 rounded-xl px-3 py-2 shadow-sm"
           >
             <div
               class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
@@ -496,8 +566,25 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
                 {{ item.nome }}
               </p>
               <p class="text-xs text-gray-500 dark:text-gray-400">
-                {{ fmt(item.precoUnitario) }} × {{ item.quantidade }} =
-                {{ fmt(item.precoUnitario * item.quantidade) }}
+                <template
+                  v-if="produtos.find((p) => p.id === item.produtoId)?.granel"
+                >
+                  {{
+                    (item.quantidade * item.precoUnitario)
+                      .toFixed(2)
+                      .replace(".", ",")
+                  }}
+                  g × {{ fmt(item.precoUnitario) }}/{{
+                    produtos.find((p) => p.id === item.produtoId)
+                      ?.unidadeBase ?? "un"
+                  }}
+                  =
+                  {{ fmt(item.precoUnitario * item.quantidade) }}
+                </template>
+                <template v-else>
+                  {{ fmt(item.precoUnitario) }} × {{ item.quantidade }} =
+                  {{ fmt(item.precoUnitario * item.quantidade) }}
+                </template>
               </p>
             </div>
             <div class="flex items-center gap-1 shrink-0">
@@ -509,8 +596,10 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
                 :disabled="item.quantidade <= 1"
                 @click="item.quantidade--"
               />
-              <span class="text-sm font-semibold w-5 text-center">{{
-                item.quantidade
+              <span class="text-sm font-semibold w-12 text-center">{{
+                Number.isInteger(item.quantidade)
+                  ? item.quantidade
+                  : item.quantidade.toFixed(3).replace(/\.?0+$/, "")
               }}</span>
               <UButton
                 icon="i-lucide-plus"
@@ -524,7 +613,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
                 size="xs"
                 color="error"
                 variant="ghost"
-                @click="removerItem(idx)"
+                @click="pedirRemoverItem(idx)"
               />
             </div>
           </div>
@@ -613,7 +702,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
             icon="i-lucide-eraser"
             class="flex-1"
             :disabled="itens.length === 0 || salvando"
-            @click="limparCarrinho"
+            @click="isModalLimpar = true"
           />
           <UButton
             label="Confirmar Venda"
@@ -712,6 +801,76 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
     </div>
   </div>
 
+  <!-- Modal granel -->
+  <UModal v-model:open="granelModal">
+    <template #content>
+      <UCard class="ring-0">
+        <template #header>
+          <div class="flex items-center gap-2">
+            <UIcon name="i-lucide-scale" class="size-5 text-orange-500" />
+            <span class="font-semibold text-gray-800 dark:text-gray-100">
+              Produto a Granel
+            </span>
+          </div>
+        </template>
+
+        <div class="flex flex-col gap-4">
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            <strong>{{ granelProduto?.nome }}</strong> —
+            {{ fmt(Number(granelProduto?.precoVenda)) }} /
+            {{ granelProduto?.unidadeBase ?? "un" }}
+          </p>
+
+          <UFormField label="Valor em reais (R$)">
+            <UInput
+              v-model="granelValor"
+              type="number"
+              min="0.01"
+              step="0.01"
+              placeholder="Ex: 20,00"
+              class="w-full"
+              autofocus
+              @keyup.enter="confirmarGranel"
+            />
+          </UFormField>
+
+          <div
+            v-if="granelQuantidade > 0"
+            class="rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 px-3 py-2 text-sm text-orange-700 dark:text-orange-300 flex items-center gap-2"
+          >
+            <UIcon name="i-lucide-info" class="size-4 shrink-0" />
+            <span>
+              Serão debitados
+              <strong
+                >{{ granelQuantidade.toFixed(3) }}
+                {{ granelProduto?.unidadeBase ?? "un" }}</strong
+              >
+              do estoque por <strong>{{ fmt(Number(granelValor)) }}</strong
+              >.
+            </span>
+          </div>
+        </div>
+
+        <template #footer>
+          <div class="flex justify-end gap-2">
+            <UButton
+              color="neutral"
+              variant="ghost"
+              @click="granelModal = false"
+              >Cancelar</UButton
+            >
+            <UButton
+              color="secondary"
+              :disabled="granelQuantidade <= 0"
+              @click="confirmarGranel"
+              >Adicionar ao carrinho</UButton
+            >
+          </div>
+        </template>
+      </UCard>
+    </template>
+  </UModal>
+
   <!-- Modal de confirmação de cancelamento -->
   <UModal v-model:open="isModalCancelar">
     <template #content>
@@ -756,6 +915,84 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
             >
             <UButton color="error" @click="confirmarCancelar"
               >Sim, cancelar venda</UButton
+            >
+          </div>
+        </template>
+      </UCard>
+    </template>
+  </UModal>
+
+  <!-- Modal: remover item do carrinho -->
+  <UModal v-model:open="isModalRemoverItem" title="Remover item">
+    <template #content>
+      <UCard class="ring-0">
+        <template #header>
+          <div class="flex items-center gap-3">
+            <div
+              class="w-9 h-9 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center"
+            >
+              <UIcon
+                name="i-lucide-trash-2"
+                class="size-4 text-red-600 dark:text-red-400"
+              />
+            </div>
+            <h3 class="font-semibold text-gray-800 dark:text-gray-100">
+              Remover item
+            </h3>
+          </div>
+        </template>
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+          Tem certeza que deseja remover este item do carrinho?
+        </p>
+        <template #footer>
+          <div class="flex justify-end gap-2">
+            <UButton
+              color="neutral"
+              variant="ghost"
+              @click="isModalRemoverItem = false"
+              >Cancelar</UButton
+            >
+            <UButton color="error" @click="confirmarRemoverItem"
+              >Remover</UButton
+            >
+          </div>
+        </template>
+      </UCard>
+    </template>
+  </UModal>
+
+  <!-- Modal: limpar carrinho -->
+  <UModal v-model:open="isModalLimpar" title="Limpar carrinho">
+    <template #content>
+      <UCard class="ring-0">
+        <template #header>
+          <div class="flex items-center gap-3">
+            <div
+              class="w-9 h-9 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center"
+            >
+              <UIcon
+                name="i-lucide-eraser"
+                class="size-4 text-red-600 dark:text-red-400"
+              />
+            </div>
+            <h3 class="font-semibold text-gray-800 dark:text-gray-100">
+              Limpar carrinho
+            </h3>
+          </div>
+        </template>
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+          Todos os itens serão removidos do carrinho. Deseja continuar?
+        </p>
+        <template #footer>
+          <div class="flex justify-end gap-2">
+            <UButton
+              color="neutral"
+              variant="ghost"
+              @click="isModalLimpar = false"
+              >Cancelar</UButton
+            >
+            <UButton color="error" @click="confirmarLimpar"
+              >Limpar tudo</UButton
             >
           </div>
         </template>

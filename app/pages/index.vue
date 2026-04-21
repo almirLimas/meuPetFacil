@@ -116,6 +116,18 @@ const iaCapabilities = [
     title: "Ver avaliações",
     desc: '"Como está a satisfação dos clientes?"',
   },
+  {
+    icon: "i-lucide-repeat",
+    color: "bg-emerald-50 text-emerald-600",
+    title: "Agendar mensalista",
+    desc: '"Agenda o Rex toda terça por 4 semanas"',
+  },
+  {
+    icon: "i-lucide-life-buoy",
+    color: "bg-rose-50 text-rose-600",
+    title: "Suporte e dúvidas",
+    desc: '"Como faço para cadastrar um produto?"',
+  },
 ];
 
 const features = [
@@ -155,6 +167,12 @@ const features = [
     icone: "i-lucide-bar-chart-2",
     titulo: "Relatórios",
     descricao: "Saiba o que mais vende e quem não voltou.",
+  },
+  {
+    icone: "i-lucide-calendar-check",
+    titulo: "Gestão de Mensalistas",
+    descricao:
+      "Cadastre clientes com plano mensal fixo. O sistema cria os agendamentos recorrentes automaticamente e gera a cobrança da mensalidade a cada 4 sessões concluídas.",
   },
 ];
 
@@ -292,6 +310,11 @@ const faqs = [
     pergunta: "Como funciona o período de teste?",
     resposta:
       "Você tem 7 dias grátis com acesso completo ao sistema. A primeira cobrança só acontece após o período de teste, e apenas se você optar por continuar.",
+  },
+  {
+    pergunta: "Como funciona o suporte?",
+    resposta:
+      "Todos os planos incluem a Anin, nossa IA integrada ao sistema. Basta digitar sua dúvida e ela responde na hora — como cadastrar um produto, entender um relatório ou qualquer situação do dia a dia. Para questões mais complexas, nossa equipe está disponível via WhatsApp.",
   },
   {
     pergunta: "Meus dados ficam seguros?",
@@ -441,7 +464,7 @@ const toggleFaq = (i: number) => {
               >
                 <UIcon name="i-lucide-bot" class="size-3.5 text-white" />
               </div>
-              IA que cadastra, agenda e responde — só digitando
+              IA que cadastra, agenda e dá suporte — só digitando
             </li>
             <li class="flex items-center gap-3 text-lg">
               <div
@@ -794,8 +817,8 @@ const toggleFaq = (i: number) => {
           </h2>
           <p class="text-gray-500 text-base max-w-2xl leading-relaxed">
             Só digitando em linguagem natural, você cadastra clientes, agenda
-            serviços, consulta o financeiro e muito mais — sem navegar por
-            menus.
+            serviços, cria agendamentos recorrentes para mensalistas, consulta o
+            financeiro e muito mais — sem navegar por menus.
           </p>
         </div>
 
@@ -911,7 +934,7 @@ const toggleFaq = (i: number) => {
                     class="bg-sky-500 rounded-2xl rounded-br-sm px-4 py-3 shadow-sm max-w-xs"
                   >
                     <p class="text-sm text-white">
-                      Conclui o agendamento do Bidu
+                      Agenda o Rex toda terça por 4 semanas
                     </p>
                   </div>
                 </div>
@@ -926,10 +949,9 @@ const toggleFaq = (i: number) => {
                     class="bg-white rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm max-w-xs"
                   >
                     <p class="text-sm text-gray-700">
-                      ✅ Agendamento do <strong>Bidu</strong> marcado como
-                      <span class="text-emerald-600 font-semibold"
-                        >Concluído</span
-                      >!
+                      ✅ <strong>4 agendamentos</strong> criados para o
+                      <strong>Rex</strong> — toda terça-feira por 4 semanas. A
+                      mensalidade é gerada automaticamente a cada 4 sessões! 🔄
                     </p>
                   </div>
                 </div>
@@ -1131,6 +1153,7 @@ const toggleFaq = (i: number) => {
               <li
                 v-for="item in [
                   'Agenda digital organizada, sem conflitos de horário',
+                  'Mensalistas com agendamentos recorrentes e cobrança automática a cada 4 sessões',
                   'E-mails automáticos trazem clientes inativos de volta',
                   'PDV com leitor de código de barras, troco automático e múltiplas formas de pagamento',
                   'Financeiro em tempo real: receita, despesas e lucro',
@@ -1548,7 +1571,9 @@ const toggleFaq = (i: number) => {
             7 dias grátis. Primeira cobrança só após o período de teste.
           </p>
           <p class="text-sm text-gray-400 mt-1">
-            Todos os planos incluem suporte via WhatsApp.
+            Todos os planos incluem suporte pela
+            <span class="font-semibold text-sky-500">IA Anin</span> + equipe via
+            WhatsApp.
           </p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">

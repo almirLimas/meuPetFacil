@@ -81,7 +81,8 @@ const categoriaConfig: Record<
 };
 
 // -- Computed -----------------------------------------------------------------
-const emAlerta = (p: Produto) => p.quantidadeAtual <= p.estoqueMinimo;
+const emAlerta = (p: Produto) =>
+  Number(p.quantidadeAtual) <= Number(p.estoqueMinimo);
 
 const produtosFiltrados = computed(() =>
   produtos.value.filter((p) => {
@@ -141,6 +142,8 @@ const formProduto = reactive({
   unidade: "un.",
   codigoBarras: "",
   marca: "",
+  granel: false,
+  unidadeBase: "g",
   quantidadeAtual: 0,
   estoqueMinimo: 5,
   precoCompra: 0,
@@ -156,6 +159,8 @@ const abrirNovoProduto = () => {
     unidade: "un.",
     codigoBarras: "",
     marca: "",
+    granel: false,
+    unidadeBase: "g",
     quantidadeAtual: 0,
     estoqueMinimo: 5,
     precoCompra: 0,
@@ -173,6 +178,8 @@ const abrirEditarProduto = (p: Produto) => {
     unidade: p.unidade ?? "un.",
     codigoBarras: p.codigoBarras ?? "",
     marca: p.marca ?? "",
+    granel: p.granel ?? false,
+    unidadeBase: p.unidadeBase ?? "g",
     quantidadeAtual: p.quantidadeAtual,
     estoqueMinimo: p.estoqueMinimo,
     precoCompra: Number(p.precoCompra),
@@ -191,6 +198,10 @@ const salvarProduto = async () => {
       unidade: formProduto.unidade || undefined,
       codigoBarras: formProduto.codigoBarras || undefined,
       marca: formProduto.marca || undefined,
+      granel: formProduto.granel,
+      unidadeBase: formProduto.granel
+        ? formProduto.unidadeBase || undefined
+        : undefined,
       estoqueMinimo: formProduto.estoqueMinimo,
       precoCompra: formProduto.precoCompra,
       precoVenda: formProduto.precoVenda || undefined,
@@ -215,12 +226,27 @@ const salvarProduto = async () => {
   }
 };
 
-const excluirProduto = async (id: string) => {
+const confirmandoExclusao = ref<string | null>(null);
+const produtoParaExcluir = ref<Produto | null>(null);
+const isModalExclusao = ref(false);
+
+const abrirModalExclusao = (p: Produto) => {
+  produtoParaExcluir.value = p;
+  isModalExclusao.value = true;
+};
+
+const excluirProduto = async () => {
+  if (!produtoParaExcluir.value) return;
+  confirmandoExclusao.value = produtoParaExcluir.value.id;
   try {
-    await removeProduto(id);
+    await removeProduto(produtoParaExcluir.value.id);
     toast.add({ title: "Produto removido do estoque", color: "neutral" });
+    isModalExclusao.value = false;
+    produtoParaExcluir.value = null;
   } catch {
     toast.add({ title: "Erro ao remover produto", color: "error" });
+  } finally {
+    confirmandoExclusao.value = null;
   }
 };
 
@@ -253,7 +279,8 @@ const salvarMovimentacao = async () => {
 
   if (
     formMov.tipo === "Saida" &&
-    formMov.quantidade > produtoSelecionado.value.quantidadeAtual
+    Number(formMov.quantidade) >
+      Number(produtoSelecionado.value.quantidadeAtual)
   ) {
     toast.add({ title: "Quantidade insuficiente em estoque", color: "error" });
     return;
@@ -264,7 +291,7 @@ const salvarMovimentacao = async () => {
     await createMovimentacao({
       produtoId: produtoSelecionado.value.id,
       tipo: formMov.tipo,
-      quantidade: formMov.quantidade,
+      quantidade: Number(formMov.quantidade),
       motivo: formMov.motivo || undefined,
     });
     toast.add({
@@ -504,9 +531,18 @@ const abrirHistorico = async (p: Produto) => {
                     <p class="font-semibold text-gray-800 dark:text-gray-100">
                       {{ p.nome }}
                     </p>
-                    <p v-if="p.descricao" class="text-xs text-gray-400 mt-0.5">
-                      {{ p.descricao }}
-                    </p>
+                    <div class="flex items-center gap-1 mt-0.5">
+                      <p v-if="p.descricao" class="text-xs text-gray-400">
+                        {{ p.descricao }}
+                      </p>
+                      <span
+                        v-if="p.granel"
+                        class="inline-flex items-center gap-0.5 text-xs font-semibold px-1.5 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400"
+                      >
+                        <UIcon name="i-lucide-scale" class="size-3" />
+                        Granel ({{ p.unidadeBase }})
+                      </span>
+                    </div>
                   </div>
                 </div>
               </td>
@@ -526,7 +562,7 @@ const abrirHistorico = async (p: Produto) => {
                   <span
                     class="font-bold"
                     :class="
-                      p.quantidadeAtual === 0
+                      Number(p.quantidadeAtual) === 0
                         ? 'text-red-600 dark:text-red-400'
                         : emAlerta(p)
                           ? 'text-amber-600 dark:text-amber-400'
@@ -535,7 +571,9 @@ const abrirHistorico = async (p: Produto) => {
                   >
                     {{ p.quantidadeAtual }}
                   </span>
-                  <span class="text-gray-400 text-xs">{{ p.unidade }}</span>
+                  <span class="text-gray-400 text-xs">{{
+                    p.unidade || "un."
+                  }}</span>
                   <UIcon
                     v-if="emAlerta(p)"
                     name="i-lucide-alert-triangle"
@@ -593,13 +631,20 @@ const abrirHistorico = async (p: Produto) => {
                     title="Editar"
                     @click="abrirEditarProduto(p)"
                   />
+                  <template v-if="confirmandoExclusao === p.id">
+                    <span
+                      class="text-xs text-red-500 font-semibold whitespace-nowrap"
+                      >Removendo...</span
+                    >
+                  </template>
                   <UButton
+                    v-else
                     icon="i-lucide-trash-2"
                     color="neutral"
                     variant="ghost"
                     size="xs"
                     title="Remover"
-                    @click="excluirProduto(p.id)"
+                    @click="abrirModalExclusao(p)"
                   />
                 </div>
               </td>
@@ -678,10 +723,58 @@ const abrirHistorico = async (p: Produto) => {
               </UFormField>
             </div>
 
+            <!-- Granel -->
+            <div
+              class="rounded-xl border border-gray-200 dark:border-neutral-600 p-3 bg-gray-50 dark:bg-neutral-700/40"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <UIcon
+                    name="i-lucide-scale"
+                    class="size-4 text-gray-500 dark:text-gray-400"
+                  />
+                  <span
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >Produto a granel</span
+                  >
+                </div>
+                <USwitch v-model="formProduto.granel" />
+              </div>
+              <div v-if="formProduto.granel" class="mt-3">
+                <UFormField label="Unidade base (para cálculo de quantidade)">
+                  <USelect
+                    v-model="formProduto.unidadeBase"
+                    :items="['g', 'ml', 'kg', 'L']"
+                    class="w-full"
+                  />
+                  <template #help>
+                    <span class="text-[11px] text-gray-400">
+                      O preço de venda será o valor por
+                      {{ formProduto.unidadeBase }}. O cliente digita quantos
+                      reais quer pagar e o sistema calcula a quantidade.
+                    </span>
+                  </template>
+                </UFormField>
+              </div>
+            </div>
+
             <div class="grid grid-cols-2 gap-3">
-              <UFormField
-                :label="editandoProduto ? 'Qtd. Mínima' : 'Qtd. Inicial'"
-              >
+              <UFormField>
+                <template #label>
+                  <span>{{
+                    editandoProduto ? "Qtd. Atual" : "Qtd. Inicial"
+                  }}</span>
+                  <UTooltip
+                    v-if="!editandoProduto"
+                    text="Quantas unidades você já tem em mãos agora. Deixe 0 para dar entrada depois."
+                    :delay-duration="100"
+                  >
+                    <UIcon
+                      name="i-lucide-circle-help"
+                      class="size-3.5 text-gray-400 cursor-pointer ml-1"
+                    />
+                  </UTooltip>
+                </template>
                 <UInput
                   v-model.number="formProduto.quantidadeAtual"
                   type="number"
@@ -816,11 +909,14 @@ const abrirHistorico = async (p: Produto) => {
               </p>
             </div>
 
-            <UFormField label="Quantidade *">
+            <UFormField
+              :label="`Quantidade * ${produtoSelecionado?.unidade ? '(' + produtoSelecionado.unidade + ')' : ''}`"
+            >
               <UInput
                 v-model.number="formMov.quantidade"
                 type="number"
-                min="1"
+                :min="produtoSelecionado?.granel ? 0.001 : 1"
+                :step="produtoSelecionado?.granel ? 0.001 : 1"
                 class="w-full"
               />
             </UFormField>
@@ -956,6 +1052,53 @@ const abrirHistorico = async (p: Produto) => {
                 variant="ghost"
                 @click="isModalHistorico = false"
                 >Fechar</UButton
+              >
+            </div>
+          </template>
+        </UCard>
+      </template>
+    </UModal>
+
+    <!-- Modal: Confirmar exclusão -->
+    <UModal v-model:open="isModalExclusao" :ui="{ content: 'max-w-sm' }">
+      <template #content>
+        <UCard class="ring-0">
+          <template #header>
+            <div class="flex items-center gap-3">
+              <div
+                class="w-9 h-9 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0"
+              >
+                <UIcon
+                  name="i-lucide-trash-2"
+                  class="size-4 text-red-600 dark:text-red-400"
+                />
+              </div>
+              <h3 class="font-semibold text-gray-800 dark:text-gray-100">
+                Remover produto
+              </h3>
+            </div>
+          </template>
+
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            Tem certeza que deseja remover
+            <span class="font-semibold">{{ produtoParaExcluir?.nome }}</span>
+            do estoque? Esta ação não pode ser desfeita.
+          </p>
+
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <UButton
+                color="neutral"
+                variant="ghost"
+                :disabled="!!confirmandoExclusao"
+                @click="isModalExclusao = false"
+                >Cancelar</UButton
+              >
+              <UButton
+                color="error"
+                :loading="!!confirmandoExclusao"
+                @click="excluirProduto"
+                >Remover</UButton
               >
             </div>
           </template>

@@ -15,6 +15,7 @@ export interface Lancamento {
   descricao: string;
   categoria: CategoriaLancamento;
   data: string;
+  formaPagamento?: string | null;
   agendamentoId?: string;
   agendamento?: {
     id: string;

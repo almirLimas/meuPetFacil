@@ -104,6 +104,23 @@ router.afterEach(() => {
   pageLoading.value = false;
 });
 
+// Novidades
+const VERSAO_ATUAL = "1.5.0";
+const whatsNewOpen = ref(false);
+const abrirWhatsNew = () => {
+  whatsNewOpen.value = true;
+};
+
+onMounted(() => {
+  const lastSeen = localStorage.getItem("whats_new_last_seen");
+  if (lastSeen !== VERSAO_ATUAL) {
+    // Pequeno delay para não abrir antes da página carregar
+    setTimeout(() => {
+      whatsNewOpen.value = true;
+    }, 800);
+  }
+});
+
 const assinaturaStatus = computed(() => authStore.usuario?.assinaturaStatus);
 const assinaturaSuspensa = computed(
   () => assinaturaStatus.value === "suspensa",
@@ -162,6 +179,17 @@ const statusAssinaturaLabel = computed(() => {
       </template>
 
       <template #right>
+        <!-- Novidades -->
+        <UTooltip text="Novidades">
+          <UButton
+            icon="i-lucide-megaphone"
+            color="neutral"
+            variant="ghost"
+            aria-label="Ver novidades"
+            @click="abrirWhatsNew"
+          />
+        </UTooltip>
+
         <!-- Notificações -->
         <NotificacoesSino />
 
@@ -253,7 +281,7 @@ const statusAssinaturaLabel = computed(() => {
         </aside>
       </transition>
 
-      <main class="flex-1 p-4 overflow-auto flex flex-col gap-4">
+      <main class="flex-1 p-4 pb-24 overflow-auto flex flex-col gap-4">
         <!-- Banner: assinatura suspensa -->
         <div
           v-if="assinaturaSuspensa"
@@ -353,6 +381,8 @@ const statusAssinaturaLabel = computed(() => {
         <slot v-else />
       </main>
     </div>
+
+    <AppWhatsNew v-model="whatsNewOpen" />
   </div>
 </template>
 

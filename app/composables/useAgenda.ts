@@ -4,6 +4,20 @@ import type {
   StatusAgendamento,
 } from "~/types/agendamento";
 
+export interface CreateAgendamentoRecorrentePayload {
+  clienteId: string;
+  petId: string;
+  servicoIds: string[];
+  diaDaSemana: number;
+  hora: string;
+  dataInicio?: string;
+  quantidadeSemanas?: number;
+  modalidade?: string;
+  taxaBusca?: number;
+  enderecoBusca?: string;
+  observacoes?: string;
+}
+
 export const useAgenda = () => {
   const { apiFetch } = useApi();
 
@@ -34,10 +48,16 @@ export const useAgenda = () => {
     return novo;
   };
 
-  const updateStatus = async (id: string, status: StatusAgendamento) => {
+  const updateStatus = async (
+    id: string,
+    status: StatusAgendamento,
+    formaPagamento?: string,
+  ) => {
+    const body: Record<string, unknown> = { status };
+    if (formaPagamento) body.formaPagamento = formaPagamento;
     const updated = await apiFetch<Agendamento>(`/agenda/${id}`, {
       method: "PATCH",
-      body: { status },
+      body,
     });
     const idx = agendamentos.value.findIndex((a) => a.id === id);
     if (idx !== -1) agendamentos.value[idx] = updated;
@@ -69,12 +89,27 @@ export const useAgenda = () => {
     if (ultimaData.value) return fetchByDate(ultimaData.value);
   };
 
+  const criarRecorrente = async (
+    payload: CreateAgendamentoRecorrentePayload,
+  ): Promise<Agendamento[]> => {
+    const result = await apiFetch<Agendamento[]>("/agenda/recorrente", {
+      method: "POST",
+      body: payload,
+    });
+    // Adiciona os agendamentos na data atual se bater com a data selecionada
+    if (result?.length) {
+      result.forEach((a) => agendamentos.value.push(a));
+    }
+    return result;
+  };
+
   return {
     agendamentos,
     loading,
     fetchByDate,
     refresh,
     create,
+    criarRecorrente,
     update,
     updateStatus,
   };

@@ -246,6 +246,22 @@ const excluir = async (id: string) => {
   await remove(id);
   toast.add({ title: "Serviço removido", color: "neutral" });
 };
+
+// -- Confirmação exclusão ------------------------------------------------------
+const isModalExcluir = ref(false);
+const servicoParaExcluir = ref<{ id: string; nome: string } | null>(null);
+
+const pedirExcluir = (s: { id: string; nome: string }) => {
+  servicoParaExcluir.value = s;
+  isModalExcluir.value = true;
+};
+
+const confirmarExcluir = async () => {
+  if (!servicoParaExcluir.value) return;
+  isModalExcluir.value = false;
+  await excluir(servicoParaExcluir.value.id);
+  servicoParaExcluir.value = null;
+};
 </script>
 
 <template>
@@ -520,7 +536,7 @@ const excluir = async (id: string) => {
                     variant="ghost"
                     size="xs"
                     title="Excluir"
-                    @click="excluir(s.id)"
+                    @click="pedirExcluir(s)"
                   />
                 </div>
               </td>
@@ -627,6 +643,45 @@ const excluir = async (id: string) => {
               <UButton color="secondary" @click="formServicoRef?.submit()">
                 {{ editando ? "Salvar alterações" : "Criar serviço" }}
               </UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
+    </UModal>
+
+    <!-- Modal: confirmar exclusão de serviço -->
+    <UModal v-model:open="isModalExcluir">
+      <template #content>
+        <UCard class="ring-0">
+          <template #header>
+            <div class="flex items-center gap-3">
+              <div
+                class="w-9 h-9 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center"
+              >
+                <UIcon
+                  name="i-lucide-trash-2"
+                  class="size-4 text-red-600 dark:text-red-400"
+                />
+              </div>
+              <h3 class="font-semibold text-gray-800 dark:text-gray-100">
+                Excluir serviço
+              </h3>
+            </div>
+          </template>
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            Tem certeza que deseja excluir
+            <strong>{{ servicoParaExcluir?.nome }}</strong
+            >? Esta ação não pode ser desfeita.
+          </p>
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <UButton
+                color="neutral"
+                variant="ghost"
+                @click="isModalExcluir = false"
+                >Cancelar</UButton
+              >
+              <UButton color="error" @click="confirmarExcluir">Excluir</UButton>
             </div>
           </template>
         </UCard>

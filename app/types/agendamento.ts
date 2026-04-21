@@ -18,7 +18,12 @@ export interface Agendamento {
   observacoes?: string | null;
   clienteId: string;
   petId: string;
-  cliente: { id: string; nome: string; telefonePrincipal: string };
+  cliente: {
+    id: string;
+    nome: string;
+    telefonePrincipal: string;
+    mensalista?: boolean;
+  };
   pet: { id: string; nome: string; especie?: string };
   servicos: Array<{
     servico: {
@@ -28,6 +33,8 @@ export interface Agendamento {
       duracaoMinutos?: number;
     };
   }>;
+  ordemServico?: { id: string; status: string } | null;
+  recorrenciaId?: string | null;
 }
 
 export interface CreateAgendamentoPayload {

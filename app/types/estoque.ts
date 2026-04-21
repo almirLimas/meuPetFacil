@@ -14,6 +14,9 @@ export interface Produto {
   categoria: CategoriaEstoque;
   unidade?: string;
   codigoBarras?: string;
+  marca?: string;
+  granel?: boolean;
+  unidadeBase?: string;
   quantidadeAtual: number;
   estoqueMinimo: number;
   precoCompra: number;
@@ -39,6 +42,9 @@ export interface CreateProdutoPayload {
   categoria: CategoriaEstoque;
   unidade?: string;
   codigoBarras?: string;
+  marca?: string;
+  granel?: boolean;
+  unidadeBase?: string;
   quantidadeAtual: number;
   estoqueMinimo: number;
   precoCompra: number;

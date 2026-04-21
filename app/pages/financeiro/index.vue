@@ -21,6 +21,46 @@ const hoje = (() => {
 const filtroData = ref(hoje);
 const filtroTipo = ref<TipoLancamento | "">("");
 
+const FORMAS_CARDS = [
+  {
+    label: "Pix",
+    values: ["Pix"],
+    icon: "i-lucide-qr-code",
+    bg: "#E0F2FE",
+    color: "#0EA5E9",
+  },
+  {
+    label: "Dinheiro",
+    values: ["Dinheiro"],
+    icon: "i-lucide-banknote",
+    bg: "#D1FAE5",
+    color: "#10B981",
+  },
+  {
+    label: "Cartão",
+    values: ["Cartao", "Débito", "Crédito"],
+    icon: "i-lucide-credit-card",
+    bg: "#EDE9FE",
+    color: "#7C3AED",
+  },
+];
+
+const totaisPorForma = computed(() =>
+  FORMAS_CARDS.map((f) => {
+    const items = lancamentos.value.filter(
+      (l) =>
+        l.tipo === "Receita" &&
+        l.formaPagamento != null &&
+        f.values.includes(l.formaPagamento),
+    );
+    return {
+      ...f,
+      total: items.reduce((s, l) => s + Number(l.valor), 0),
+      count: items.length,
+    };
+  }),
+);
+
 const carregar = async () => {
   await Promise.all([
     fetchLancamentos({
@@ -63,6 +103,19 @@ const labelCategoria: Record<CategoriaLancamento, string> = {
   Outro: "Outro",
 };
 
+const corCategoria: Record<CategoriaLancamento, string> = {
+  Servico: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-400",
+  Produto:
+    "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400",
+  Consulta:
+    "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400",
+  Material:
+    "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400",
+  Manutencao:
+    "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400",
+  Outro: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
+};
+
 const salvando = ref(false);
 
 const abrirModal = () => {
@@ -102,13 +155,28 @@ const salvar = async () => {
   }
 };
 
-const confirmarRemover = async (id: string) => {
+const isModalRemover = ref(false);
+const lancamentoParaRemover = ref<{ id: string; descricao: string } | null>(
+  null,
+);
+
+const pedirRemover = (item: { id: string; descricao: string }) => {
+  lancamentoParaRemover.value = item;
+  isModalRemover.value = true;
+};
+
+const confirmarRemover = async () => {
+  const item = lancamentoParaRemover.value;
+  if (!item) return;
+  isModalRemover.value = false;
   try {
-    await remover(id);
+    await remover(item.id);
     await fetchResumoMes();
     toast.add({ title: "Lançamento removido", color: "neutral" });
   } catch {
     toast.add({ title: "Erro ao remover lançamento", color: "error" });
+  } finally {
+    lancamentoParaRemover.value = null;
   }
 };
 
@@ -213,6 +281,40 @@ const fmtData = (d: string) =>
       </template>
     </div>
 
+    <!-- Cards por forma de pagamento -->
+    <div
+      v-if="!loading && lancamentos.length > 0"
+      class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+    >
+      <div
+        v-for="card in totaisPorForma"
+        :key="card.label"
+        class="bg-white dark:bg-neutral-800 rounded-2xl p-3 shadow-sm flex items-center gap-3"
+      >
+        <div
+          class="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+          :style="{ backgroundColor: card.bg }"
+        >
+          <UIcon
+            :name="card.icon"
+            class="size-5"
+            :style="{ color: card.color }"
+          />
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+            {{ card.label }}
+          </p>
+          <p
+            class="text-sm font-bold text-gray-800 dark:text-gray-100 leading-tight"
+          >
+            {{ fmt(card.total) }}
+          </p>
+          <p class="text-xs text-gray-400">{{ card.count }} lanç.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Filtros + tabela -->
     <div
       class="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm overflow-hidden"
@@ -287,6 +389,11 @@ const fmtData = (d: string) =>
                 Data
               </th>
               <th
+                class="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hidden sm:table-cell"
+              >
+                Pagamento
+              </th>
+              <th
                 class="text-right px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
               >
                 Valor
@@ -346,11 +453,7 @@ const fmtData = (d: string) =>
               <td class="px-4 py-3 hidden sm:table-cell">
                 <span
                   class="text-xs font-semibold px-2.5 py-1 rounded-full"
-                  :class="
-                    item.tipo === 'Receita'
-                      ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
-                      : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'
-                  "
+                  :class="corCategoria[item.categoria]"
                 >
                   {{ labelCategoria[item.categoria] }}
                 </span>
@@ -359,6 +462,15 @@ const fmtData = (d: string) =>
                 class="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell"
               >
                 {{ fmtData(item.data) }}
+              </td>
+              <td class="px-4 py-3 hidden sm:table-cell">
+                <span
+                  v-if="item.formaPagamento"
+                  class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                >
+                  {{ item.formaPagamento }}
+                </span>
+                <span v-else class="text-xs text-gray-400">—</span>
               </td>
               <td class="px-4 py-3 text-right">
                 <span
@@ -381,7 +493,7 @@ const fmtData = (d: string) =>
                     variant="ghost"
                     size="xs"
                     aria-label="Remover"
-                    @click="confirmarRemover(item.id)"
+                    @click="pedirRemover(item)"
                   />
                 </div>
               </td>
@@ -463,6 +575,45 @@ const fmtData = (d: string) =>
             @click="salvar"
           />
         </div>
+      </template>
+    </UModal>
+
+    <!-- Modal: confirmar remoção de lançamento -->
+    <UModal v-model:open="isModalRemover">
+      <template #content>
+        <UCard class="ring-0">
+          <template #header>
+            <div class="flex items-center gap-3">
+              <div
+                class="w-9 h-9 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center"
+              >
+                <UIcon
+                  name="i-lucide-trash-2"
+                  class="size-4 text-red-600 dark:text-red-400"
+                />
+              </div>
+              <h3 class="font-semibold text-gray-800 dark:text-gray-100">
+                Remover lançamento
+              </h3>
+            </div>
+          </template>
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            Tem certeza que deseja remover
+            <strong>{{ lancamentoParaRemover?.descricao }}</strong
+            >? Esta ação não pode ser desfeita.
+          </p>
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <UButton
+                color="neutral"
+                variant="ghost"
+                @click="isModalRemover = false"
+                >Cancelar</UButton
+              >
+              <UButton color="error" @click="confirmarRemover">Remover</UButton>
+            </div>
+          </template>
+        </UCard>
       </template>
     </UModal>
   </div>

@@ -10,9 +10,17 @@ import type { Pet } from "~/types/pet";
 import { useAuthStore } from "~/stores/auth";
 
 const { apiFetch } = useApi();
-const { agendamentos, loading, fetchByDate, create, update, updateStatus } =
-  useAgenda();
+const {
+  agendamentos,
+  loading,
+  fetchByDate,
+  create,
+  criarRecorrente,
+  update,
+  updateStatus,
+} = useAgenda();
 const toast = useToast();
+const router = useRouter();
 const { abrirAssistente } = useAssistente();
 const auth = useAuthStore();
 
@@ -176,10 +184,14 @@ function resolverExibicaoStatus(ag: {
 // -- Ações de status ----------------------------------------------------------
 const alterandoStatus = ref<string | null>(null);
 
-const alterarStatus = async (id: string, status: StatusAgendamento) => {
+const alterarStatus = async (
+  id: string,
+  status: StatusAgendamento,
+  formaPagamento?: string,
+) => {
   alterandoStatus.value = id;
   try {
-    await updateStatus(id, status);
+    await updateStatus(id, status, formaPagamento);
     toast.add({ title: "Status atualizado!", color: "success" });
   } catch {
     toast.add({ title: "Erro ao atualizar status", color: "error" });
@@ -207,15 +219,52 @@ const confirmarCancelamento = async () => {
 // -- Modal confirmação de concluir -------------------------------------------
 const confirmConcluirOpen = ref(false);
 const agendamentoParaConcluir = ref<string | null>(null);
+const formaPagamentoConcluir = ref<string>("Dinheiro");
 
-const pedirConcluir = (id: string) => {
-  agendamentoParaConcluir.value = id;
+const FORMAS_PAGAMENTO = [
+  {
+    label: "Dinheiro",
+    value: "Dinheiro",
+    valueOs: "Dinheiro",
+    icon: "i-lucide-banknote",
+  },
+  { label: "PIX", value: "Pix", valueOs: "Pix", icon: "i-lucide-qr-code" },
+  {
+    label: "Débito",
+    value: "Débito",
+    valueOs: "Cartao",
+    icon: "i-lucide-credit-card",
+  },
+  {
+    label: "Crédito",
+    value: "Crédito",
+    valueOs: "Cartao",
+    icon: "i-lucide-credit-card",
+  },
+];
+
+const pedirConcluir = (item: (typeof agendamentos.value)[number]) => {
+  // Se existe OS aberta, redireciona para finalizar por lá
+  if (item.ordemServico?.status === "Aberta") {
+    router.push(`/agenda/${item.id}/os`);
+    return;
+  }
+  agendamentoParaConcluir.value = item.id;
+  formaPagamentoConcluir.value = "Dinheiro";
   confirmConcluirOpen.value = true;
 };
 
 const confirmarConcluir = async () => {
   if (!agendamentoParaConcluir.value) return;
-  await alterarStatus(agendamentoParaConcluir.value, "Concluido");
+  const fpSelecionada = FORMAS_PAGAMENTO.find(
+    (f) => f.value === formaPagamentoConcluir.value,
+  );
+  // Envia valueOs (compatível com enum Prisma FormaPagamento) para o backend
+  await alterarStatus(
+    agendamentoParaConcluir.value,
+    "Concluido",
+    fpSelecionada?.valueOs ?? formaPagamentoConcluir.value,
+  );
   confirmConcluirOpen.value = false;
   agendamentoParaConcluir.value = null;
 };
@@ -271,7 +320,9 @@ const isModalOpen = ref(false);
 const salvando = ref(false);
 
 // Clientes para o select
-const clientes = ref<{ label: string; value: string }[]>([]);
+const clientes = ref<{ label: string; value: string; mensalista?: boolean }[]>(
+  [],
+);
 const clientesLoading = ref(false);
 
 // Pets do cliente selecionado
@@ -371,6 +422,7 @@ const carregarDadosModal = async () => {
   clientes.value = (clientesResp.data ?? []).map((c) => ({
     label: c.nome,
     value: c.id,
+    mensalista: c.mensalista ?? false,
   }));
 
   servicos.value = (Array.isArray(servicosResp) ? servicosResp : [])
@@ -570,8 +622,11 @@ const salvarEdicao = async () => {
       status: editForm.status,
       dataHora,
       modalidade: editForm.modalidade,
-      enderecoBusca: editForm.enderecoBusca || undefined,
-      observacoes: editForm.observacoes || undefined,
+      enderecoBusca:
+        editForm.modalidade === "PetshopBusca"
+          ? editForm.enderecoBusca.trim() || undefined
+          : undefined,
+      observacoes: editForm.observacoes.trim() || undefined,
     });
     isEditModalOpen.value = false;
     toast.add({ title: "Agendamento atualizado!", color: "success" });
@@ -579,6 +634,90 @@ const salvarEdicao = async () => {
     toast.add({ title: "Erro ao atualizar agendamento", color: "error" });
   } finally {
     salvandoEdicao.value = false;
+  }
+};
+
+// -- Recorrência (mensalista) -------------------------------------------------
+const recorrente = ref(false);
+const recorrenciaForm = reactive({
+  diaDaSemana: 2, // terça como padrão
+  quantidadeSemanas: 4,
+});
+
+const diasDaSemana = [
+  { label: "Domingo", value: 0 },
+  { label: "Segunda", value: 1 },
+  { label: "Terça", value: 2 },
+  { label: "Quarta", value: 3 },
+  { label: "Quinta", value: 4 },
+  { label: "Sexta", value: 5 },
+  { label: "Sábado", value: 6 },
+];
+
+// Computed: cliente selecionado é mensalista?
+const clienteEhMensalista = computed(
+  () =>
+    clientes.value.find((c) => c.value === novoForm.clienteId)?.mensalista ??
+    false,
+);
+
+// Auto-ativa recorrência ao selecionar mensalista; sincroniza dia com a data
+watch(
+  () => novoForm.clienteId,
+  (id) => {
+    const isMensalista =
+      clientes.value.find((c) => c.value === id)?.mensalista ?? false;
+    recorrente.value = isMensalista;
+    if (isMensalista && novoForm.data) {
+      recorrenciaForm.diaDaSemana = new Date(
+        novoForm.data + "T00:00:00",
+      ).getDay();
+    }
+  },
+);
+
+const salvarRecorrente = async () => {
+  if (
+    !novoForm.hora ||
+    !novoForm.servicoIds.length ||
+    !novoForm.clienteId ||
+    !novoForm.petId
+  ) {
+    toast.add({
+      title: "Preencha todos os campos obrigatórios",
+      color: "error",
+    });
+    return;
+  }
+  salvando.value = true;
+  try {
+    const criados = await criarRecorrente({
+      clienteId: novoForm.clienteId,
+      petId: novoForm.petId,
+      servicoIds: novoForm.servicoIds,
+      diaDaSemana: recorrenciaForm.diaDaSemana,
+      hora: novoForm.hora,
+      dataInicio: novoForm.data,
+      quantidadeSemanas: recorrenciaForm.quantidadeSemanas,
+      modalidade: novoForm.modalidade,
+      taxaBusca: novoForm.taxaBusca ? Number(novoForm.taxaBusca) : undefined,
+      enderecoBusca: novoForm.enderecoBusca || undefined,
+      observacoes: novoForm.observacoes || undefined,
+    });
+    isModalOpen.value = false;
+    recorrente.value = false;
+    await fetchByDate(selectedDate.value);
+    toast.add({
+      title: `✅ ${criados.length} agendamentos recorrentes criados!`,
+      color: "success",
+    });
+  } catch {
+    toast.add({
+      title: "Erro ao criar agendamentos recorrentes",
+      color: "error",
+    });
+  } finally {
+    salvando.value = false;
   }
 };
 
@@ -916,15 +1055,34 @@ const salvarAgendamento = async () => {
 
               <!-- Cliente -->
               <td class="px-4 py-3 whitespace-nowrap">
-                <p class="text-sm font-medium text-gray-800 dark:text-gray-100">
-                  {{ item.cliente.nome }}
-                </p>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <p
+                    class="text-sm font-medium text-gray-800 dark:text-gray-100"
+                  >
+                    {{ item.cliente.nome }}
+                  </p>
+                  <span
+                    v-if="item.cliente.mensalista"
+                    class="inline-flex items-center gap-0.5 text-xs font-semibold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400"
+                  >
+                    <UIcon name="i-lucide-calendar-check" class="size-3" />
+                    Mensalista
+                  </span>
+                  <span
+                    v-if="item.recorrenciaId"
+                    class="inline-flex items-center gap-0.5 text-xs font-semibold px-1.5 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-400"
+                  >
+                    <UIcon name="i-lucide-repeat" class="size-3" />
+                    Recorrente
+                  </span>
+                </div>
                 <p class="text-xs text-gray-400 mt-0.5">
                   {{ item.cliente.telefonePrincipal }}
                 </p>
                 <p
                   v-if="
-                    item.modalidade === 'PetshopBusca' && item.enderecoBusca
+                    item.modalidade === 'PetshopBusca' &&
+                    item.enderecoBusca?.trim()
                   "
                   class="text-xs text-amber-600 dark:text-amber-400 mt-0.5 max-w-48 truncate"
                 >
@@ -937,7 +1095,10 @@ const salvarAgendamento = async () => {
                   v-if="item.observacoes"
                   class="text-xs text-gray-400 mt-0.5 italic max-w-48 truncate"
                 >
-                  {{ item.observacoes }}
+                  <UIcon
+                    name="i-lucide-message-square"
+                    class="inline size-3 mr-0.5"
+                  />{{ item.observacoes }}
                 </p>
               </td>
 
@@ -984,6 +1145,23 @@ const salvarAgendamento = async () => {
               <td class="px-4 py-3 whitespace-nowrap">
                 <div class="flex items-center gap-1 justify-end">
                   <UButton
+                    v-if="!['Cancelado', 'NaoCompareceu'].includes(item.status)"
+                    :icon="
+                      item.status === 'Concluido'
+                        ? 'i-lucide-printer'
+                        : 'i-lucide-clipboard-list'
+                    "
+                    :color="item.status === 'Concluido' ? 'neutral' : 'primary'"
+                    variant="ghost"
+                    size="xs"
+                    :title="
+                      item.status === 'Concluido'
+                        ? 'Ver / Imprimir OS'
+                        : 'Abrir Ordem de Serviço'
+                    "
+                    :to="`/agenda/${item.id}/os`"
+                  />
+                  <UButton
                     v-if="
                       !['Concluido', 'Cancelado', 'NaoCompareceu'].includes(
                         item.status,
@@ -995,7 +1173,7 @@ const salvarAgendamento = async () => {
                     size="xs"
                     title="Concluir agendamento"
                     :loading="alterandoStatus === item.id"
-                    @click="pedirConcluir(item.id)"
+                    @click="pedirConcluir(item)"
                   />
                   <UButton
                     icon="i-lucide-pencil"
@@ -1263,6 +1441,70 @@ const salvarAgendamento = async () => {
                 >
               </template>
             </UFormField>
+
+            <!-- Recorrência — exibe apenas para mensalistas -->
+            <div
+              v-if="clienteEhMensalista"
+              class="rounded-xl border border-emerald-200 dark:border-emerald-700 p-3 bg-emerald-50 dark:bg-emerald-900/20"
+            >
+              <div class="flex items-center gap-2 mb-3">
+                <UIcon
+                  name="i-lucide-repeat"
+                  class="size-4 text-emerald-600 dark:text-emerald-400"
+                />
+                <span
+                  class="text-sm font-semibold text-emerald-700 dark:text-emerald-300"
+                  >Agendamento recorrente (mensalista)</span
+                >
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <UFormField label="Dia da semana">
+                  <USelect
+                    v-model="recorrenciaForm.diaDaSemana"
+                    :items="diasDaSemana"
+                    value-key="value"
+                    label-key="label"
+                    class="w-full"
+                  />
+                </UFormField>
+                <UFormField label="Nº de semanas">
+                  <UInput
+                    v-model="recorrenciaForm.quantidadeSemanas"
+                    type="number"
+                    min="1"
+                    max="52"
+                    class="w-full"
+                  />
+                </UFormField>
+                <div
+                  class="col-span-2 text-xs text-amber-600 dark:text-amber-400 flex items-start gap-1.5"
+                >
+                  <UIcon
+                    name="i-lucide-info"
+                    class="size-3.5 mt-0.5 shrink-0"
+                  />
+                  <span>
+                    Serão criados
+                    <strong>{{ recorrenciaForm.quantidadeSemanas }}</strong>
+                    agendamentos toda
+                    <strong>{{
+                      diasDaSemana.find(
+                        (d) => d.value === recorrenciaForm.diaDaSemana,
+                      )?.label
+                    }}</strong>
+                    a partir de
+                    <strong>{{
+                      new Date(novoForm.data + "T00:00:00").toLocaleDateString(
+                        "pt-BR",
+                      )
+                    }}</strong
+                    >. A cobrança da mensalidade é gerada automaticamente a cada
+                    4 sessões concluídas.
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <template #footer>
@@ -1276,6 +1518,16 @@ const salvarAgendamento = async () => {
                 Cancelar
               </UButton>
               <UButton
+                v-if="recorrente"
+                color="secondary"
+                icon="i-lucide-repeat"
+                :loading="salvando"
+                @click="salvarRecorrente"
+              >
+                Criar {{ recorrenciaForm.quantidadeSemanas }} agendamentos
+              </UButton>
+              <UButton
+                v-else
                 color="secondary"
                 :loading="salvando"
                 @click="salvarAgendamento"
@@ -1545,10 +1797,35 @@ const salvarAgendamento = async () => {
             </div>
           </template>
 
-          <p class="text-sm text-gray-600 dark:text-gray-300">
-            Confirma a conclusão deste agendamento? O lançamento financeiro será
-            gerado automaticamente.
-          </p>
+          <div class="flex flex-col gap-4">
+            <p class="text-sm text-gray-600 dark:text-gray-300">
+              Confirma a conclusão deste agendamento? O lançamento financeiro
+              será gerado automaticamente.
+            </p>
+            <div class="flex flex-col gap-1.5">
+              <p
+                class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Forma de pagamento
+              </p>
+              <div class="grid grid-cols-2 gap-2">
+                <button
+                  v-for="fp in FORMAS_PAGAMENTO"
+                  :key="fp.value"
+                  class="flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors"
+                  :class="
+                    formaPagamentoConcluir === fp.value
+                      ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
+                      : 'border-gray-200 dark:border-neutral-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-800'
+                  "
+                  @click="formaPagamentoConcluir = fp.value"
+                >
+                  <UIcon :name="fp.icon" class="size-4 shrink-0" />
+                  {{ fp.label }}
+                </button>
+              </div>
+            </div>
+          </div>
 
           <template #footer>
             <div class="flex justify-end gap-2">

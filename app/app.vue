@@ -11,6 +11,8 @@ const auth = useAuthStore();
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-    <AppAssistente v-if="auth.isAutenticado" />
+    <div class="print:hidden">
+      <AppAssistente v-if="auth.isAutenticado" />
+    </div>
   </UApp>
 </template>

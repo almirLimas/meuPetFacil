@@ -19,9 +19,10 @@ export const useEstoque = () => {
       if (busca) params.set("busca", busca);
       if (alertas) params.set("alertas", "true");
       const query = params.toString();
-      produtos.value = await apiFetch<Produto[]>(
-        `/estoque/produtos${query ? `?${query}` : ""}`,
-      );
+      const url = query ? `/estoque/produtos?${query}` : `/estoque/produtos`;
+      const result = await apiFetch<Produto[]>(url);
+      produtos.value = result;
+      return result;
     } finally {
       loading.value = false;
     }
@@ -64,14 +65,14 @@ export const useEstoque = () => {
   const createMovimentacao = async (payload: CreateMovimentacaoPayload) => {
     const mov = await apiFetch<Movimentacao>("/estoque/movimentacoes", {
       method: "POST",
-      body: payload,
+      body: { ...payload, quantidade: Number(payload.quantidade) },
     });
     const p = produtos.value.find((p) => p.id === payload.produtoId);
     if (p) {
       p.quantidadeAtual =
         payload.tipo === "Entrada"
-          ? p.quantidadeAtual + payload.quantidade
-          : p.quantidadeAtual - payload.quantidade;
+          ? Number(p.quantidadeAtual) + Number(payload.quantidade)
+          : Number(p.quantidadeAtual) - Number(payload.quantidade);
     }
     movimentacoes.value.unshift(mov);
     return mov;
