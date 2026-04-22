@@ -12,7 +12,7 @@
 
     <!-- Card assinatura -->
     <div
-      v-if="auth.usuario"
+      v-if="auth.usuario && auth.isAdmin"
       class="rounded-2xl px-5 py-4 flex items-center justify-between text-sm"
       :class="assinaturaClass"
     >
@@ -180,6 +180,7 @@
 
     <!-- Meta de Receita Mensal -->
     <div
+      v-if="auth.isAdmin"
       class="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm p-6 space-y-5"
     >
       <div>
@@ -220,6 +221,7 @@
 
     <!-- Taxa de Busca (Taxidog) -->
     <div
+      v-if="auth.isAdmin"
       class="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm p-6 space-y-5"
     >
       <div>

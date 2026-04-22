@@ -30,12 +30,25 @@ const menuUsuario = computed(() => [
       icon: "i-lucide-user-circle",
       onSelect: () => navigateTo("/configuracoes/perfil"),
     },
-    {
-      label: "Minha Assinatura",
-      icon: "i-lucide-credit-card",
-      suffix: statusAssinaturaLabel.value,
-      onSelect: () => navigateTo("/configuracoes/assinatura"),
-    },
+    ...(authStore.isAdmin
+      ? [
+          {
+            label: "Equipe",
+            icon: "i-lucide-users",
+            onSelect: () => navigateTo("/configuracoes/equipe"),
+          },
+        ]
+      : []),
+    ...(authStore.isAdmin
+      ? [
+          {
+            label: "Minha Assinatura",
+            icon: "i-lucide-credit-card",
+            suffix: statusAssinaturaLabel.value,
+            onSelect: () => navigateTo("/configuracoes/assinatura"),
+          },
+        ]
+      : []),
     {
       label: "Sair",
       icon: "i-lucide-log-out",
@@ -44,29 +57,75 @@ const menuUsuario = computed(() => [
   ],
 ]);
 
-const menuItems = [
-  { label: "Dashboard", icon: "i-lucide-layout-dashboard", to: "/dashboard" },
+const todosMenuItems = [
+  {
+    label: "Dashboard",
+    icon: "i-lucide-layout-dashboard",
+    to: "/dashboard",
+    permissao: "dashboard",
+  },
   {
     label: "Clientes",
     icon: "i-lucide-users",
     to: "/clientes",
     activeOn: ["/cadastro-cliente", "/pets/"],
+    permissao: "clientes",
   },
-  { label: "Agenda", icon: "i-lucide-calendar", to: "/agenda" },
-  { label: "Serviços", icon: "i-lucide-briefcase", to: "/servicos" },
-  { label: "Estoque", icon: "i-lucide-package", to: "/estoque" },
-  { label: "Vendas", icon: "i-lucide-shopping-cart", to: "/pdv" },
-  { label: "Financeiro", icon: "i-lucide-wallet", to: "/financeiro" },
-  { label: "Relatórios", icon: "i-lucide-bar-chart-2", to: "/relatorios" },
-  { label: "Avaliações", icon: "i-lucide-star", to: "/avaliacoes" },
+  {
+    label: "Agenda",
+    icon: "i-lucide-calendar",
+    to: "/agenda",
+    permissao: "agendamentos",
+  },
+  {
+    label: "Serviços",
+    icon: "i-lucide-briefcase",
+    to: "/servicos",
+    permissao: "configuracoes",
+  },
+  {
+    label: "Estoque",
+    icon: "i-lucide-package",
+    to: "/estoque",
+    permissao: "estoque",
+  },
+  {
+    label: "Vendas",
+    icon: "i-lucide-shopping-cart",
+    to: "/pdv",
+    permissao: "pdv",
+  },
+  {
+    label: "Financeiro",
+    icon: "i-lucide-wallet",
+    to: "/financeiro",
+    permissao: "financeiro",
+  },
+  {
+    label: "Relatórios",
+    icon: "i-lucide-bar-chart-2",
+    to: "/relatorios",
+    permissao: "relatorios",
+  },
+  {
+    label: "Avaliações",
+    icon: "i-lucide-star",
+    to: "/avaliacoes",
+    permissao: "relatorios",
+  },
   {
     label: "Primeiros passos",
     icon: "i-lucide-rocket",
     to: "/primeiros-passos",
+    permissao: "dashboard",
   },
 ];
 
-const isMenuItemActive = (item: (typeof menuItems)[number]) => {
+const menuItems = computed(() =>
+  todosMenuItems.filter((item) => authStore.temPermissao(item.permissao)),
+);
+
+const isMenuItemActive = (item: (typeof todosMenuItems)[number]) => {
   if (route.path === item.to) return true;
   if (item.to !== "/dashboard" && route.path.startsWith(item.to)) return true;
   if ("activeOn" in item && item.activeOn)

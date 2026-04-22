@@ -776,6 +776,7 @@ const salvarAgendamento = async () => {
         </p>
       </div>
       <UButton
+        v-if="auth.usuario?.perfil !== 'caixa'"
         icon="i-lucide-plus"
         label="Novo Agendamento"
         color="secondary"
@@ -957,6 +958,7 @@ const salvarAgendamento = async () => {
         <UIcon name="i-lucide-calendar-x" class="text-5xl" />
         <p class="text-sm font-medium">Nenhum agendamento para este dia</p>
         <UButton
+          v-if="auth.usuario?.perfil !== 'caixa'"
           variant="ghost"
           color="neutral"
           size="sm"
@@ -1176,6 +1178,7 @@ const salvarAgendamento = async () => {
                     @click="pedirConcluir(item)"
                   />
                   <UButton
+                    v-if="auth.usuario?.perfil !== 'caixa'"
                     icon="i-lucide-pencil"
                     color="neutral"
                     variant="ghost"
@@ -1187,7 +1190,7 @@ const salvarAgendamento = async () => {
                     v-if="
                       !['Concluido', 'Cancelado', 'NaoCompareceu'].includes(
                         item.status,
-                      )
+                      ) && auth.usuario?.perfil !== 'caixa'
                     "
                     icon="i-lucide-user-x"
                     color="neutral"
@@ -1197,7 +1200,10 @@ const salvarAgendamento = async () => {
                     @click="pedirNaoCompareceu(item.id)"
                   />
                   <UButton
-                    v-if="!['Cancelado', 'NaoCompareceu'].includes(item.status)"
+                    v-if="
+                      !['Cancelado', 'NaoCompareceu'].includes(item.status) &&
+                      auth.usuario?.perfil !== 'caixa'
+                    "
                     icon="i-lucide-x-circle"
                     color="neutral"
                     variant="ghost"
@@ -1209,7 +1215,7 @@ const salvarAgendamento = async () => {
                     v-if="
                       !['Concluido', 'Cancelado', 'NaoCompareceu'].includes(
                         item.status,
-                      )
+                      ) && auth.usuario?.perfil !== 'caixa'
                     "
                     icon="i-lucide-trash-2"
                     color="neutral"

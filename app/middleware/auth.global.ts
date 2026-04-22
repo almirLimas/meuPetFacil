@@ -1,4 +1,5 @@
 import { useAuthStore } from "~/stores/auth";
+import { PERMISSOES } from "~/types/usuario";
 
 const publicRoutes = new Set([
   "/",
@@ -7,6 +8,23 @@ const publicRoutes = new Set([
   "/esqueceu-senha",
   "/redefinir-senha",
 ]);
+
+// Rotas acessíveis por todos os perfis autenticados (não entram no filtro de permissão)
+const rotasLivres = new Set(["/configuracoes/perfil"]);
+
+// Mapa de prefixo de rota → chave de permissão
+const ROTAS_PERMISSAO: Array<{ prefixo: string; permissao: string }> = [
+  { prefixo: "/dashboard", permissao: "dashboard" },
+  { prefixo: "/clientes", permissao: "clientes" },
+  { prefixo: "/agenda", permissao: "agendamentos" },
+  { prefixo: "/estoque", permissao: "estoque" },
+  { prefixo: "/financeiro", permissao: "financeiro" },
+  { prefixo: "/relatorios", permissao: "relatorios" },
+  { prefixo: "/pdv", permissao: "pdv" },
+  { prefixo: "/avaliacoes", permissao: "relatorios" },
+  { prefixo: "/configuracoes/equipe", permissao: "configuracoes" },
+  { prefixo: "/configuracoes", permissao: "configuracoes" },
+];
 
 const renovacaoRoutes = new Set([
   "/renovar-assinatura",
@@ -48,5 +66,18 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   if (!isMaster && bloqueado && !renovacaoRoutes.has(to.path)) {
     return navigateTo("/configuracoes/assinatura");
+  }
+
+  // Bloqueia rotas que o perfil do usuário não tem permissão
+  const perfil = auth.usuario?.perfil;
+  if (perfil && perfil !== "admin" && !rotasLivres.has(to.path)) {
+    const permissoesUsuario = PERMISSOES[perfil] ?? [];
+    const rotaRestrita = ROTAS_PERMISSAO.find((r) =>
+      to.path.startsWith(r.prefixo),
+    );
+    if (rotaRestrita && !permissoesUsuario.includes(rotaRestrita.permissao)) {
+      const destino = perfil === "caixa" ? "/agenda" : "/dashboard";
+      return navigateTo(destino);
+    }
   }
 });

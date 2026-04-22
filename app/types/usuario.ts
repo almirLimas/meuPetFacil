@@ -1,4 +1,23 @@
-export type UsuarioPerfil = "admin" | "staff";
+export type UsuarioPerfil =
+  | "admin"
+  | "gerente"
+  | "atendente"
+  | "caixa"
+  | "staff";
+
+export const PERFIL_LABELS: Record<UsuarioPerfil, string> = {
+  admin: "Administrador",
+  gerente: "Gerente",
+  atendente: "Atendente",
+  caixa: "Caixa",
+  staff: "Staff",
+};
+
+export const PERFIS_STAFF: Exclude<UsuarioPerfil, "admin" | "staff">[] = [
+  "gerente",
+  "atendente",
+  "caixa",
+];
 export type UsuarioStatus = "ativo" | "inativo";
 export type PlanoSistema = "basico" | "plus";
 export type PlanoExibido = "basico" | "plus";
@@ -117,6 +136,17 @@ export const PERMISSOES: Record<UsuarioPerfil, string[]> = {
     "usuarios",
     "configuracoes",
   ],
+  gerente: [
+    "dashboard",
+    "clientes",
+    "pets",
+    "agendamentos",
+    "vacinas",
+    "estoque",
+    "relatorios",
+  ],
+  atendente: ["dashboard", "clientes", "pets", "agendamentos", "vacinas"],
+  caixa: ["agendamentos", "pdv"],
   staff: [
     "dashboard",
     "clientes",

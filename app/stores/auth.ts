@@ -56,7 +56,9 @@ export const useAuthStore = defineStore("auth", () => {
       );
       token.value = res.access_token;
       usuario.value = { ...res.usuario, lastAccess: new Date().toISOString() };
-      navigateTo("/dashboard");
+      const perfil = res.usuario.perfil;
+      if (perfil === "caixa") navigateTo("/agenda");
+      else navigateTo("/dashboard");
     } catch (err: unknown) {
       const { show } = useApiError();
       const data = (err as { data?: { message?: string | string[] } })?.data;
