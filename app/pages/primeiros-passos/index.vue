@@ -347,6 +347,59 @@ useBreadcrumb().set([{ label: "Primeiros passos" }]);
           </div>
         </div>
       </UCard>
+
+      <!-- 9 -->
+      <UCard class="ring-0 shadow-sm">
+        <div class="flex gap-4">
+          <div
+            class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
+          >
+            9
+          </div>
+          <div class="flex flex-col gap-1 flex-1">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <p class="font-semibold text-gray-800 dark:text-gray-100">
+                Adicione usuários ao sistema
+              </p>
+              <UButton
+                size="xs"
+                color="secondary"
+                variant="soft"
+                to="/configuracoes/equipe"
+                trailing-icon="i-lucide-arrow-right"
+              >
+                Ir para Equipe
+              </UButton>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Se você tem funcionários que também precisam acessar o sistema,
+              cadastre-os em <strong>Configurações → Equipe</strong>. Veja como:
+            </p>
+            <ul
+              class="mt-1.5 text-sm text-gray-500 dark:text-gray-400 list-disc list-inside space-y-1"
+            >
+              <li>
+                Clique em <strong>Adicionar usuário</strong> e preencha nome,
+                e-mail, telefone (opcional) e uma senha inicial.
+              </li>
+              <li>
+                Escolha o <strong>perfil de acesso</strong>:
+                <strong>Gerente</strong> (acessa tudo exceto financeiro e
+                configurações), <strong>Atendente</strong> (agenda, clientes e
+                pets) ou <strong>Caixa</strong> (agenda e PDV).
+              </li>
+              <li>
+                Salve e repasse as credenciais ao funcionário. Ele já poderá
+                fazer login com o e-mail e senha cadastrados.
+              </li>
+              <li>
+                Para remover um usuário, clique no ícone de lixeira ao lado do
+                nome dele na lista.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </UCard>
     </div>
 
     <!-- Dica final -->
