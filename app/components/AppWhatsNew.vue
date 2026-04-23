@@ -18,9 +18,39 @@ interface Versao {
   novidades: Novidade[];
 }
 
-const VERSAO_ATUAL = "1.5.0";
+const VERSAO_ATUAL = "1.6.0";
 
 const changelog: Versao[] = [
+  {
+    versao: "1.6.0",
+    data: "23 de abril de 2026",
+    novidades: [
+      {
+        tipo: "novo",
+        texto:
+          "Fechamento de Caixa — registre o encerramento do dia com resumo separado de vendas no PDV e agendamentos (banho, tosa etc.)",
+      },
+      {
+        tipo: "novo",
+        texto:
+          "Breakdown por forma de pagamento no fechamento — veja exatamente quanto entrou em Pix, Dinheiro, Cartão e mais",
+      },
+      {
+        tipo: "novo",
+        texto:
+          "Navegação por datas no fechamento — consulte o histórico de qualquer dia já fechado",
+      },
+      {
+        tipo: "melhoria",
+        texto:
+          "Perfis de acesso atualizados — Caixa agora pode cadastrar clientes e realizar fechamento de caixa",
+      },
+      {
+        tipo: "melhoria",
+        texto: "Exclusão de clientes restrita a administradores e gerentes",
+      },
+    ],
+  },
   {
     versao: "1.5.0",
     data: "21 de abril de 2026",

@@ -142,7 +142,18 @@ const mostrarPermissoes = ref(false);
 
 const tabelaPermissoes = [
   { label: "Dashboard", gerente: true, atendente: true, caixa: false },
-  { label: "Clientes", gerente: true, atendente: true, caixa: false },
+  {
+    label: "Clientes — visualizar / cadastrar",
+    gerente: true,
+    atendente: true,
+    caixa: true,
+  },
+  {
+    label: "Clientes — excluir",
+    gerente: true,
+    atendente: false,
+    caixa: false,
+  },
   { label: "Agenda — visualizar", gerente: true, atendente: true, caixa: true },
   {
     label: "Agenda — criar / editar",
@@ -163,6 +174,12 @@ const tabelaPermissoes = [
     caixa: false,
   },
   { label: "Vendas (PDV)", gerente: false, atendente: false, caixa: true },
+  {
+    label: "Fechamento de Caixa",
+    gerente: false,
+    atendente: false,
+    caixa: false,
+  },
   { label: "Estoque", gerente: true, atendente: false, caixa: false },
   { label: "Relatórios", gerente: true, atendente: false, caixa: false },
   { label: "Avaliações", gerente: true, atendente: false, caixa: false },

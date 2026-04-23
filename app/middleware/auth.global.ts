@@ -22,6 +22,7 @@ const ROTAS_PERMISSAO: Array<{ prefixo: string; permissao: string }> = [
   { prefixo: "/relatorios", permissao: "relatorios" },
   { prefixo: "/pdv", permissao: "pdv" },
   { prefixo: "/avaliacoes", permissao: "relatorios" },
+  { prefixo: "/fechamento", permissao: "fechamento" },
   { prefixo: "/configuracoes/equipe", permissao: "configuracoes" },
   { prefixo: "/configuracoes", permissao: "configuracoes" },
 ];

@@ -114,6 +114,12 @@ const todosMenuItems = [
     permissao: "relatorios",
   },
   {
+    label: "Fechamento de Caixa",
+    icon: "i-lucide-lock",
+    to: "/fechamento",
+    permissao: "fechamento",
+  },
+  {
     label: "Primeiros passos",
     icon: "i-lucide-rocket",
     to: "/primeiros-passos",

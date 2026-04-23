@@ -135,6 +135,8 @@ export const PERMISSOES: Record<UsuarioPerfil, string[]> = {
     "relatorios",
     "usuarios",
     "configuracoes",
+    "pdv",
+    "fechamento",
   ],
   gerente: [
     "dashboard",
@@ -146,7 +148,7 @@ export const PERMISSOES: Record<UsuarioPerfil, string[]> = {
     "relatorios",
   ],
   atendente: ["dashboard", "clientes", "pets", "agendamentos", "vacinas"],
-  caixa: ["agendamentos", "pdv"],
+  caixa: ["agendamentos", "pdv", "clientes"],
   staff: [
     "dashboard",
     "clientes",
