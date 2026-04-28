@@ -1648,7 +1648,12 @@ const toggleFaq = (i: number) => {
               >
               <div class="flex items-end gap-1">
                 <span class="text-4xl font-extrabold text-gray-900"
-                  >R$ {{ plano.preco }}</span
+                  >R$
+                  {{
+                    plano.preco.toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                    })
+                  }}</span
                 >
                 <span class="text-gray-400 mb-1">/mês</span>
               </div>

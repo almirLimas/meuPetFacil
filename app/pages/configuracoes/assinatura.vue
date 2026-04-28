@@ -59,7 +59,7 @@ const statusConfig = computed(() => {
     case "ativa":
       return {
         label: "Assinatura Ativa",
-        desc: `Plano ${planoAtual.value.nome} — R$ ${planoAtual.value.preco}/mês`,
+        desc: `Plano ${planoAtual.value.nome} — R$ ${planoAtual.value.preco.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/mês`,
         icon: "i-lucide-circle-check",
         badgeColor:
           "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
@@ -281,7 +281,12 @@ async function handleCancelar() {
                 name="i-lucide-credit-card"
                 class="size-3.5 text-green-500"
               />
-              R$ {{ planoAtual.preco }}/mês via Mercado Pago
+              R$
+              {{
+                planoAtual.preco.toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                })
+              }}/mês via Mercado Pago
             </span>
             <span
               class="inline-flex items-center gap-1.5 text-xs font-medium bg-white dark:bg-neutral-700 border border-green-200 dark:border-green-700 text-gray-700 dark:text-gray-200 rounded-full px-3 py-1"
@@ -356,7 +361,12 @@ async function handleCancelar() {
               </UBadge>
             </div>
             <p class="text-2xl font-extrabold text-gray-900 dark:text-white">
-              R$ {{ PLANOS.basico.preco }}
+              R$
+              {{
+                PLANOS.basico.preco.toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                })
+              }}
               <span class="text-sm font-normal text-gray-500">/mês</span>
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -423,7 +433,12 @@ async function handleCancelar() {
               </UBadge>
             </div>
             <p class="text-2xl font-extrabold text-gray-900 dark:text-white">
-              R$ {{ PLANOS.plus.preco }}
+              R$
+              {{
+                PLANOS.plus.preco.toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                })
+              }}
               <span class="text-sm font-normal text-gray-500">/mês</span>
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
