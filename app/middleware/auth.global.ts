@@ -1,5 +1,12 @@
 import { useAuthStore } from "~/stores/auth";
-import { PERMISSOES } from "~/types/usuario";
+import { PERMISSOES, MODULOS_PLANO } from "~/types/usuario";
+import type { PlanoSistema } from "~/types/usuario";
+
+// Mapa de prefixo de rota → módulo de plano exigido
+const ROTAS_PLANO: Array<{ prefixo: string; modulo: string }> = [
+  { prefixo: "/estoque", modulo: "estoque" },
+  { prefixo: "/avaliacoes", modulo: "avaliacao_cliente" },
+];
 
 const publicRoutes = new Set([
   "/",
@@ -67,6 +74,21 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   if (!isMaster && bloqueado && !renovacaoRoutes.has(to.path)) {
     return navigateTo("/configuracoes/assinatura");
+  }
+
+  // Bloqueia rotas que o plano do usuário não inclui
+  const plano = auth.usuario?.plano as PlanoSistema | undefined;
+  if (!isMaster && plano) {
+    const modulosDoPlano = MODULOS_PLANO[plano] ?? MODULOS_PLANO.basico;
+    const rotaBloqueadaPorPlano = ROTAS_PLANO.find((r) =>
+      to.path.startsWith(r.prefixo),
+    );
+    if (
+      rotaBloqueadaPorPlano &&
+      !modulosDoPlano.includes(rotaBloqueadaPorPlano.modulo)
+    ) {
+      return navigateTo("/configuracoes/assinatura");
+    }
   }
 
   // Bloqueia rotas que o perfil do usuário não tem permissão

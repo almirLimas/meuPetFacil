@@ -429,28 +429,43 @@ async function handleCancelar() {
             <p class="text-xs text-gray-500 dark:text-gray-400">
               {{ PLANOS.plus.descricao }}
             </p>
-            <ul class="space-y-1.5 mt-1">
-              <li
-                v-for="modulo in PLANOS.plus.modulos"
-                :key="modulo"
-                class="flex flex-col gap-0.5 text-xs text-gray-600 dark:text-gray-300"
+            <ul class="space-y-1 mt-1">
+              <template
+                v-for="categoria in PLANOS.plus.categorias"
+                :key="categoria.nome"
               >
-                <span class="flex items-center gap-2">
-                  <UIcon
-                    name="i-lucide-check"
-                    class="size-3.5 text-orange-500 shrink-0"
-                  />
-                  {{ MODULO_LABELS[modulo] ?? modulo }}
-                </span>
-                <span
-                  v-if="modulo === 'avaliacao_cliente'"
-                  class="ml-5.5 text-[10px] text-gray-400 dark:text-gray-500 leading-tight"
+                <li class="mt-2 first:mt-0">
+                  <span
+                    class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wide"
+                  >
+                    {{ categoria.nome }}
+                  </span>
+                </li>
+                <li
+                  v-for="item in categoria.itens"
+                  :key="item.label"
+                  class="flex items-center gap-2 text-xs ml-2"
+                  :class="
+                    item.futuro
+                      ? 'text-gray-400 dark:text-gray-600'
+                      : 'text-gray-600 dark:text-gray-300'
+                  "
                 >
-                  Após cada atendimento concluído, o cliente avalia via e-mail
-                  com emojis. Você acompanha a nota média, índice de satisfação
-                  e cada avaliação individualmente.
-                </span>
-              </li>
+                  <UIcon
+                    :name="item.futuro ? 'i-lucide-clock' : 'i-lucide-check'"
+                    class="size-3 shrink-0"
+                    :class="
+                      item.futuro
+                        ? 'text-gray-300 dark:text-gray-600'
+                        : 'text-orange-500'
+                    "
+                  />
+                  {{ item.label }}
+                  <span v-if="item.futuro" class="text-[10px] text-gray-400"
+                    >(em breve)</span
+                  >
+                </li>
+              </template>
             </ul>
           </div>
         </div>

@@ -63,6 +63,7 @@ const todosMenuItems = [
     icon: "i-lucide-layout-dashboard",
     to: "/dashboard",
     permissao: "dashboard",
+    moduloPlano: "dashboard",
   },
   {
     label: "Clientes",
@@ -70,65 +71,79 @@ const todosMenuItems = [
     to: "/clientes",
     activeOn: ["/cadastro-cliente", "/pets/"],
     permissao: "clientes",
+    moduloPlano: "clientes",
   },
   {
     label: "Agenda",
     icon: "i-lucide-calendar",
     to: "/agenda",
     permissao: "agendamentos",
+    moduloPlano: "agendamentos",
   },
   {
     label: "Serviços",
     icon: "i-lucide-briefcase",
     to: "/servicos",
     permissao: "configuracoes",
+    moduloPlano: "servicos",
   },
   {
     label: "Estoque",
     icon: "i-lucide-package",
     to: "/estoque",
     permissao: "estoque",
+    moduloPlano: "estoque",
   },
   {
     label: "Vendas",
     icon: "i-lucide-shopping-cart",
     to: "/pdv",
     permissao: "pdv",
+    moduloPlano: "pdv",
   },
   {
     label: "Financeiro",
     icon: "i-lucide-wallet",
     to: "/financeiro",
     permissao: "financeiro",
+    moduloPlano: "financeiro",
   },
   {
     label: "Relatórios",
     icon: "i-lucide-bar-chart-2",
     to: "/relatorios",
     permissao: "relatorios",
+    moduloPlano: "relatorios",
   },
   {
     label: "Avaliações",
     icon: "i-lucide-star",
     to: "/avaliacoes",
     permissao: "relatorios",
+    moduloPlano: "avaliacao_cliente",
   },
   {
     label: "Fechamento de Caixa",
     icon: "i-lucide-lock",
     to: "/fechamento",
     permissao: "fechamento",
+    moduloPlano: "fechamento",
   },
   {
     label: "Primeiros passos",
     icon: "i-lucide-rocket",
     to: "/primeiros-passos",
     permissao: "dashboard",
+    moduloPlano: "dashboard",
   },
 ];
 
 const menuItems = computed(() =>
-  todosMenuItems.filter((item) => authStore.temPermissao(item.permissao)),
+  todosMenuItems.filter(
+    (item) =>
+      authStore.temPermissao(item.permissao) &&
+      authStore.temAcessoPlano(item.moduloPlano),
+  ),
 );
 
 const isMenuItemActive = (item: (typeof todosMenuItems)[number]) => {

@@ -1,7 +1,7 @@
 ﻿import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import type { Usuario, UsuarioPerfil, PlanoSistema } from "~/types/usuario";
-import { PERMISSOES } from "~/types/usuario";
+import { PERMISSOES, MODULOS_PLANO } from "~/types/usuario";
 
 export const useAuthStore = defineStore("auth", () => {
   // -- State ----------------------------------------------------------------
@@ -28,6 +28,12 @@ export const useAuthStore = defineStore("auth", () => {
     return usuario.value
       ? PERMISSOES[usuario.value.perfil].includes(modulo)
       : false;
+  };
+
+  const temAcessoPlano = (modulo: string): boolean => {
+    const plano = usuario.value?.plano as PlanoSistema | undefined;
+    if (!plano) return false;
+    return (MODULOS_PLANO[plano] ?? MODULOS_PLANO.basico).includes(modulo);
   };
 
   // -- Actions --------------------------------------------------------------
@@ -145,6 +151,7 @@ export const useAuthStore = defineStore("auth", () => {
     isAdmin,
     permissoes,
     temPermissao,
+    temAcessoPlano,
     // actions
     inicializar,
     login,

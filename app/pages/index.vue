@@ -18,7 +18,7 @@ useHead({
           {
             "@type": "Offer",
             name: "Básico",
-            price: "79.00",
+            price: "49.90",
             priceCurrency: "BRL",
             description:
               "Sistema para pet shop com agenda, clientes, financeiro e relatórios.",
@@ -176,22 +176,34 @@ const features = [
   },
 ];
 
-const planos = [
+type RecursoCategoria = { categoria: string; itens: string[] };
+type RecursoItem = string | RecursoCategoria;
+
+const planos: Array<{
+  id: string;
+  nome: string;
+  preco: number;
+  destaque: boolean;
+  badge: string | null;
+  descricao: string;
+  recursos: RecursoItem[];
+}> = [
   {
     id: "basico",
     nome: "Básico",
-    preco: 79,
+    preco: 49.9,
     destaque: false,
     badge: null,
-    descricao: "Para petshops que querem se organizar e crescer.",
+    descricao: "Para petshops que querem organizar a rotina.",
     recursos: [
       "IA Anin: cadastre, agende e consulte digitando",
       "Agenda de agendamentos",
       "Cadastro de clientes e pets",
       "Controle de serviços",
       "Ponto de Venda (PDV) com leitor de código de barras",
-      "Financeiro",
-      "Relatórios essenciais",
+      "Financeiro (contas a pagar e receber)",
+      "Controle de caixa / fechamento",
+      "Usuários ilimitados com controle de acesso",
     ],
   },
   {
@@ -200,16 +212,52 @@ const planos = [
     preco: 109,
     destaque: true,
     badge: "Mais popular",
-    descricao:
-      "Para petshops que querem fidelizar clientes no piloto automático.",
+    descricao: "Para petshops que vendem produtos e querem controle total.",
     recursos: [
-      "Tudo do Básico (incluindo IA Anin)",
-      "PDV com múltiplas formas de pagamento e troco automático",
-      "Lembrete automático por e-mail para clientes inativos",
-      "Avaliação automática após cada atendimento",
-      "Painel de satisfação dos clientes (nota média e % satisfeitos)",
-      "Relatório mensal enviado por e-mail",
-      "Meta mensal com acompanhamento",
+      {
+        categoria: "Agenda",
+        itens: ["Agendamentos com status", "Histórico de atendimentos"],
+      },
+      {
+        categoria: "Clientes & Pets",
+        itens: ["Cadastro de clientes", "Cadastro de pets"],
+      },
+      {
+        categoria: "Serviços",
+        itens: ["Cadastro de serviços", "Pacotes de serviços (em breve)"],
+      },
+      {
+        categoria: "Estoque",
+        itens: [
+          "Cadastro de produtos",
+          "Movimentação do estoque",
+          "Alertas e Curva ABC (em breve)",
+        ],
+      },
+      {
+        categoria: "Vendas",
+        itens: [
+          "PDV completo com múltiplas formas de pagamento",
+          "Controle de caixa / fechamento",
+          "Orçamentos (em breve)",
+        ],
+      },
+      {
+        categoria: "Financeiro",
+        itens: [
+          "Contas a pagar e receber",
+          "Controle de saldos dos clientes",
+          "Meta mensal",
+          "Relatório mensal por e-mail",
+        ],
+      },
+      {
+        categoria: "Geral",
+        itens: [
+          "IA Anin incluída",
+          "Usuários ilimitados com controle de acesso",
+        ],
+      },
     ],
   },
 ];
@@ -530,7 +578,7 @@ const toggleFaq = (i: number) => {
             </NuxtLink>
           </div>
           <p class="text-white/70 text-sm">
-            7 dias grátis · depois R$ 79/mês · cancele quando quiser
+            7 dias grátis · depois R$ 49,90/mês · cancele quando quiser
           </p>
         </div>
         <div
@@ -1606,29 +1654,51 @@ const toggleFaq = (i: number) => {
               </div>
               <p class="text-sm text-gray-500 mt-1">{{ plano.descricao }}</p>
             </div>
-            <ul class="flex flex-col gap-3 mb-8 flex-1">
-              <li
-                v-for="(rec, idx) in plano.recursos"
-                :key="rec"
-                class="flex items-start gap-2 text-sm"
-                :class="
-                  idx === 0 ? 'text-sky-600 font-semibold' : 'text-gray-700'
-                "
-              >
-                <span v-if="idx === 0" class="shrink-0 mt-0.5">
-                  <img
-                    src="/anin.png"
-                    class="w-4 h-4 object-contain"
-                    alt="IA"
-                  />
-                </span>
-                <UIcon
+            <ul class="flex flex-col gap-2 mb-8 flex-1">
+              <template v-for="(rec, idx) in plano.recursos" :key="idx">
+                <!-- Category group (Plus) -->
+                <template v-if="typeof rec === 'object'">
+                  <li class="mt-2 first:mt-0">
+                    <span
+                      class="text-[10px] font-bold text-gray-400 uppercase tracking-wide"
+                      >{{ rec.categoria }}</span
+                    >
+                  </li>
+                  <li
+                    v-for="item in rec.itens"
+                    :key="item"
+                    class="flex items-start gap-2 text-sm text-gray-700 ml-2"
+                  >
+                    <UIcon
+                      name="i-lucide-check"
+                      class="size-4 text-orange-400 mt-0.5 shrink-0"
+                    />
+                    {{ item }}
+                  </li>
+                </template>
+                <!-- Flat item (Básico) -->
+                <li
                   v-else
-                  name="i-lucide-check"
-                  class="size-4 text-sky-500 mt-0.5 shrink-0"
-                />
-                {{ rec }}
-              </li>
+                  class="flex items-start gap-2 text-sm"
+                  :class="
+                    idx === 0 ? 'text-sky-600 font-semibold' : 'text-gray-700'
+                  "
+                >
+                  <span v-if="idx === 0" class="shrink-0 mt-0.5">
+                    <img
+                      src="/anin.png"
+                      class="w-4 h-4 object-contain"
+                      alt="IA"
+                    />
+                  </span>
+                  <UIcon
+                    v-else
+                    name="i-lucide-check"
+                    class="size-4 text-sky-500 mt-0.5 shrink-0"
+                  />
+                  {{ rec }}
+                </li>
+              </template>
             </ul>
             <NuxtLink
               :to="'/criar-conta?plano=' + plano.id"
