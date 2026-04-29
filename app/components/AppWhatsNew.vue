@@ -18,128 +18,17 @@ interface Versao {
   novidades: Novidade[];
 }
 
-const VERSAO_ATUAL = "1.6.0";
+const VERSAO_ATUAL = "1.6.1";
 
 const changelog: Versao[] = [
   {
-    versao: "1.6.0",
-    data: "23 de abril de 2026",
+    versao: "1.6.1",
+    data: "29 de abril de 2026",
     novidades: [
       {
-        tipo: "novo",
-        texto:
-          "Fechamento de Caixa — registre o encerramento do dia com resumo separado de vendas no PDV e agendamentos (banho, tosa etc.)",
-      },
-      {
-        tipo: "novo",
-        texto:
-          "Breakdown por forma de pagamento no fechamento — veja exatamente quanto entrou em Pix, Dinheiro, Cartão e mais",
-      },
-      {
-        tipo: "novo",
-        texto:
-          "Navegação por datas no fechamento — consulte o histórico de qualquer dia já fechado",
-      },
-      {
         tipo: "melhoria",
         texto:
-          "Perfis de acesso atualizados — Caixa agora pode cadastrar clientes e realizar fechamento de caixa",
-      },
-      {
-        tipo: "melhoria",
-        texto: "Exclusão de clientes restrita a administradores e gerentes",
-      },
-    ],
-  },
-  {
-    versao: "1.5.0",
-    data: "21 de abril de 2026",
-    novidades: [
-      {
-        tipo: "novo",
-        texto:
-          "Forma de pagamento no agendamento — informe Dinheiro, PIX, Débito ou Crédito ao concluir o atendimento",
-      },
-      {
-        tipo: "novo",
-        texto:
-          "Cards de faturamento por pagamento no Financeiro — veja o total recebido em Pix, Dinheiro e Cartão",
-      },
-      {
-        tipo: "melhoria",
-        texto:
-          "Histórico financeiro exibe a forma de pagamento de cada lançamento",
-      },
-      {
-        tipo: "melhoria",
-        texto:
-          "Categorias no financeiro agora têm cores distintas (Serviço, Produto, Consulta etc.)",
-      },
-    ],
-  },
-  {
-    versao: "1.4.0",
-    data: "20 de abril de 2026",
-    novidades: [
-      {
-        tipo: "novo",
-        texto:
-          "Agendamentos recorrentes para clientes mensalistas — crie semanas de uma vez só",
-      },
-      {
-        tipo: "novo",
-        texto: "Cobrança de mensalidade automática a cada 4 sessões concluídas",
-      },
-      {
-        tipo: "novo",
-        texto:
-          "Produtos a granel (ração, shampoo etc.) — venda por valor e o estoque desconta em g/ml automaticamente",
-      },
-      {
-        tipo: "melhoria",
-        texto:
-          "Assistente IA entende mensalistas e cria agendamentos recorrentes pelo chat",
-      },
-      {
-        tipo: "novo",
-        texto:
-          "IA Anin agora responde dúvidas e dá suporte direto no chat — sem precisar sair do sistema",
-      },
-    ],
-  },
-  {
-    versao: "1.3.0",
-    data: "7 de abril de 2026",
-    novidades: [
-      {
-        tipo: "novo",
-        texto: "Avaliações de clientes com link exclusivo por WhatsApp",
-      },
-      {
-        tipo: "novo",
-        texto: "CPF no cadastro do usuário",
-      },
-      {
-        tipo: "melhoria",
-        texto: "Taxa de busca agora aparece separada na OS",
-      },
-    ],
-  },
-  {
-    versao: "1.2.0",
-    data: "1 de abril de 2026",
-    novidades: [
-      {
-        tipo: "novo",
-        texto: "Plano Plus com limites expandidos",
-      },
-      {
-        tipo: "novo",
-        texto: "E-mails de aviso de fim do trial",
-      },
-      {
-        tipo: "melhoria",
-        texto: "Meta mensal de faturamento no dashboard",
+          "Mais raças disponíveis no cadastro de pets — adicionamos Pug, Chihuahua, Schnauzer, Dálmata, Akita, Shiba Inu e muitas outras raças de cães e gatos",
       },
     ],
   },

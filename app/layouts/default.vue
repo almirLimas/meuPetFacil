@@ -185,7 +185,7 @@ router.afterEach(() => {
 });
 
 // Novidades
-const VERSAO_ATUAL = "1.6.0";
+const VERSAO_ATUAL = "1.6.1";
 const whatsNewOpen = ref(false);
 const abrirWhatsNew = () => {
   whatsNewOpen.value = true;
