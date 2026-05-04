@@ -123,6 +123,13 @@ const todosMenuItems = [
     moduloPlano: "avaliacao_cliente",
   },
   {
+    label: "WhatsApp",
+    icon: "i-simple-icons-whatsapp",
+    to: "/configuracoes/whatsapp",
+    permissao: "configuracoes",
+    moduloPlano: "whatsapp",
+  },
+  {
     label: "Fechamento de Caixa",
     icon: "i-lucide-lock",
     to: "/fechamento",

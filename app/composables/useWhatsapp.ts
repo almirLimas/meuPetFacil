@@ -20,9 +20,13 @@ export const useWhatsapp = () => {
 
   let pollingTimer: ReturnType<typeof setInterval> | null = null;
 
-  /** Converte a string raw do QR code em imagem PNG (data URL) */
+  /** Converte a string raw do QR code em imagem PNG (data URL), ou usa diretamente se já for data URL */
   async function gerarQrImage(raw: string) {
     if (!import.meta.client) return;
+    if (raw.startsWith("data:")) {
+      qrDataUrl.value = raw;
+      return;
+    }
     const QRCode = await import("qrcode");
     qrDataUrl.value = await QRCode.toDataURL(raw, { width: 256, margin: 2 });
   }

@@ -3,7 +3,8 @@ export type UsuarioPerfil =
   | "gerente"
   | "atendente"
   | "caixa"
-  | "staff";
+  | "staff"
+  | "motoboy";
 
 export const PERFIL_LABELS: Record<UsuarioPerfil, string> = {
   admin: "Administrador",
@@ -11,12 +12,14 @@ export const PERFIL_LABELS: Record<UsuarioPerfil, string> = {
   atendente: "Atendente",
   caixa: "Caixa",
   staff: "Staff",
+  motoboy: "Motoboy",
 };
 
 export const PERFIS_STAFF: Exclude<UsuarioPerfil, "admin" | "staff">[] = [
   "gerente",
   "atendente",
   "caixa",
+  "motoboy",
 ];
 export type UsuarioStatus = "ativo" | "inativo";
 export type PlanoSistema = "basico" | "plus";
@@ -220,6 +223,7 @@ export const MODULOS_PLANO: Record<PlanoSistema, string[]> = {
     "configuracoes",
     "estoque",
     "avaliacao_cliente",
+    "whatsapp",
   ],
 };
 
@@ -257,6 +261,7 @@ export const PERMISSOES: Record<UsuarioPerfil, string[]> = {
     "vacinas",
     "estoque",
   ],
+  motoboy: ["clientes", "agendamentos"],
 };
 
 /** Estado do formulário de criação de conta (landing page → dono do negócio) */

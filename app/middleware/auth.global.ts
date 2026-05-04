@@ -99,7 +99,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
       to.path.startsWith(r.prefixo),
     );
     if (rotaRestrita && !permissoesUsuario.includes(rotaRestrita.permissao)) {
-      const destino = perfil === "caixa" ? "/agenda" : "/dashboard";
+      const destino =
+        perfil === "caixa" || perfil === "motoboy" ? "/agenda" : "/dashboard";
       return navigateTo(destino);
     }
   }

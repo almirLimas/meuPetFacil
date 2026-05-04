@@ -10,6 +10,7 @@ import {
   PERFIS_STAFF,
   type UsuarioPerfil,
 } from "~/types/usuario";
+import { useAuthStore } from "~/stores/auth";
 
 interface StaffItem {
   id: string;
@@ -33,18 +34,52 @@ const staffParaRemover = ref<StaffItem | null>(null);
 const erroModal = ref("");
 const mostrarSenha = ref(false);
 const formRef = ref();
+const emailDisponivel = ref<boolean | null>(null);
+const verificandoEmail = ref(false);
+const modoModal = ref<"criar" | "editar">("criar");
+const editandoStaff = ref<StaffItem | null>(null);
 
-const schema = z.object({
+const schemaCriar = z.object({
   nomeCompleto: z.string().min(1, "Nome e obrigatorio"),
   email: z.string().email("E-mail invalido"),
-  telefone: z.string().optional(),
-  perfil: z.enum(["gerente", "atendente", "caixa"], {
+  telefone: z
+    .string()
+    .optional()
+    .refine(
+      (v) => !v || v.replace(/\D/g, "").length >= 10,
+      "Celular incompleto",
+    ),
+  perfil: z.enum(["gerente", "atendente", "caixa", "motoboy"], {
     error: "Selecione um perfil",
   }),
   senha: z.string().min(6, "A senha deve ter no minimo 6 caracteres"),
 });
 
-type FormState = z.infer<typeof schema>;
+const schemaEditar = z.object({
+  nomeCompleto: z.string().min(1, "Nome e obrigatorio"),
+  telefone: z
+    .string()
+    .optional()
+    .refine(
+      (v) => !v || v.replace(/\D/g, "").length >= 10,
+      "Celular incompleto",
+    ),
+  perfil: z.enum(["gerente", "atendente", "caixa", "motoboy"], {
+    error: "Selecione um perfil",
+  }),
+  novaSenha: z
+    .union([z.string().min(6, "Minimo 6 caracteres"), z.literal("")])
+    .optional(),
+});
+
+interface FormState {
+  nomeCompleto: string;
+  email: string;
+  telefone: string;
+  perfil: "gerente" | "atendente" | "caixa" | "motoboy";
+  senha: string;
+  novaSenha: string;
+}
 
 const form = reactive<FormState>({
   nomeCompleto: "",
@@ -52,6 +87,7 @@ const form = reactive<FormState>({
   telefone: "",
   perfil: "caixa",
   senha: "",
+  novaSenha: "",
 });
 
 const opcoesPerfilStaff = PERFIS_STAFF.map((p) => ({
@@ -63,12 +99,14 @@ const descricaoPerfil: Record<string, string> = {
   gerente: "Acessa tudo exceto financeiro e configuracoes",
   atendente: "Acessa agenda, clientes e pets",
   caixa: "Acessa agenda e PDV (vendas)",
+  motoboy: "Acessa agenda e clientes (sem PDV)",
 };
 
 function badgeColor(perfil: string) {
   if (perfil === "gerente") return "blue";
   if (perfil === "atendente") return "green";
   if (perfil === "caixa") return "yellow";
+  if (perfil === "motoboy") return "orange";
   return "neutral";
 }
 
@@ -82,31 +120,106 @@ async function carregarStaff() {
 }
 
 function abrirModal() {
+  modoModal.value = "criar";
+  editandoStaff.value = null;
   Object.assign(form, {
     nomeCompleto: "",
     email: "",
     telefone: "",
     perfil: "caixa",
     senha: "",
+    novaSenha: "",
   });
   erroModal.value = "";
+  emailDisponivel.value = null;
   mostrarSenha.value = false;
   isModalStaff.value = true;
+}
+
+function abrirModalEdicao(s: StaffItem) {
+  modoModal.value = "editar";
+  editandoStaff.value = s;
+  Object.assign(form, {
+    nomeCompleto: s.nomeCompleto,
+    email: s.email,
+    telefone: s.telefone ?? "",
+    perfil: s.perfil as FormState["perfil"],
+    senha: "",
+    novaSenha: "",
+  });
+  erroModal.value = "";
+  emailDisponivel.value = null;
+  mostrarSenha.value = false;
+  isModalStaff.value = true;
+}
+
+async function verificarEmailDisponivel() {
+  const emailValido = z.string().email().safeParse(form.email).success;
+  if (!emailValido) {
+    emailDisponivel.value = null;
+    return;
+  }
+  verificandoEmail.value = true;
+  try {
+    const res = await apiFetch<{ disponivel: boolean }>(
+      `/auth/verificar-email?email=${encodeURIComponent(form.email)}`,
+    );
+    emailDisponivel.value = res.disponivel;
+  } catch {
+    emailDisponivel.value = null;
+  } finally {
+    verificandoEmail.value = false;
+  }
 }
 
 async function salvarStaff() {
   erroModal.value = "";
   salvando.value = true;
   try {
-    const novo = await apiFetch<StaffItem>("/auth/staff", {
-      method: "POST",
-      body: { ...form },
-    });
-    staff.value.push(novo);
-    isModalStaff.value = false;
-    toast.add({ title: "Funcionario cadastrado com sucesso!", color: "green" });
+    if (modoModal.value === "editar" && editandoStaff.value) {
+      const atualizado = await apiFetch<StaffItem>(
+        `/auth/staff/${editandoStaff.value.id}`,
+        {
+          method: "PATCH",
+          body: {
+            nomeCompleto: form.nomeCompleto,
+            telefone: form.telefone,
+            perfil: form.perfil,
+            ...(form.novaSenha ? { novaSenha: form.novaSenha } : {}),
+          },
+        },
+      );
+      const idx = staff.value.findIndex((s) => s.id === atualizado.id);
+      if (idx !== -1) staff.value[idx] = atualizado;
+      isModalStaff.value = false;
+      toast.add({
+        title: "Funcionario atualizado com sucesso!",
+        color: "green",
+      });
+    } else {
+      const novo = await apiFetch<StaffItem>("/auth/staff", {
+        method: "POST",
+        body: {
+          nomeCompleto: form.nomeCompleto,
+          email: form.email,
+          telefone: form.telefone || undefined,
+          perfil: form.perfil,
+          senha: form.senha,
+        },
+      });
+      staff.value.push(novo);
+      isModalStaff.value = false;
+      toast.add({
+        title: "Funcionario cadastrado com sucesso!",
+        color: "green",
+      });
+    }
   } catch (err: any) {
-    erroModal.value = err?.data?.message ?? "Erro ao cadastrar funcionario.";
+    const data = err?.data;
+    const msg = Array.isArray(data?.message)
+      ? data.message.join(", ")
+      : (data?.message ?? "Erro ao salvar funcionario.");
+    toast.add({ title: msg, color: "error", icon: "i-lucide-circle-alert" });
   } finally {
     salvando.value = false;
   }
@@ -136,55 +249,114 @@ async function removerStaff() {
   }
 }
 
+const limiteStaff = computed(() => {
+  const plano = useAuthStore().usuario?.plano;
+  return plano === "plus" ? 5 : 3;
+});
+
 onMounted(carregarStaff);
 
 const mostrarPermissoes = ref(false);
 
 const tabelaPermissoes = [
-  { label: "Dashboard", gerente: true, atendente: true, caixa: false },
+  {
+    label: "Dashboard",
+    gerente: true,
+    atendente: true,
+    caixa: false,
+    motoboy: false,
+  },
   {
     label: "Clientes — visualizar / cadastrar",
     gerente: true,
     atendente: true,
     caixa: true,
+    motoboy: true,
   },
   {
     label: "Clientes — excluir",
     gerente: true,
     atendente: false,
     caixa: false,
+    motoboy: false,
   },
-  { label: "Agenda — visualizar", gerente: true, atendente: true, caixa: true },
+  {
+    label: "Agenda — visualizar",
+    gerente: true,
+    atendente: true,
+    caixa: true,
+    motoboy: true,
+  },
   {
     label: "Agenda — criar / editar",
     gerente: true,
     atendente: true,
     caixa: false,
+    motoboy: true,
   },
   {
     label: "Agenda — confirmar / concluir",
     gerente: true,
     atendente: true,
     caixa: true,
+    motoboy: true,
   },
   {
     label: "Agenda — cancelar / excluir",
     gerente: true,
     atendente: true,
     caixa: false,
+    motoboy: false,
   },
-  { label: "Vendas (PDV)", gerente: false, atendente: false, caixa: true },
+  {
+    label: "Vendas (PDV)",
+    gerente: false,
+    atendente: false,
+    caixa: true,
+    motoboy: false,
+  },
   {
     label: "Fechamento de Caixa",
     gerente: false,
     atendente: false,
     caixa: false,
+    motoboy: false,
   },
-  { label: "Estoque", gerente: true, atendente: false, caixa: false },
-  { label: "Relatórios", gerente: true, atendente: false, caixa: false },
-  { label: "Avaliações", gerente: true, atendente: false, caixa: false },
-  { label: "Financeiro", gerente: false, atendente: false, caixa: false },
-  { label: "Configurações", gerente: false, atendente: false, caixa: false },
+  {
+    label: "Estoque",
+    gerente: true,
+    atendente: false,
+    caixa: false,
+    motoboy: false,
+  },
+  {
+    label: "Relatórios",
+    gerente: true,
+    atendente: false,
+    caixa: false,
+    motoboy: false,
+  },
+  {
+    label: "Avaliações",
+    gerente: true,
+    atendente: false,
+    caixa: false,
+    motoboy: false,
+  },
+  {
+    label: "Financeiro",
+    gerente: false,
+    atendente: false,
+    caixa: false,
+    motoboy: false,
+  },
+  {
+    label: "Configurações",
+    gerente: false,
+    atendente: false,
+    caixa: false,
+    motoboy: false,
+  },
 ];
 </script>
 
@@ -193,7 +365,8 @@ const tabelaPermissoes = [
     <div>
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Equipe</h1>
       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-        Gerencie os funcionarios do seu petshop. Maximo de 3 funcionarios.
+        Gerencie os funcionarios do seu petshop. Maximo de
+        {{ limiteStaff }} funcionarios.
       </p>
     </div>
 
@@ -202,10 +375,10 @@ const tabelaPermissoes = [
     >
       <div class="flex items-center justify-between">
         <h2 class="font-semibold text-gray-800 dark:text-gray-100 text-base">
-          Funcionarios ({{ staff.length }}/3)
+          Funcionarios ({{ staff.length }}/{{ limiteStaff }})
         </h2>
         <UButton
-          v-if="staff.length < 3"
+          v-if="staff.length < limiteStaff"
           size="sm"
           icon="i-lucide-plus"
           class="text-sm font-semibold rounded-xl text-white"
@@ -257,6 +430,13 @@ const tabelaPermissoes = [
               :color="badgeColor(s.perfil)"
               variant="subtle"
               size="sm"
+            />
+            <UButton
+              icon="i-lucide-pencil"
+              size="xs"
+              color="neutral"
+              variant="ghost"
+              @click="abrirModalEdicao(s)"
             />
             <UButton
               icon="i-lucide-trash-2"
@@ -321,6 +501,11 @@ const tabelaPermissoes = [
                 >
                   Caixa
                 </th>
+                <th
+                  class="text-center py-2 px-3 font-medium text-orange-600 dark:text-orange-400"
+                >
+                  Motoboy
+                </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-50 dark:divide-neutral-700/50">
@@ -364,6 +549,18 @@ const tabelaPermissoes = [
                     class="size-3.5 text-gray-300 dark:text-neutral-600"
                   />
                 </td>
+                <td class="py-2 px-3 text-center">
+                  <UIcon
+                    v-if="linha.motoboy"
+                    name="i-lucide-check"
+                    class="size-3.5 text-green-500"
+                  />
+                  <UIcon
+                    v-else
+                    name="i-lucide-minus"
+                    class="size-3.5 text-gray-300 dark:text-neutral-600"
+                  />
+                </td>
               </tr>
             </tbody>
           </table>
@@ -371,13 +568,38 @@ const tabelaPermissoes = [
       </div>
     </div>
 
-    <UModal v-model:open="isModalStaff" title="Novo Funcionario">
+    <UModal
+      v-model:open="isModalStaff"
+      title="Novo Funcionario"
+      @update:open="
+        (v) => {
+          if (!v) {
+            modoModal = 'criar';
+            editandoStaff = null;
+            Object.assign(form, {
+              nomeCompleto: '',
+              email: '',
+              telefone: '',
+              perfil: 'caixa',
+              senha: '',
+              novaSenha: '',
+            });
+            emailDisponivel = null;
+            erroModal = '';
+          }
+        }
+      "
+    >
       <template #content>
         <UCard class="ring-0">
           <template #header>
             <div class="flex items-center justify-between">
               <h3 class="font-semibold text-gray-800 dark:text-gray-100">
-                Novo Funcionario
+                {{
+                  modoModal === "criar"
+                    ? "Novo Funcionario"
+                    : "Editar Funcionario"
+                }}
               </h3>
               <UButton
                 icon="i-lucide-x"
@@ -391,11 +613,27 @@ const tabelaPermissoes = [
 
           <UForm
             ref="formRef"
-            :schema="schema"
+            :schema="modoModal === 'criar' ? schemaCriar : schemaEditar"
             :state="form"
             class="flex flex-col gap-4"
+            autocomplete="new-password"
             @submit="salvarStaff"
           >
+            <!-- honeypot: engana o browser e impede autocomplete -->
+            <input
+              type="text"
+              name="username"
+              style="display: none"
+              tabindex="-1"
+              aria-hidden="true"
+            />
+            <input
+              type="password"
+              name="password"
+              style="display: none"
+              tabindex="-1"
+              aria-hidden="true"
+            />
             <UFormField name="nomeCompleto" label="Nome completo *">
               <UInput
                 v-model="form.nomeCompleto"
@@ -404,19 +642,65 @@ const tabelaPermissoes = [
               />
             </UFormField>
 
-            <UFormField name="email" label="E-mail de acesso *">
+            <UFormField
+              v-if="modoModal === 'criar'"
+              name="email"
+              label="E-mail de acesso *"
+            >
               <UInput
                 v-model="form.email"
                 type="email"
                 placeholder="Ex: caixa@meupetshop.com"
                 class="w-full"
-              />
+                @blur="verificarEmailDisponivel"
+              >
+                <template #trailing>
+                  <UIcon
+                    v-if="verificandoEmail"
+                    name="i-lucide-loader-circle"
+                    class="size-4 animate-spin text-gray-400"
+                  />
+                  <UIcon
+                    v-else-if="emailDisponivel === true"
+                    name="i-lucide-circle-check"
+                    class="size-4 text-green-500"
+                  />
+                  <UIcon
+                    v-else-if="emailDisponivel === false"
+                    name="i-lucide-circle-x"
+                    class="size-4 text-red-500"
+                  />
+                </template>
+              </UInput>
+              <template v-if="emailDisponivel === false" #help>
+                <span class="text-[11px] text-red-500"
+                  >E-mail já cadastrado</span
+                >
+              </template>
             </UFormField>
 
-            <UFormField name="telefone" label="Telefone (opcional)">
+            <UFormField v-else name="email" label="E-mail de acesso">
               <UInput
+                :model-value="form.email"
+                type="email"
+                class="w-full"
+                disabled
+              >
+                <template #trailing>
+                  <UIcon name="i-lucide-lock" class="size-4 text-gray-400" />
+                </template>
+              </UInput>
+              <template #help>
+                <span class="text-[11px] text-gray-400"
+                  >O e-mail não pode ser alterado</span
+                >
+              </template>
+            </UFormField>
+
+            <UFormField name="telefone" label="Celular (opcional)">
+              <InputTelefoneInput
                 v-model="form.telefone"
-                placeholder="(11) 99999-9999"
+                autocomplete="off"
                 class="w-full"
               />
             </UFormField>
@@ -436,11 +720,16 @@ const tabelaPermissoes = [
               </template>
             </UFormField>
 
-            <UFormField name="senha" label="Senha de acesso *">
+            <UFormField
+              v-if="modoModal === 'criar'"
+              name="senha"
+              label="Senha de acesso *"
+            >
               <UInput
                 v-model="form.senha"
                 :type="mostrarSenha ? 'text' : 'password'"
                 placeholder="Minimo 6 caracteres"
+                autocomplete="off"
                 class="w-full"
               >
                 <template #trailing>
@@ -456,7 +745,30 @@ const tabelaPermissoes = [
               </UInput>
             </UFormField>
 
-            <p v-if="erroModal" class="text-sm text-red-500">{{ erroModal }}</p>
+            <UFormField
+              v-if="modoModal === 'editar'"
+              name="novaSenha"
+              label="Nova senha (opcional)"
+            >
+              <UInput
+                v-model="form.novaSenha"
+                :type="mostrarSenha ? 'text' : 'password'"
+                placeholder="Deixe em branco para não alterar"
+                autocomplete="off"
+                class="w-full"
+              >
+                <template #trailing>
+                  <UButton
+                    type="button"
+                    color="neutral"
+                    variant="ghost"
+                    size="sm"
+                    :icon="mostrarSenha ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                    @click="mostrarSenha = !mostrarSenha"
+                  />
+                </template>
+              </UInput>
+            </UFormField>
 
             <div class="flex justify-end gap-2 pt-1">
               <UButton
@@ -471,7 +783,7 @@ const tabelaPermissoes = [
                 class="text-sm font-semibold rounded-xl text-white"
                 style="background-color: #f07030"
               >
-                Cadastrar
+                {{ modoModal === "criar" ? "Cadastrar" : "Salvar" }}
               </UButton>
             </div>
           </UForm>

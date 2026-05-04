@@ -18,9 +18,35 @@ interface Versao {
   novidades: Novidade[];
 }
 
-const VERSAO_ATUAL = "1.6.1";
+const VERSAO_ATUAL = "1.7.0";
 
 const changelog: Versao[] = [
+  {
+    versao: "1.7.0",
+    data: "4 de maio de 2026",
+    novidades: [
+      {
+        tipo: "novo",
+        texto:
+          "Integração com WhatsApp — conecte o número da sua petshop e envie mensagens automáticas para os clientes",
+      },
+      {
+        tipo: "novo",
+        texto:
+          "Confirmação automática de agendamento via WhatsApp — o cliente recebe a mensagem assim que o agendamento é criado",
+      },
+      {
+        tipo: "novo",
+        texto:
+          "Pesquisa de satisfação via WhatsApp — ao concluir um agendamento, o cliente recebe automaticamente um link para avaliação",
+      },
+      {
+        tipo: "novo",
+        texto:
+          "Personalização de mensagens — edite os templates de confirmação e de pesquisa de satisfação direto no painel (menu WhatsApp)",
+      },
+    ],
+  },
   {
     versao: "1.6.1",
     data: "29 de abril de 2026",

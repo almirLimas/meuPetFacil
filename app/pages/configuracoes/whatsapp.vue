@@ -17,9 +17,86 @@ const {
   desconectar,
 } = useWhatsapp();
 
+// ── Template de mensagem ─────────────────────────────────────────────────────
+const { apiFetch } = useApi();
+const toast = useToast();
+
+const TEMPLATE_PADRAO =
+  "Olá, {nome}! 🐾 Seu agendamento para {pet} foi confirmado.\nServiço: {servico}\nData: {data} às {hora}\nAté lá! 😊";
+
+const TEMPLATE_AVALIACAO_PADRAO =
+  "Olá, {nome}! 🐾 Esperamos que {pet} tenha adorado o serviço!\n\nPoderia avaliar o atendimento? Leva menos de 1 minuto 😊\n{link}";
+
+const mensagem = ref(TEMPLATE_PADRAO);
+const mensagemAvaliacao = ref(TEMPLATE_AVALIACAO_PADRAO);
+const salvandoMensagem = ref(false);
+const salvandoAvaliacao = ref(false);
+
+async function carregarMensagem() {
+  try {
+    const data = await apiFetch<{
+      mensagem: string;
+      mensagemAvaliacao: string;
+    }>("/auth/whatsapp-config");
+    mensagem.value = data.mensagem;
+    mensagemAvaliacao.value = data.mensagemAvaliacao;
+  } catch {
+    // usa padrão
+  }
+}
+
+async function salvarMensagem() {
+  salvandoMensagem.value = true;
+  try {
+    await apiFetch("/auth/whatsapp-config", {
+      method: "PATCH",
+      body: { mensagem: mensagem.value },
+    });
+    toast.add({ title: "Mensagem salva!", color: "green" });
+  } catch {
+    toast.add({ title: "Erro ao salvar mensagem.", color: "red" });
+  } finally {
+    salvandoMensagem.value = false;
+  }
+}
+
+async function salvarMensagemAvaliacao() {
+  salvandoAvaliacao.value = true;
+  try {
+    await apiFetch("/auth/whatsapp-config", {
+      method: "PATCH",
+      body: { mensagemAvaliacao: mensagemAvaliacao.value },
+    });
+    toast.add({ title: "Mensagem de avaliação salva!", color: "green" });
+  } catch {
+    toast.add({ title: "Erro ao salvar mensagem.", color: "red" });
+  } finally {
+    salvandoAvaliacao.value = false;
+  }
+}
+
+const previewMensagem = computed(() =>
+  mensagem.value
+    .replaceAll("{nome}", "João Silva")
+    .replaceAll("{pet}", "Bolinha")
+    .replaceAll("{servico}", "Banho e Tosa")
+    .replaceAll("{data}", "10/05/2026")
+    .replaceAll("{hora}", "14:00"),
+);
+
+const previewAvaliacao = computed(() =>
+  mensagemAvaliacao.value
+    .replaceAll("{nome}", "João Silva")
+    .replaceAll("{pet}", "Bolinha")
+    .replaceAll("{link}", "https://app.aninpet.com.br/avaliar/xxx"),
+);
+
 // Carrega o status atual ao montar a página (somente no plano Plus)
 onMounted(() => {
-  if (isPlus.value) void atualizarStatus();
+  if (isPlus.value) {
+    void atualizarStatus();
+    void carregarMensagem();
+  }
 });
 
 const statusLabel = computed(() => {
@@ -46,7 +123,7 @@ const statusColor = computed(
 </script>
 
 <template>
-  <div class="p-6 max-w-xl mx-auto">
+  <div class="px-4 py-8 space-y-6">
     <h1 class="text-2xl font-bold mb-1">WhatsApp</h1>
     <p class="text-neutral-500 dark:text-neutral-400 mb-6 text-sm">
       Conecte o número de WhatsApp da sua petshop para enviar lembretes e
@@ -203,6 +280,142 @@ const statusColor = computed(
         :title="erro"
         class="mb-4"
       />
+
+      <!-- Templates de mensagens lado a lado -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        <!-- Mensagem de agendamento -->
+        <UCard class="flex flex-col">
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon
+                name="i-lucide-message-square-text"
+                class="text-green-500"
+              />
+              <p class="font-semibold text-sm">Confirmação de agendamento</p>
+            </div>
+          </template>
+
+          <div class="space-y-3 flex-1">
+            <p class="text-xs text-neutral-500 dark:text-neutral-400">
+              Enviada quando um agendamento é criado.
+            </p>
+            <div class="flex flex-wrap gap-1">
+              <UBadge
+                v-for="v in [
+                  '{nome}',
+                  '{pet}',
+                  '{servico}',
+                  '{data}',
+                  '{hora}',
+                ]"
+                :key="v"
+                color="neutral"
+                variant="soft"
+                class="font-mono text-xs cursor-pointer select-all"
+                >{{ v }}</UBadge
+              >
+            </div>
+
+            <UTextarea
+              v-model="mensagem"
+              :rows="5"
+              placeholder="Digite a mensagem..."
+              class="w-full font-mono text-sm"
+            />
+
+            <div
+              v-if="previewMensagem"
+              class="bg-green-50 dark:bg-green-950/30 rounded-xl p-3 border border-green-200 dark:border-green-800"
+            >
+              <p
+                class="text-xs font-semibold text-green-700 dark:text-green-300 mb-1"
+              >
+                Prévia:
+              </p>
+              <p
+                class="text-sm text-green-800 dark:text-green-200 whitespace-pre-line"
+              >
+                {{ previewMensagem }}
+              </p>
+            </div>
+          </div>
+
+          <template #footer>
+            <div class="flex justify-end">
+              <UButton
+                color="primary"
+                :loading="salvandoMensagem"
+                icon="i-lucide-save"
+                @click="salvarMensagem"
+              >
+                Salvar
+              </UButton>
+            </div>
+          </template>
+        </UCard>
+
+        <!-- Mensagem de avaliação -->
+        <UCard class="flex flex-col">
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-star" class="text-yellow-500" />
+              <p class="font-semibold text-sm">Pesquisa de satisfação</p>
+            </div>
+          </template>
+
+          <div class="space-y-3 flex-1">
+            <p class="text-xs text-neutral-500 dark:text-neutral-400">
+              Enviada quando um agendamento é concluído.
+            </p>
+            <div class="flex flex-wrap gap-1">
+              <UBadge
+                v-for="v in ['{nome}', '{pet}', '{link}']"
+                :key="v"
+                color="neutral"
+                variant="soft"
+                class="font-mono text-xs cursor-pointer select-all"
+                >{{ v }}</UBadge
+              >
+            </div>
+
+            <UTextarea
+              v-model="mensagemAvaliacao"
+              :rows="5"
+              placeholder="Digite a mensagem..."
+              class="w-full font-mono text-sm"
+            />
+
+            <div
+              v-if="previewAvaliacao"
+              class="bg-yellow-50 dark:bg-yellow-950/30 rounded-xl p-3 border border-yellow-200 dark:border-yellow-800"
+            >
+              <p
+                class="text-xs font-semibold text-yellow-700 dark:text-yellow-300 mb-1"
+              >
+                Prévia:
+              </p>
+              <p
+                class="text-sm text-yellow-800 dark:text-yellow-200 whitespace-pre-line"
+              >
+                {{ previewAvaliacao }}
+              </p>
+            </div>
+          </div>
+
+          <template #footer>
+            <div class="flex justify-end">
+              <UButton
+                color="primary"
+                :loading="salvandoAvaliacao"
+                icon="i-lucide-save"
+                @click="salvarMensagemAvaliacao"
+              >
+                Salvar
+              </UButton>
+            </div>
+          </template>
+        </UCard>
+      </div>
 
       <!-- Dicas -->
       <UCard class="bg-blue-50 dark:bg-blue-950/30">
