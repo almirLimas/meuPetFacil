@@ -88,6 +88,13 @@ const todosMenuItems = [
     moduloPlano: "servicos",
   },
   {
+    label: "Pacotes",
+    icon: "i-lucide-ticket",
+    to: "/pacotes",
+    permissao: "configuracoes",
+    moduloPlano: "pacotes",
+  },
+  {
     label: "Estoque",
     icon: "i-lucide-package",
     to: "/estoque",

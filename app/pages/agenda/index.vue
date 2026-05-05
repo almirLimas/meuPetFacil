@@ -7,6 +7,7 @@ import type {
 } from "~/types/agendamento";
 import type { Cliente } from "~/types/cliente";
 import type { Pet } from "~/types/pet";
+import type { PacoteClienteAtivo } from "~/types/pacote";
 import { useAuthStore } from "~/stores/auth";
 
 const { apiFetch } = useApi();
@@ -243,33 +244,7 @@ const FORMAS_PAGAMENTO = [
   },
 ];
 
-const pedirConcluir = (item: (typeof agendamentos.value)[number]) => {
-  // Se existe OS aberta, redireciona para finalizar por lá
-  if (item.ordemServico?.status === "Aberta") {
-    router.push(`/agenda/${item.id}/os`);
-    return;
-  }
-  agendamentoParaConcluir.value = item.id;
-  formaPagamentoConcluir.value = "Dinheiro";
-  confirmConcluirOpen.value = true;
-};
-
-const confirmarConcluir = async () => {
-  if (!agendamentoParaConcluir.value) return;
-  const fpSelecionada = FORMAS_PAGAMENTO.find(
-    (f) => f.value === formaPagamentoConcluir.value,
-  );
-  // Envia valueOs (compatível com enum Prisma FormaPagamento) para o backend
-  await alterarStatus(
-    agendamentoParaConcluir.value,
-    "Concluido",
-    fpSelecionada?.valueOs ?? formaPagamentoConcluir.value,
-  );
-  confirmConcluirOpen.value = false;
-  agendamentoParaConcluir.value = null;
-};
-
-// -- Modal confirmação de Não Compareceu -------------------------------------
+// -- Modal confirmação de exclusão -------------------------------------------
 const confirmNaoCompareceuOpen = ref(false);
 const agendamentoParaNaoCompareceu = ref<string | null>(null);
 
@@ -285,7 +260,74 @@ const confirmarNaoCompareceu = async () => {
   agendamentoParaNaoCompareceu.value = null;
 };
 
-// -- Modal confirmação de exclusão -------------------------------------------
+// -- Pacote ativo do cliente selecionado --------------------------------------
+const pacoteAtivoCliente = ref<PacoteClienteAtivo | null>(null);
+const loadingPacote = ref(false);
+
+const buscarPacoteAtivo = async (clienteId: string) => {
+  pacoteAtivoCliente.value = null;
+  if (!clienteId) return;
+  loadingPacote.value = true;
+  try {
+    const lista = await apiFetch<PacoteClienteAtivo[]>(
+      `/pacotes/clientes/${clienteId}`,
+    );
+    pacoteAtivoCliente.value =
+      lista.find(
+        (p) => p.status === "Ativo" && p.sessoesUsadas < p.totalSessoes,
+      ) ?? null;
+  } catch {
+    pacoteAtivoCliente.value = null;
+  } finally {
+    loadingPacote.value = false;
+  }
+};
+
+// -- Concluir com desconto de pacote ------------------------------------------
+// Ao abrir modal de concluir, usa pacoteAtivo diretamente do agendamento
+const pedirConcluir = (item: (typeof agendamentos.value)[number]) => {
+  // Se existe OS aberta, redireciona para finalizar por lá
+  if (item.ordemServico?.status === "Aberta") {
+    router.push(`/agenda/${item.id}/os`);
+    return;
+  }
+  agendamentoParaConcluir.value = item.id;
+  formaPagamentoConcluir.value = "Dinheiro";
+  pacoteAtivoConcluir.value = item.pacoteAtivo ?? null;
+  confirmConcluirOpen.value = true;
+};
+
+const pacoteAtivoConcluir = ref<{
+  id: string;
+  sessoesUsadas: number;
+  totalSessoes: number;
+  status: string;
+  pacote?: { nome: string } | null;
+} | null>(null);
+const loadingPacoteConcluir = ref(false);
+
+const confirmarConcluir = async () => {
+  if (!agendamentoParaConcluir.value) return;
+  const fpSelecionada = FORMAS_PAGAMENTO.find(
+    (f) => f.value === formaPagamentoConcluir.value,
+  );
+  await alterarStatus(
+    agendamentoParaConcluir.value,
+    "Concluido",
+    fpSelecionada?.valueOs ?? formaPagamentoConcluir.value,
+  );
+  // O desconto de sessão é feito automaticamente no backend ao concluir
+  if (pacoteAtivoConcluir.value) {
+    toast.add({
+      title: "Sessão do pacote descontada automaticamente!",
+      description: `${pacoteAtivoConcluir.value.pacote?.nome} — ${pacoteAtivoConcluir.value.sessoesUsadas + 1}/${pacoteAtivoConcluir.value.totalSessoes} sessões`,
+      color: "info",
+    });
+  }
+  confirmConcluirOpen.value = false;
+  agendamentoParaConcluir.value = null;
+  pacoteAtivoConcluir.value = null;
+};
 const confirmExcluirOpen = ref(false);
 const agendamentoParaExcluir = ref<string | null>(null);
 const excluindo = ref(false);
@@ -343,6 +385,7 @@ const novoForm = reactive({
   taxaBusca: "",
   enderecoBusca: "",
   observacoes: "",
+  usarPacote: false,
 });
 
 const clienteSelecionadoEndereco = ref<{
@@ -394,6 +437,20 @@ watch(
   },
 );
 
+// Quando seleciona "Do pacote", auto-preenche serviços do pacote; ao voltar para avulso limpa
+watch(
+  () => novoForm.usarPacote,
+  (usarPacote) => {
+    if (usarPacote && pacoteAtivoCliente.value?.pacote?.servicos?.length) {
+      novoForm.servicoIds = pacoteAtivoCliente.value.pacote.servicos.map(
+        (s) => s.id,
+      );
+    } else if (!usarPacote) {
+      novoForm.servicoIds = [];
+    }
+  },
+);
+
 const carregarDadosModal = async () => {
   novoForm.data = selectedDate.value;
   novoForm.hora = "";
@@ -404,6 +461,8 @@ const carregarDadosModal = async () => {
   novoForm.taxaBusca = "";
   novoForm.enderecoBusca = "";
   novoForm.observacoes = "";
+  novoForm.usarPacote = false;
+  pacoteAtivoCliente.value = null;
   clienteSelecionadoEndereco.value = null;
   petsDoCliente.value = [];
 
@@ -490,12 +549,13 @@ watch(isModalOpen, (open) => {
   if (open) carregarDadosModal();
 });
 
-// Quando cliente muda, carrega seus pets
+// Quando cliente muda, carrega seus pets e verifica pacote ativo
 watch(
   () => novoForm.clienteId,
   async (id) => {
     novoForm.petId = "";
     petsDoCliente.value = [];
+    buscarPacoteAtivo(id);
     if (!id) return;
 
     petsLoading.value = true;
@@ -703,6 +763,10 @@ const salvarRecorrente = async () => {
       taxaBusca: novoForm.taxaBusca ? Number(novoForm.taxaBusca) : undefined,
       enderecoBusca: novoForm.enderecoBusca || undefined,
       observacoes: novoForm.observacoes || undefined,
+      pacoteClienteAtivoId:
+        novoForm.usarPacote && pacoteAtivoCliente.value
+          ? pacoteAtivoCliente.value.id
+          : undefined,
     });
     isModalOpen.value = false;
     recorrente.value = false;
@@ -750,6 +814,10 @@ const salvarAgendamento = async () => {
       taxaBusca: novoForm.taxaBusca ? Number(novoForm.taxaBusca) : undefined,
       enderecoBusca: novoForm.enderecoBusca || undefined,
       observacoes: novoForm.observacoes || undefined,
+      pacoteClienteAtivoId:
+        novoForm.usarPacote && pacoteAtivoCliente.value
+          ? pacoteAtivoCliente.value.id
+          : undefined,
     });
 
     isModalOpen.value = false;
@@ -1077,6 +1145,14 @@ const salvarAgendamento = async () => {
                     <UIcon name="i-lucide-repeat" class="size-3" />
                     Recorrente
                   </span>
+                  <span
+                    v-if="item.pacoteAtivo"
+                    class="inline-flex items-center gap-0.5 text-xs font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400"
+                    :title="item.pacoteAtivo.pacote?.nome"
+                  >
+                    <UIcon name="i-lucide-ticket" class="size-3" />
+                    Pacote
+                  </span>
                 </div>
                 <p class="text-xs text-gray-400 mt-0.5">
                   {{ item.cliente.telefonePrincipal }}
@@ -1268,7 +1344,7 @@ const salvarAgendamento = async () => {
     <!-- Modal novo agendamento -->
     <UModal v-model:open="isModalOpen">
       <template #content>
-        <UCard class="ring-0">
+        <UCard class="ring-0" :ui="{ body: 'overflow-y-auto max-h-[65vh]' }">
           <template #header>
             <div class="flex items-center justify-between">
               <h3 class="font-semibold text-gray-800 dark:text-gray-100">
@@ -1306,44 +1382,6 @@ const salvarAgendamento = async () => {
               </button>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
-              <UFormField label="Data *">
-                <UInput v-model="novoForm.data" type="date" class="w-full" />
-              </UFormField>
-              <UFormField label="Hora *">
-                <div class="flex gap-1.5 w-full">
-                  <UInput
-                    ref="horaNovoInputRef"
-                    v-model="novoForm.hora"
-                    type="time"
-                    class="flex-1"
-                    @change="
-                      (e: Event) =>
-                        (novoForm.hora = (e.target as HTMLInputElement).value)
-                    "
-                  />
-                  <UButton
-                    icon="i-lucide-check"
-                    color="secondary"
-                    variant="soft"
-                    title="Confirmar hora"
-                    @click="confirmarHoraNovo"
-                  />
-                </div>
-              </UFormField>
-            </div>
-
-            <UFormField label="Serviços *">
-              <USelect
-                v-model="novoForm.servicoIds"
-                :items="servicos"
-                :loading="servicosLoading"
-                placeholder="Selecione os serviços"
-                class="w-full"
-                multiple
-              />
-            </UFormField>
-
             <UFormField label="Cliente *">
               <USelect
                 v-model="novoForm.clienteId"
@@ -1370,6 +1408,111 @@ const salvarAgendamento = async () => {
                 class="w-full"
               />
             </UFormField>
+
+            <!-- Toggle avulso / pacote -->
+            <div
+              v-if="loadingPacote"
+              class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 dark:bg-neutral-700/50 text-xs text-gray-400"
+            >
+              <UIcon
+                name="i-lucide-loader-circle"
+                class="animate-spin size-3.5"
+              />
+              Verificando pacotes do cliente...
+            </div>
+            <div v-else-if="pacoteAtivoCliente" class="flex flex-col gap-2">
+              <p
+                class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+              >
+                Tipo de agendamento
+              </p>
+              <div class="flex gap-2">
+                <button
+                  type="button"
+                  class="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all"
+                  :class="
+                    !novoForm.usarPacote
+                      ? 'border-[#0EA5E9] bg-sky-50 dark:bg-sky-900/20 text-[#0EA5E9]'
+                      : 'border-gray-200 dark:border-neutral-600 text-gray-500 dark:text-gray-400 hover:border-gray-300'
+                  "
+                  @click="novoForm.usarPacote = false"
+                >
+                  <UIcon name="i-lucide-banknote" class="size-4" />
+                  Avulso
+                </button>
+                <button
+                  type="button"
+                  class="flex-1 flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-xl border-2 text-sm font-semibold transition-all"
+                  :class="
+                    novoForm.usarPacote
+                      ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600'
+                      : 'border-gray-200 dark:border-neutral-600 text-gray-500 dark:text-gray-400 hover:border-gray-300'
+                  "
+                  @click="novoForm.usarPacote = true"
+                >
+                  <span class="flex items-center gap-1.5">
+                    <UIcon name="i-lucide-ticket" class="size-4" />
+                    Do pacote
+                  </span>
+                  <span class="text-xs font-normal opacity-75">
+                    {{ pacoteAtivoCliente.pacote?.nome }} ·
+                    {{ pacoteAtivoCliente.sessoesUsadas }}/{{
+                      pacoteAtivoCliente.totalSessoes
+                    }}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <UFormField
+              :label="
+                novoForm.usarPacote ? 'Serviços (do pacote)' : 'Serviços *'
+              "
+            >
+              <USelect
+                v-model="novoForm.servicoIds"
+                :items="servicos"
+                :loading="servicosLoading"
+                :disabled="novoForm.usarPacote"
+                placeholder="Selecione os serviços"
+                class="w-full"
+                multiple
+              />
+              <template v-if="novoForm.usarPacote" #help>
+                <span
+                  class="text-[11px] text-emerald-600 dark:text-emerald-400"
+                >
+                  Preenchido automaticamente com os serviços do pacote.
+                </span>
+              </template>
+            </UFormField>
+
+            <div class="grid grid-cols-2 gap-3">
+              <UFormField label="Data *">
+                <UInput v-model="novoForm.data" type="date" class="w-full" />
+              </UFormField>
+              <UFormField label="Hora *">
+                <div class="flex gap-1.5 w-full">
+                  <UInput
+                    ref="horaNovoInputRef"
+                    v-model="novoForm.hora"
+                    type="time"
+                    class="flex-1"
+                    @change="
+                      (e: Event) =>
+                        (novoForm.hora = (e.target as HTMLInputElement).value)
+                    "
+                  />
+                  <UButton
+                    icon="i-lucide-check"
+                    color="secondary"
+                    variant="soft"
+                    title="Confirmar hora"
+                    @click="confirmarHoraNovo"
+                  />
+                </div>
+              </UFormField>
+            </div>
 
             <UFormField label="Modalidade">
               <div class="flex gap-2">
@@ -1808,6 +1951,34 @@ const salvarAgendamento = async () => {
               Confirma a conclusão deste agendamento? O lançamento financeiro
               será gerado automaticamente.
             </p>
+
+            <!-- Pacote vinculado ao agendamento -->
+            <div
+              v-if="pacoteAtivoConcluir"
+              class="rounded-lg border border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20 p-3 flex items-start gap-2"
+            >
+              <UIcon
+                name="i-lucide-ticket"
+                class="size-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0"
+              />
+              <div>
+                <p
+                  class="text-xs font-semibold text-emerald-700 dark:text-emerald-300"
+                >
+                  Agendamento do pacote — sessão será descontada automaticamente
+                </p>
+                <p
+                  class="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5"
+                >
+                  {{ pacoteAtivoConcluir.pacote?.nome }} ·
+                  {{ pacoteAtivoConcluir.sessoesUsadas }}/{{
+                    pacoteAtivoConcluir.totalSessoes
+                  }}
+                  sessões usadas
+                </p>
+              </div>
+            </div>
+
             <div class="flex flex-col gap-1.5">
               <p
                 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide"

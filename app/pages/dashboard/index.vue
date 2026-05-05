@@ -148,9 +148,29 @@ const servicosPopulares = [
 const { produtos, fetchProdutos } = useEstoque();
 const { resumo: resumoAvaliacoes, fetchResumo: fetchResumoAvaliacoes } =
   useAvaliacoes();
+
+const { fetchTodosAtivos } = usePacotes();
+const pacotesAtivosLista = ref<any[]>([]);
+
+const receitaPacotes = computed(() =>
+  pacotesAtivosLista.value.reduce(
+    (acc: number, p: any) => acc + Number(p.valor),
+    0,
+  ),
+);
+const pacotesVencendoEmBreve = computed(() =>
+  pacotesAtivosLista.value.filter((p: any) => {
+    const dias = Math.ceil(
+      (new Date(p.expiraEm).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+    );
+    return dias <= 7;
+  }),
+);
+
 onMounted(() => {
   fetchProdutos();
   fetchResumoAvaliacoes();
+  fetchTodosAtivos().then((res) => (pacotesAtivosLista.value = res));
 });
 
 const iconeCategoria: Record<string, string> = {
@@ -664,6 +684,119 @@ const percentReceita = computed(() =>
             style="background-color: #f07030"
             >Ver Financeiro Completo</NuxtLink
           >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Row 6: Pacotes Recorrentes ── -->
+  <div
+    v-if="authStore.temAcessoPlano('pacotes')"
+    class="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm overflow-hidden"
+  >
+    <div
+      class="flex items-center justify-between px-4 py-2.5"
+      style="background-color: #1d9fb6"
+    >
+      <div class="flex items-center gap-2">
+        <UIcon name="i-lucide-ticket" class="size-4 text-white" />
+        <h3 class="text-white font-semibold text-sm">Pacotes Recorrentes</h3>
+      </div>
+      <NuxtLink
+        to="/pacotes"
+        class="text-white text-xs bg-white/20 rounded-full px-2 py-0.5 font-semibold hover:bg-white/30 transition-colors"
+      >
+        Ver todos &rsaquo;
+      </NuxtLink>
+    </div>
+    <div class="p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <!-- Receita recorrente -->
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center shrink-0"
+        >
+          <UIcon name="i-lucide-repeat" class="text-emerald-500" />
+        </div>
+        <div>
+          <p class="text-xs text-gray-400">Receita em pacotes</p>
+          <p class="text-lg font-bold text-emerald-500">
+            {{
+              receitaPacotes.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })
+            }}
+          </p>
+        </div>
+      </div>
+      <!-- Total ativos -->
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-full bg-primary-50 dark:bg-primary-900/30 flex items-center justify-center shrink-0"
+        >
+          <UIcon name="i-lucide-users" class="text-primary" />
+        </div>
+        <div>
+          <p class="text-xs text-gray-400">Pacotes ativos</p>
+          <p class="text-lg font-bold text-gray-800 dark:text-gray-100">
+            {{ pacotesAtivosLista.length }}
+          </p>
+        </div>
+      </div>
+      <!-- Vencendo em breve -->
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+          :class="
+            pacotesVencendoEmBreve.length > 0
+              ? 'bg-amber-50 dark:bg-amber-900/30'
+              : 'bg-gray-50 dark:bg-neutral-700'
+          "
+        >
+          <UIcon
+            name="i-lucide-clock-alert"
+            :class="
+              pacotesVencendoEmBreve.length > 0
+                ? 'text-amber-500'
+                : 'text-gray-400'
+            "
+          />
+        </div>
+        <div>
+          <p class="text-xs text-gray-400">Vencem em 7 dias</p>
+          <p
+            class="text-lg font-bold"
+            :class="
+              pacotesVencendoEmBreve.length > 0
+                ? 'text-amber-500'
+                : 'text-gray-800 dark:text-gray-100'
+            "
+          >
+            {{ pacotesVencendoEmBreve.length }}
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- Lista de quem vence em breve -->
+    <div
+      v-if="pacotesVencendoEmBreve.length > 0"
+      class="border-t border-gray-50 dark:border-neutral-700 px-4 pb-4"
+    >
+      <p class="text-xs font-medium text-amber-500 pt-3 mb-2">
+        Vencendo em breve
+      </p>
+      <div class="flex flex-col gap-1.5">
+        <div
+          v-for="p in pacotesVencendoEmBreve.slice(0, 4)"
+          :key="p.id"
+          class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300"
+        >
+          <span class="truncate">
+            {{ p.cliente?.nome }} — {{ p.pacote?.nome }}
+          </span>
+          <span class="text-amber-500 font-medium shrink-0 ml-2">
+            {{ new Date(p.expiraEm).toLocaleDateString("pt-BR") }}
+          </span>
         </div>
       </div>
     </div>

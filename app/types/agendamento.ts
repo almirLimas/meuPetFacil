@@ -35,6 +35,14 @@ export interface Agendamento {
   }>;
   ordemServico?: { id: string; status: string } | null;
   recorrenciaId?: string | null;
+  pacoteClienteAtivoId?: string | null;
+  pacoteAtivo?: {
+    id: string;
+    sessoesUsadas: number;
+    totalSessoes: number;
+    status: string;
+    pacote?: { nome: string } | null;
+  } | null;
 }
 
 export interface CreateAgendamentoPayload {
@@ -46,4 +54,5 @@ export interface CreateAgendamentoPayload {
   taxaBusca?: number;
   enderecoBusca?: string;
   observacoes?: string;
+  pacoteClienteAtivoId?: string;
 }

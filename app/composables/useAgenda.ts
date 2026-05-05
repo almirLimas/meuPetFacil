@@ -16,6 +16,7 @@ export interface CreateAgendamentoRecorrentePayload {
   taxaBusca?: number;
   enderecoBusca?: string;
   observacoes?: string;
+  pacoteClienteAtivoId?: string;
 }
 
 export const useAgenda = () => {

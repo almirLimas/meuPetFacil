@@ -51,7 +51,7 @@ export interface PlanoInfo {
 export const PLANOS: Record<PlanoSistema, PlanoInfo> = {
   basico: {
     nome: "Básico",
-    preco: 49.9,
+    preco: 39.9,
     descricao: "Para petshops que querem organizar a rotina.",
     modulos: [
       "ia_anin",
@@ -65,7 +65,7 @@ export const PLANOS: Record<PlanoSistema, PlanoInfo> = {
   },
   plus: {
     nome: "Plus",
-    preco: 109,
+    preco: 69.9,
     descricao: "Para petshops que vendem produtos e querem controle total.",
     modulos: [
       "ia_anin",
@@ -79,6 +79,8 @@ export const PLANOS: Record<PlanoSistema, PlanoInfo> = {
       "avaliacao_cliente",
       "relatorio_mensal",
       "meta_mensal",
+      "whatsapp_automatico",
+      "pacotes",
     ],
     categorias: [
       {
@@ -224,6 +226,7 @@ export const MODULOS_PLANO: Record<PlanoSistema, string[]> = {
     "estoque",
     "avaliacao_cliente",
     "whatsapp",
+    "pacotes",
   ],
 };
 

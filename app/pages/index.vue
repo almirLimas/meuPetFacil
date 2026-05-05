@@ -18,7 +18,7 @@ useHead({
           {
             "@type": "Offer",
             name: "Básico",
-            price: "49.90",
+            price: "39.90",
             priceCurrency: "BRL",
             description:
               "Sistema para pet shop com agenda, clientes, financeiro e relatórios.",
@@ -26,10 +26,10 @@ useHead({
           {
             "@type": "Offer",
             name: "Plus",
-            price: "109.00",
+            price: "69.90",
             priceCurrency: "BRL",
             description:
-              "Sistema para pet shop com lembretes automáticos, avaliação de clientes e metas.",
+              "Sistema para pet shop com mensagens automáticas no WhatsApp, avaliação de clientes e controle total.",
           },
         ],
         description:
@@ -191,7 +191,7 @@ const planos: Array<{
   {
     id: "basico",
     nome: "Básico",
-    preco: 49.9,
+    preco: 39.9,
     destaque: false,
     badge: null,
     descricao: "Para petshops que querem organizar a rotina.",
@@ -204,12 +204,13 @@ const planos: Array<{
       "Financeiro (contas a pagar e receber)",
       "Controle de caixa / fechamento",
       "Usuários ilimitados com controle de acesso",
+      "❌ Mensagens automáticas no WhatsApp (disponível no Plus)",
     ],
   },
   {
     id: "plus",
     nome: "Plus",
-    preco: 109,
+    preco: 69.9,
     destaque: true,
     badge: "Mais popular",
     descricao: "Para petshops que vendem produtos e querem controle total.",
@@ -249,6 +250,14 @@ const planos: Array<{
           "Controle de saldos dos clientes",
           "Meta mensal",
           "Relatório mensal por e-mail",
+        ],
+      },
+      {
+        categoria: "WhatsApp Automático",
+        itens: [
+          "Confirmação de agendamento via WhatsApp",
+          "Lembrete de retorno via WhatsApp",
+          "Avaliação enviada automaticamente após cada serviço",
         ],
       },
       {
@@ -497,68 +506,24 @@ const toggleFaq = (i: number) => {
         <div class="text-white pb-16 pt-4 flex flex-col gap-6">
           <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
             <span class="text-orange-300"
-              >Use IA para agilizar atendimentos e organizar seu pet shop</span
+              >Automatize seu pet shop com WhatsApp</span
             >
           </h1>
           <p class="text-xl text-white/90 font-semibold -mt-2">
-            Sistema para seu petshop —
-            <span class="text-orange-300">{{ typedText }}</span
-            ><span class="typewriter-cursor text-orange-300">|</span>
+            Pare de perder clientes por falta de contato.
+            <span class="text-orange-300">Fidelize no automático.</span>
           </p>
           <ul class="flex flex-col gap-3">
             <li class="flex items-center gap-3 text-lg font-semibold">
               <div
                 class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
               >
-                <UIcon name="i-lucide-bot" class="size-3.5 text-white" />
-              </div>
-              IA que cadastra, agenda e dá suporte — só digitando
-            </li>
-            <li class="flex items-center gap-3 text-lg">
-              <div
-                class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
-              >
                 <UIcon
-                  name="i-lucide-shopping-cart"
+                  name="i-lucide-message-circle"
                   class="size-3.5 text-white"
                 />
               </div>
-              Ponto de Venda com leitor de código de barras
-            </li>
-            <li class="flex items-center gap-3 text-lg">
-              <div
-                class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
-              >
-                <UIcon name="i-lucide-calendar" class="size-3.5 text-white" />
-              </div>
-              Agendas e Clientes Organizados
-            </li>
-            <li class="flex items-center gap-3 text-lg">
-              <div
-                class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
-              >
-                <UIcon name="i-lucide-package" class="size-3.5 text-white" />
-              </div>
-              Controle de Vendas e Estoque
-            </li>
-            <li class="flex items-center gap-3 text-lg">
-              <div
-                class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
-              >
-                <UIcon name="i-lucide-mail" class="size-3.5 text-white" />
-              </div>
-              Lembretes automáticos por e-mail para clientes inativos
-            </li>
-            <li class="flex items-center gap-3 text-lg">
-              <div
-                class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
-              >
-                <UIcon
-                  name="i-lucide-trending-up"
-                  class="size-3.5 text-white"
-                />
-              </div>
-              Fidelize Clientes e Aumente a Receita
+              Confirmação e lembrete de agendamento via WhatsApp
             </li>
             <li class="flex items-center gap-3 text-lg">
               <div
@@ -566,7 +531,31 @@ const toggleFaq = (i: number) => {
               >
                 <UIcon name="i-lucide-star" class="size-3.5 text-white" />
               </div>
-              Avaliação automática dos clientes após cada atendimento
+              Avaliação enviada automaticamente após cada serviço
+            </li>
+            <li class="flex items-center gap-3 text-lg">
+              <div
+                class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
+              >
+                <UIcon name="i-lucide-calendar" class="size-3.5 text-white" />
+              </div>
+              Agenda e clientes organizados em um só lugar
+            </li>
+            <li class="flex items-center gap-3 text-lg">
+              <div
+                class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
+              >
+                <UIcon name="i-lucide-package" class="size-3.5 text-white" />
+              </div>
+              Controle de vendas, caixa e estoque simples
+            </li>
+            <li class="flex items-center gap-3 text-lg">
+              <div
+                class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
+              >
+                <UIcon name="i-lucide-bot" class="size-3.5 text-white" />
+              </div>
+              IA que ajuda no atendimento e organização
             </li>
           </ul>
           <div class="flex flex-col sm:flex-row gap-3 mt-2">
@@ -1169,6 +1158,7 @@ const toggleFaq = (i: number) => {
                 v-for="item in [
                   'Agenda em caderno ou WhatsApp — cheio de conflitos',
                   'Clientes que somem e nunca mais voltam',
+                  'Nenhum aviso automático: cliente esquece e não aparece',
                   'Vendas no balcão sem controle: troco errado, sem registro',
                   'Caixa no final do dia sem saber o lucro real',
                   'Estoque descoberto por falta de controle',
@@ -1201,12 +1191,12 @@ const toggleFaq = (i: number) => {
               <li
                 v-for="item in [
                   'Agenda digital organizada, sem conflitos de horário',
+                  'Confirmação e lembrete de agendamento via WhatsApp — automático',
+                  'Avaliação enviada automaticamente no WhatsApp após cada serviço',
                   'Mensalistas com agendamentos recorrentes e cobrança automática a cada 4 sessões',
-                  'E-mails automáticos trazem clientes inativos de volta',
                   'PDV com leitor de código de barras, troco automático e múltiplas formas de pagamento',
                   'Financeiro em tempo real: receita, despesas e lucro',
                   'Estoque atualizado automaticamente a cada venda',
-                  'Avaliação automática após cada atendimento',
                   'Mais tempo para focar no que você ama: os pets',
                 ]"
                 :key="item"
