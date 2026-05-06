@@ -148,8 +148,8 @@ const servicosPopulares = [
 const { produtos, fetchProdutos } = useEstoque();
 const { resumo: resumoAvaliacoes, fetchResumo: fetchResumoAvaliacoes } =
   useAvaliacoes();
-
 const { fetchTodosAtivos } = usePacotes();
+
 const pacotesAtivosLista = ref<any[]>([]);
 
 const receitaPacotes = computed(() =>

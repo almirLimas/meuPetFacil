@@ -50,6 +50,12 @@ export const usePacotes = () => {
     pacoteId: string;
     clienteId: string;
     petId?: string;
+    agendarSessoes?: boolean;
+    diaDaSemana?: number;
+    hora?: string;
+    servicoIds?: string[];
+    dataInicio?: string;
+    modalidade?: string;
   }) => {
     return apiFetch<PacoteClienteAtivo>("/pacotes/ativar", {
       method: "POST",

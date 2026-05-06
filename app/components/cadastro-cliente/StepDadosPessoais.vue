@@ -26,9 +26,6 @@ const schema = z.object({
     ),
   telefoneSecundario: z.string().optional(),
   email: z.string().email("E-mail inválido").optional().or(z.literal("")),
-  mensalista: z.boolean().optional(),
-  valorMensal: z.number().min(0).optional().nullable(),
-  diaVencimento: z.number().int().min(1).max(31).optional().nullable(),
 });
 
 const state = defineModel<ClienteFormState>({ required: true });
@@ -100,43 +97,6 @@ defineExpose({
           class="w-full"
         />
       </UFormField>
-
-      <UFormField name="mensalista" class="md:col-span-2">
-        <div class="flex items-center gap-3">
-          <USwitch v-model="state.mensalista" />
-          <span class="text-sm font-medium"
-            >Cliente mensalista (plano mensal fixo)</span
-          >
-        </div>
-      </UFormField>
-
-      <template v-if="state.mensalista">
-        <UFormField label="Valor mensal (R$)" name="valorMensal">
-          <UInput
-            v-model.number="state.valorMensal"
-            type="number"
-            min="0"
-            step="0.01"
-            placeholder="Ex: 150.00"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField
-          label="Dia do vencimento"
-          name="diaVencimento"
-          hint="(1-31)"
-        >
-          <UInput
-            v-model.number="state.diaVencimento"
-            type="number"
-            min="1"
-            max="31"
-            placeholder="Ex: 10"
-            class="w-full"
-          />
-        </UFormField>
-      </template>
     </div>
   </UForm>
 </template>

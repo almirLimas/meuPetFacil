@@ -15,9 +15,6 @@ const schema = z.object({
     ),
   comoConheceu: z.string().optional(),
   observacoes: z.string().optional(),
-  mensalista: z.boolean().optional(),
-  valorMensal: z.number().min(0).optional().nullable(),
-  diaVencimento: z.number().int().min(1).max(31).optional().nullable(),
   status: z.string().min(1, "Selecione o status"),
 });
 

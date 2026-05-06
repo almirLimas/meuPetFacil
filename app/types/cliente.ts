@@ -30,5 +30,5 @@ export interface Cliente extends Omit<ClienteFormState, "pets"> {
   updatedAt?: string;
   ultimaMensalidadePaga?: string | null;
   pets: Pet[];
-  _count?: { pets: number };
+  _count?: { pets: number; pacotesAtivos?: number };
 }

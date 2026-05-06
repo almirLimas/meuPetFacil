@@ -445,6 +445,71 @@ const salvar = async () => {
         <UCard class="ring-0 shadow-sm mt-2">
           <CadastroClienteStepInformacoes v-model="state" />
         </UCard>
+
+        <!-- Card mensalista (só aparece se o cliente JÁ é mensalista) -->
+        <UCard
+          v-if="state.mensalista"
+          class="ring-0 shadow-sm mt-3 border border-orange-200 dark:border-orange-800"
+        >
+          <div class="flex flex-col gap-4">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p
+                  class="text-sm font-semibold text-gray-800 dark:text-gray-100"
+                >
+                  Plano Mensalista
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  Desative para migrar este cliente para o sistema de pacotes.
+                </p>
+              </div>
+              <USwitch v-model="state.mensalista" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <UFormField label="Valor mensal (R$)">
+                <UInput
+                  v-model.number="state.valorMensal"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  class="w-full"
+                />
+              </UFormField>
+              <UFormField label="Dia de vencimento">
+                <UInput
+                  v-model.number="state.diaVencimento"
+                  type="number"
+                  min="1"
+                  max="31"
+                  class="w-full"
+                />
+              </UFormField>
+            </div>
+          </div>
+        </UCard>
+
+        <!-- Aviso quando mensalista é desativado pelo usuário nesta sessão -->
+        <UCard
+          v-else-if="cliente?.mensalista"
+          class="ring-0 shadow-sm mt-3 border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/30"
+        >
+          <div class="flex items-center gap-3">
+            <UIcon
+              name="i-lucide-check-circle"
+              class="text-green-500 text-xl shrink-0"
+            />
+            <div>
+              <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+                Mensalidade desativada
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                Salve as alterações e depois vá para a aba
+                <strong>Pacotes</strong> para ativar um pacote.
+              </p>
+            </div>
+          </div>
+        </UCard>
       </template>
 
       <template #pets>
@@ -535,17 +600,11 @@ const salvar = async () => {
                   <span>{{ p.sessoesUsadas }} / {{ p.totalSessoes }}</span>
                 </div>
                 <UProgress
-                  :value="
-                    p.totalSessoes > 0
-                      ? Math.round(
-                          ((p.sessoesUsadas ?? 0) / p.totalSessoes) * 100,
-                        )
-                      : 0
-                  "
+                  :model-value="p.sessoesUsadas ?? 0"
+                  :max="p.totalSessoes"
                   :color="
                     p.sessoesUsadas >= p.totalSessoes ? 'neutral' : 'primary'
                   "
-                  animation="none"
                   size="sm"
                 />
               </div>

@@ -140,7 +140,15 @@ const pacoteTemplates = ref<PacoteServico[]>([]);
 const loadingPacotes = ref(false);
 const isModalAtivarOpen = ref(false);
 const loadingAtivar = ref(false);
-const formAtivar = reactive({ pacoteId: "", petId: "" });
+const formAtivar = reactive({
+  pacoteId: "",
+  petId: "none",
+  agendarSessoes: false,
+  diaDaSemana: 5, // sexta
+  hora: "09:00",
+  dataInicio: "",
+  modalidade: "ClienteTraz",
+});
 
 onMounted(async () => {
   loadingPacotes.value = true;
@@ -164,13 +172,18 @@ const opcoesTemplates = computed(() =>
 );
 
 const opcoesPets = computed(() => [
-  { label: "Sem pet específico", value: "" },
+  { label: "Sem pet específico", value: "none" },
   ...(cliente.value?.pets ?? []).map((p) => ({ label: p.nome, value: p.id })),
 ]);
 
 const abrirModalAtivar = () => {
   formAtivar.pacoteId = opcoesTemplates.value[0]?.value ?? "";
-  formAtivar.petId = "";
+  formAtivar.petId = opcoesPets.value[1]?.value ?? "none";
+  formAtivar.agendarSessoes = false;
+  formAtivar.diaDaSemana = 5;
+  formAtivar.hora = "09:00";
+  formAtivar.dataInicio = "";
+  formAtivar.modalidade = "ClienteTraz";
   isModalAtivarOpen.value = true;
 };
 
@@ -181,11 +194,26 @@ const salvarAtivar = async () => {
     const novo = await ativarPacote({
       pacoteId: formAtivar.pacoteId,
       clienteId: id,
-      petId: formAtivar.petId || undefined,
+      petId:
+        formAtivar.petId && formAtivar.petId !== "none"
+          ? formAtivar.petId
+          : undefined,
+      ...(formAtivar.agendarSessoes && {
+        agendarSessoes: true,
+        diaDaSemana: formAtivar.diaDaSemana,
+        hora: formAtivar.hora,
+        dataInicio: formAtivar.dataInicio || undefined,
+        modalidade: formAtivar.modalidade,
+      }),
     });
     pacotesCliente.value.unshift(novo);
     isModalAtivarOpen.value = false;
-    toast.add({ title: "Pacote ativado!", color: "success" });
+    toast.add({
+      title: formAtivar.agendarSessoes
+        ? "Pacote ativado e sessões agendadas!"
+        : "Pacote ativado!",
+      color: "success",
+    });
   } catch (e: any) {
     toast.add({
       title: e?.data?.message ?? "Erro ao ativar pacote",
@@ -573,17 +601,11 @@ const statusPacoteBadge = (p: PacoteClienteAtivo) => {
                   <span>{{ p.sessoesUsadas }} / {{ p.totalSessoes }}</span>
                 </div>
                 <UProgress
-                  :value="
-                    p.totalSessoes > 0
-                      ? Math.round(
-                          ((p.sessoesUsadas ?? 0) / p.totalSessoes) * 100,
-                        )
-                      : 0
-                  "
+                  :model-value="p.sessoesUsadas ?? 0"
+                  :max="p.totalSessoes"
                   :color="
                     p.sessoesUsadas >= p.totalSessoes ? 'neutral' : 'primary'
                   "
-                  animation="none"
                   size="sm"
                 />
               </div>
@@ -630,9 +652,11 @@ const statusPacoteBadge = (p: PacoteClienteAtivo) => {
   <UModal
     v-model:open="isModalAtivarOpen"
     title="Ativar pacote para este cliente"
+    class="max-w-lg"
   >
     <template #body>
       <div class="flex flex-col gap-4">
+        <!-- Pacote -->
         <UFormField label="Pacote">
           <USelect
             v-model="formAtivar.pacoteId"
@@ -642,6 +666,83 @@ const statusPacoteBadge = (p: PacoteClienteAtivo) => {
             class="w-full"
           />
         </UFormField>
+
+        <!-- Pet -->
+        <UFormField label="Pet">
+          <USelect
+            v-model="formAtivar.petId"
+            :items="opcoesPets"
+            value-key="value"
+            label-key="label"
+            class="w-full"
+          />
+        </UFormField>
+
+        <!-- Agendar sessões automaticamente -->
+        <div
+          class="rounded-xl border border-gray-100 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800/50 p-4 flex flex-col gap-4"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+                Agendar todas as sessões agora
+              </p>
+              <p class="text-xs text-gray-400 mt-0.5">
+                Cria automaticamente N agendamentos semanais
+              </p>
+            </div>
+            <USwitch v-model="formAtivar.agendarSessoes" />
+          </div>
+
+          <template v-if="formAtivar.agendarSessoes">
+            <!-- Dia da semana + horário -->
+            <div class="grid grid-cols-2 gap-3">
+              <UFormField label="Dia da semana">
+                <USelect
+                  v-model.number="formAtivar.diaDaSemana"
+                  :items="[
+                    { label: 'Domingo', value: 0 },
+                    { label: 'Segunda', value: 1 },
+                    { label: 'Terça', value: 2 },
+                    { label: 'Quarta', value: 3 },
+                    { label: 'Quinta', value: 4 },
+                    { label: 'Sexta', value: 5 },
+                    { label: 'Sábado', value: 6 },
+                  ]"
+                  value-key="value"
+                  label-key="label"
+                  class="w-full"
+                />
+              </UFormField>
+              <UFormField label="Horário">
+                <UInput v-model="formAtivar.hora" type="time" class="w-full" />
+              </UFormField>
+            </div>
+
+            <!-- Data de início (opcional) -->
+            <UFormField label="Data de início (opcional)">
+              <UInput
+                v-model="formAtivar.dataInicio"
+                type="date"
+                class="w-full"
+              />
+            </UFormField>
+
+            <!-- Modalidade -->
+            <UFormField label="Modalidade">
+              <USelect
+                v-model="formAtivar.modalidade"
+                :items="[
+                  { label: 'Cliente traz', value: 'ClienteTraz' },
+                  { label: 'Busca no endereço', value: 'PetshopBusca' },
+                ]"
+                value-key="value"
+                label-key="label"
+                class="w-full"
+              />
+            </UFormField>
+          </template>
+        </div>
       </div>
     </template>
     <template #footer>
@@ -654,7 +755,9 @@ const statusPacoteBadge = (p: PacoteClienteAtivo) => {
         />
         <UButton
           color="primary"
-          label="Ativar"
+          :label="
+            formAtivar.agendarSessoes ? 'Ativar e agendar sessões' : 'Ativar'
+          "
           :loading="loadingAtivar"
           @click="salvarAtivar"
         />

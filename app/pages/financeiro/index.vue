@@ -20,6 +20,17 @@ const hoje = (() => {
 })();
 const filtroData = ref(hoje);
 const filtroTipo = ref<TipoLancamento | "">("");
+const filtroOrigem = ref<"" | "agendamento" | "loja">("");
+
+const lancamentosFiltrados = computed(() => {
+  if (!filtroOrigem.value) return lancamentos.value;
+  if (filtroOrigem.value === "agendamento")
+    return lancamentos.value.filter((l) => !!l.agendamentoId);
+  // loja = PDV: categoria Produto sem agendamento
+  return lancamentos.value.filter(
+    (l) => l.categoria === "Produto" && !l.agendamentoId,
+  );
+});
 
 const FORMAS_CARDS = [
   {
@@ -348,6 +359,25 @@ const fmtData = (d: string) =>
             {{ t.label }}
           </button>
         </div>
+        <div class="flex gap-1 flex-wrap">
+          <button
+            v-for="o in [
+              { label: 'Todas origens', value: '' },
+              { label: 'Agendamentos', value: 'agendamento' },
+              { label: 'Loja (PDV)', value: 'loja' },
+            ]"
+            :key="o.value"
+            class="px-3 py-1 rounded-full text-xs font-semibold transition-colors"
+            :class="
+              filtroOrigem === o.value
+                ? 'bg-violet-500 text-white'
+                : 'bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-neutral-600'
+            "
+            @click="filtroOrigem = o.value as '' | 'agendamento' | 'loja'"
+          >
+            {{ o.label }}
+          </button>
+        </div>
       </div>
 
       <!-- Loading -->
@@ -361,7 +391,7 @@ const fmtData = (d: string) =>
 
       <!-- Empty state -->
       <div
-        v-else-if="lancamentos.length === 0"
+        v-else-if="lancamentosFiltrados.length === 0"
         class="flex flex-col items-center justify-center py-16 gap-2 text-gray-400"
       >
         <UIcon name="i-lucide-wallet" class="text-5xl" />
@@ -407,7 +437,7 @@ const fmtData = (d: string) =>
           </thead>
           <tbody>
             <tr
-              v-for="item in lancamentos"
+              v-for="item in lancamentosFiltrados"
               :key="item.id"
               class="border-b border-gray-50 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors"
             >

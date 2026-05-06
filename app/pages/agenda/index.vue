@@ -1147,7 +1147,7 @@ const salvarAgendamento = async () => {
                   </span>
                   <span
                     v-if="item.pacoteAtivo"
-                    class="inline-flex items-center gap-0.5 text-xs font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400"
+                    class="inline-flex items-center gap-0.5 text-xs font-semibold px-1.5 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-400"
                     :title="item.pacoteAtivo.pacote?.nome"
                   >
                     <UIcon name="i-lucide-ticket" class="size-3" />
@@ -1162,7 +1162,7 @@ const salvarAgendamento = async () => {
                     item.modalidade === 'PetshopBusca' &&
                     item.enderecoBusca?.trim()
                   "
-                  class="text-xs text-amber-600 dark:text-amber-400 mt-0.5 max-w-48 truncate"
+                  class="text-xs text-amber-600 dark:text-amber-400 mt-0.5 max-w-56 break-words"
                 >
                   <UIcon
                     name="i-lucide-map-pin"
@@ -1582,7 +1582,6 @@ const salvarAgendamento = async () => {
                 v-model="novoForm.enderecoBusca"
                 placeholder="Rua, número - bairro - cidade"
                 class="w-full"
-                disabled
               />
               <template #help>
                 <span class="text-[11px] text-gray-400"

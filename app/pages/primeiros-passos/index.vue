@@ -129,39 +129,11 @@ useBreadcrumb().set([{ label: "Primeiros passos" }]);
               endereço. Você também pode cadastrar os pets de cada cliente
               diretamente no cadastro.
             </p>
-            <p
-              class="mt-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
-            >
-              Cliente mensalista
-            </p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Se um cliente paga um valor fixo por mês (ex: banho toda semana
-              por R$ 120/mês), ative o campo
-              <strong>"Cliente mensalista"</strong> já no primeiro passo do
-              cadastro:
-            </p>
-            <ul
-              class="mt-1.5 text-sm text-gray-500 dark:text-gray-400 list-disc list-inside space-y-1"
-            >
-              <li>
-                Informe o <strong>valor mensal</strong> combinado e o
-                <strong>dia do vencimento</strong> (ex: todo dia 10).
-              </li>
-              <li>
-                O sistema registrará esse cliente como mensalista e exibirá essa
-                informação no perfil dele.
-              </li>
-              <li>
-                Os agendamentos do mensalista são criados normalmente; o
-                controle de pagamento mensal é feito na aba
-                <strong>Financeiro</strong>.
-              </li>
-            </ul>
           </div>
         </div>
       </UCard>
 
-      <!-- 3 -->
+      <!-- 4 -->
       <UCard class="ring-0 shadow-sm">
         <div class="flex gap-4">
           <div
@@ -296,6 +268,63 @@ useBreadcrumb().set([{ label: "Primeiros passos" }]);
           <div class="flex flex-col gap-1 flex-1">
             <div class="flex items-center justify-between gap-2 flex-wrap">
               <p class="font-semibold text-gray-800 dark:text-gray-100">
+                Crie pacotes de serviços
+              </p>
+              <UButton
+                size="xs"
+                color="secondary"
+                variant="soft"
+                to="/pacotes"
+                trailing-icon="i-lucide-arrow-right"
+              >
+                Ir para Pacotes
+              </UButton>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Pacotes permitem vender um conjunto de sessões antecipadamente
+              (ex: "5 banhos por R$ 180"). Veja como funciona:
+            </p>
+            <ul
+              class="mt-1.5 text-sm text-gray-500 dark:text-gray-400 list-disc list-inside space-y-1"
+            >
+              <li>
+                Acesse <strong>Pacotes</strong> e crie um modelo: defina o nome,
+                os serviços incluídos, o número de sessões, o valor total e o
+                prazo de validade.
+              </li>
+              <li>
+                Para vender o pacote a um cliente, vá até o perfil do cliente
+                (aba <strong>Pacotes</strong>) e clique em
+                <strong>Adicionar pacote</strong>. Escolha o modelo e confirme.
+              </li>
+              <li>
+                A cada agendamento concluído, o sistema debita automaticamente
+                uma sessão do pacote ativo do cliente.
+              </li>
+              <li>
+                Quando a última sessão for usada, o sistema gera o lançamento
+                financeiro com o valor total do pacote.
+              </li>
+              <li>
+                Acompanhe o saldo de sessões e a validade de cada pacote
+                diretamente no perfil do cliente.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </UCard>
+
+      <!-- 8 -->
+      <UCard class="ring-0 shadow-sm">
+        <div class="flex gap-4">
+          <div
+            class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
+          >
+            8
+          </div>
+          <div class="flex flex-col gap-1 flex-1">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <p class="font-semibold text-gray-800 dark:text-gray-100">
                 Acompanhe o financeiro
               </p>
               <UButton
@@ -316,13 +345,13 @@ useBreadcrumb().set([{ label: "Primeiros passos" }]);
         </div>
       </UCard>
 
-      <!-- 8 -->
+      <!-- 9 -->
       <UCard class="ring-0 shadow-sm">
         <div class="flex gap-4">
           <div
             class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
           >
-            8
+            9
           </div>
           <div class="flex flex-col gap-1 flex-1">
             <div class="flex items-center justify-between gap-2 flex-wrap">
@@ -348,13 +377,13 @@ useBreadcrumb().set([{ label: "Primeiros passos" }]);
         </div>
       </UCard>
 
-      <!-- 9 -->
+      <!-- 10 -->
       <UCard class="ring-0 shadow-sm">
         <div class="flex gap-4">
           <div
             class="shrink-0 w-9 h-9 rounded-full bg-[#1d9fb6] flex items-center justify-center text-white font-bold text-sm"
           >
-            9
+            10
           </div>
           <div class="flex flex-col gap-1 flex-1">
             <div class="flex items-center justify-between gap-2 flex-wrap">

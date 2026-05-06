@@ -18,9 +18,40 @@ interface Versao {
   novidades: Novidade[];
 }
 
-const VERSAO_ATUAL = "1.7.0";
+const VERSAO_ATUAL = "1.8.0";
 
 const changelog: Versao[] = [
+  {
+    versao: "1.8.0",
+    data: "6 de maio de 2026",
+    novidades: [
+      {
+        tipo: "novo",
+        texto:
+          "Pacotes de serviços — crie pacotes com N sessões, defina valor e validade. O sistema debita uma sessão a cada atendimento concluído e gera o lançamento financeiro automaticamente ao esgotar o pacote",
+      },
+      {
+        tipo: "novo",
+        texto:
+          "Ativação de pacote para o cliente — acesse o perfil do cliente, aba Pacotes, e vincule um pacote. Ao ativar, é possível já agendar todas as sessões recorrentes de uma vez",
+      },
+      {
+        tipo: "melhoria",
+        texto:
+          "Filtro de origem no Financeiro — filtre lançamentos por Agendamentos ou Loja (PDV) para visualizar receitas separadas",
+      },
+      {
+        tipo: "melhoria",
+        texto:
+          "Endereço de busca na agenda — agendamentos com modalidade 'Petshop busca' agora exibem o endereço completo na tabela sem corte",
+      },
+      {
+        tipo: "melhoria",
+        texto:
+          "Campo de endereço editável no novo agendamento — antes o campo era bloqueado; agora é possível ajustar manualmente o endereço de busca",
+      },
+    ],
+  },
   {
     versao: "1.7.0",
     data: "4 de maio de 2026",
@@ -44,17 +75,6 @@ const changelog: Versao[] = [
         tipo: "novo",
         texto:
           "Personalização de mensagens — edite os templates de confirmação e de pesquisa de satisfação direto no painel (menu WhatsApp)",
-      },
-    ],
-  },
-  {
-    versao: "1.6.1",
-    data: "29 de abril de 2026",
-    novidades: [
-      {
-        tipo: "melhoria",
-        texto:
-          "Mais raças disponíveis no cadastro de pets — adicionamos Pug, Chihuahua, Schnauzer, Dálmata, Akita, Shiba Inu e muitas outras raças de cães e gatos",
       },
     ],
   },

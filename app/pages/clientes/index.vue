@@ -187,6 +187,13 @@ const getAvatarColor = (id: string) => {
               >
                 Mensalista
               </UBadge>
+              <span
+                v-if="(row.original._count?.pacotesAtivos ?? 0) > 0"
+                class="inline-flex items-center gap-0.5 text-xs font-semibold px-1.5 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-400"
+              >
+                <UIcon name="i-lucide-ticket" class="size-3" />
+                Pacotes
+              </span>
             </div>
           </template>
 

@@ -117,12 +117,6 @@ const iaCapabilities = [
     desc: '"Como está a satisfação dos clientes?"',
   },
   {
-    icon: "i-lucide-repeat",
-    color: "bg-emerald-50 text-emerald-600",
-    title: "Agendar mensalista",
-    desc: '"Agenda o Rex toda terça por 4 semanas"',
-  },
-  {
     icon: "i-lucide-life-buoy",
     color: "bg-rose-50 text-rose-600",
     title: "Suporte e dúvidas",
@@ -169,10 +163,10 @@ const features = [
     descricao: "Saiba o que mais vende e quem não voltou.",
   },
   {
-    icone: "i-lucide-calendar-check",
-    titulo: "Gestão de Mensalistas",
+    icone: "i-lucide-ticket",
+    titulo: "Pacotes de Serviços",
     descricao:
-      "Cadastre clientes com plano mensal fixo. O sistema cria os agendamentos recorrentes automaticamente e gera a cobrança da mensalidade a cada 4 sessões concluídas.",
+      "Crie pacotes de sessões (ex: 5 banhos, combo banho + tosa), defina valor e validade. O sistema debita uma sessão a cada atendimento concluído e gera o lançamento financeiro ao final.",
   },
 ];
 
@@ -203,6 +197,7 @@ const planos: Array<{
       "Ponto de Venda (PDV) com leitor de código de barras",
       "Financeiro (contas a pagar e receber)",
       "Controle de caixa / fechamento",
+      "Pacotes de serviços por sessões",
       "Usuários ilimitados com controle de acesso",
       "❌ Mensagens automáticas no WhatsApp (disponível no Plus)",
     ],
@@ -225,7 +220,7 @@ const planos: Array<{
       },
       {
         categoria: "Serviços",
-        itens: ["Cadastro de serviços", "Pacotes de serviços (em breve)"],
+        itens: ["Cadastro de serviços", "Pacotes de serviços por sessões"],
       },
       {
         categoria: "Estoque",
@@ -553,6 +548,14 @@ const toggleFaq = (i: number) => {
               <div
                 class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
               >
+                <UIcon name="i-lucide-ticket" class="size-3.5 text-white" />
+              </div>
+              Pacotes de serviços para fidelizar e garantir receita todo mês
+            </li>
+            <li class="flex items-center gap-3 text-lg">
+              <div
+                class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center shrink-0"
+              >
                 <UIcon name="i-lucide-bot" class="size-3.5 text-white" />
               </div>
               IA que ajuda no atendimento e organização
@@ -832,6 +835,273 @@ const toggleFaq = (i: number) => {
       </div>
     </section>
 
+    <!-- PACOTES -->
+    <section
+      id="pacotes"
+      class="py-20 px-6 bg-gradient-to-b from-violet-50 to-white overflow-hidden"
+    >
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-14 flex flex-col items-center gap-3">
+          <div
+            class="inline-flex items-center gap-2 bg-violet-100 text-violet-700 text-xs font-bold px-3 py-1.5 rounded-full"
+          >
+            <UIcon name="i-lucide-gift" class="size-3.5" />
+            Pacotes de Serviços
+          </div>
+          <h2
+            class="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight"
+          >
+            Venda pacotes e garanta<br />
+            <span class="text-violet-600">receita recorrente todo mês</span>
+          </h2>
+          <p class="text-gray-500 text-base max-w-2xl leading-relaxed">
+            Crie pacotes com quantos serviços quiser, defina o valor e o prazo
+            de validade. O cliente compra, você controla o uso — e fideliza de
+            verdade.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+          <!-- Left: benefits -->
+          <div class="flex flex-col gap-6">
+            <div class="flex flex-col gap-4">
+              <div
+                class="flex items-start gap-4 p-5 rounded-2xl bg-white border border-violet-100 shadow-sm"
+              >
+                <div
+                  class="w-11 h-11 rounded-xl bg-violet-100 flex items-center justify-center shrink-0"
+                >
+                  <UIcon
+                    name="i-lucide-layers"
+                    class="size-5 text-violet-600"
+                  />
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-800 mb-1">
+                    Monte pacotes do seu jeito
+                  </h3>
+                  <p class="text-sm text-gray-500 leading-relaxed">
+                    Crie pacotes com quantas sessões quiser — "5 banhos", "10
+                    tosas", "combo banho + tosa". Você define o preço e a
+                    validade.
+                  </p>
+                </div>
+              </div>
+              <div
+                class="flex items-start gap-4 p-5 rounded-2xl bg-white border border-violet-100 shadow-sm"
+              >
+                <div
+                  class="w-11 h-11 rounded-xl bg-orange-100 flex items-center justify-center shrink-0"
+                >
+                  <UIcon
+                    name="i-lucide-scan-barcode"
+                    class="size-5 text-orange-500"
+                  />
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-800 mb-1">
+                    Controle de uso automático
+                  </h3>
+                  <p class="text-sm text-gray-500 leading-relaxed">
+                    A cada atendimento concluído, o sistema debita uma sessão do
+                    pacote do cliente. Sem planilha, sem anotação manual.
+                  </p>
+                </div>
+              </div>
+              <div
+                class="flex items-start gap-4 p-5 rounded-2xl bg-white border border-violet-100 shadow-sm"
+              >
+                <div
+                  class="w-11 h-11 rounded-xl bg-sky-100 flex items-center justify-center shrink-0"
+                >
+                  <UIcon name="i-lucide-bell" class="size-5 text-sky-500" />
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-800 mb-1">
+                    Alerta de vencimento
+                  </h3>
+                  <p class="text-sm text-gray-500 leading-relaxed">
+                    Acompanhe no dashboard quais pacotes estão prestes a vencer
+                    e entre em contato para renovar antes de perder o cliente.
+                  </p>
+                </div>
+              </div>
+              <div
+                class="flex items-start gap-4 p-5 rounded-2xl bg-white border border-violet-100 shadow-sm"
+              >
+                <div
+                  class="w-11 h-11 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0"
+                >
+                  <UIcon
+                    name="i-lucide-trending-up"
+                    class="size-5 text-emerald-600"
+                  />
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-800 mb-1">
+                    Receita garantida no mês
+                  </h3>
+                  <p class="text-sm text-gray-500 leading-relaxed">
+                    Clientes com pacote ativo voltam mais. Venda antecipada
+                    significa fluxo de caixa previsível — menos preocupação,
+                    mais foco no negócio.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: mockup fiel ao sistema -->
+          <div class="flex flex-col gap-3 items-center w-full max-w-sm mx-auto">
+            <!-- Card 1 — Banho & Tosa -->
+            <div
+              class="w-full flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-md"
+            >
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="inline-flex size-9 items-center justify-center rounded-lg bg-violet-50"
+                  >
+                    <UIcon
+                      name="i-lucide-ticket"
+                      class="text-violet-600 text-lg"
+                    />
+                  </span>
+                  <div>
+                    <p
+                      class="font-semibold text-gray-800 text-sm leading-tight"
+                    >
+                      Banho & Tosa
+                    </p>
+                    <p class="text-xs text-gray-400">combo completo</p>
+                  </div>
+                </div>
+                <span
+                  class="inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700"
+                  >Ativo</span
+                >
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="rounded-lg bg-gray-50 p-2">
+                  <p class="text-xs text-gray-400">Valor</p>
+                  <p class="text-sm font-bold text-violet-600">R$ 180,00</p>
+                </div>
+                <div class="rounded-lg bg-gray-50 p-2">
+                  <p class="text-xs text-gray-400">Sessões</p>
+                  <p class="text-sm font-bold text-gray-700">5x</p>
+                </div>
+                <div class="rounded-lg bg-gray-50 p-2">
+                  <p class="text-xs text-gray-400">Validade</p>
+                  <p class="text-sm font-bold text-gray-700">60d</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-1">
+                <span
+                  class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
+                  >Banho</span
+                >
+                <span
+                  class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
+                  >Tosa</span
+                >
+              </div>
+              <div class="flex gap-2">
+                <div
+                  class="flex-1 flex items-center gap-1.5 justify-center rounded-lg py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 cursor-default"
+                >
+                  <UIcon name="i-lucide-pencil" class="size-3.5" /> Editar
+                </div>
+                <div
+                  class="flex-1 flex items-center gap-1.5 justify-center rounded-lg py-1.5 text-xs font-medium text-emerald-600 hover:bg-emerald-50 cursor-default"
+                >
+                  <UIcon name="i-simple-icons-whatsapp" class="size-3.5" />
+                  WhatsApp
+                </div>
+                <div
+                  class="flex items-center justify-center px-2 rounded-lg py-1.5 text-red-400 hover:bg-red-50 cursor-default"
+                >
+                  <UIcon name="i-lucide-trash-2" class="size-3.5" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2 — Banhos -->
+            <div
+              class="w-full flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-md"
+            >
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="inline-flex size-9 items-center justify-center rounded-lg bg-violet-50"
+                  >
+                    <UIcon
+                      name="i-lucide-ticket"
+                      class="text-violet-600 text-lg"
+                    />
+                  </span>
+                  <div>
+                    <p
+                      class="font-semibold text-gray-800 text-sm leading-tight"
+                    >
+                      Banhos
+                    </p>
+                    <p class="text-xs text-gray-400">banho simples</p>
+                  </div>
+                </div>
+                <span
+                  class="inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700"
+                  >Ativo</span
+                >
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="rounded-lg bg-gray-50 p-2">
+                  <p class="text-xs text-gray-400">Valor</p>
+                  <p class="text-sm font-bold text-violet-600">R$ 40,00</p>
+                </div>
+                <div class="rounded-lg bg-gray-50 p-2">
+                  <p class="text-xs text-gray-400">Sessões</p>
+                  <p class="text-sm font-bold text-gray-700">4x</p>
+                </div>
+                <div class="rounded-lg bg-gray-50 p-2">
+                  <p class="text-xs text-gray-400">Validade</p>
+                  <p class="text-sm font-bold text-gray-700">30d</p>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <div
+                  class="flex-1 flex items-center gap-1.5 justify-center rounded-lg py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 cursor-default"
+                >
+                  <UIcon name="i-lucide-pencil" class="size-3.5" /> Editar
+                </div>
+                <div
+                  class="flex-1 flex items-center gap-1.5 justify-center rounded-lg py-1.5 text-xs font-medium text-emerald-600 hover:bg-emerald-50 cursor-default"
+                >
+                  <UIcon name="i-simple-icons-whatsapp" class="size-3.5" />
+                  WhatsApp
+                </div>
+                <div
+                  class="flex items-center justify-center px-2 rounded-lg py-1.5 text-red-400 hover:bg-red-50 cursor-default"
+                >
+                  <UIcon name="i-lucide-trash-2" class="size-3.5" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-14">
+          <NuxtLink
+            to="/criar-conta"
+            class="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-base transition-colors shadow-lg"
+          >
+            Criar pacotes no meu pet shop
+            <UIcon name="i-lucide-arrow-right" class="size-4" />
+          </NuxtLink>
+          <p class="text-gray-400 text-sm mt-3">7 dias grátis · sem cartão</p>
+        </div>
+      </div>
+    </section>
+
     <!-- IA ANIN SECTION -->
     <section
       id="ia-anin"
@@ -854,8 +1124,8 @@ const toggleFaq = (i: number) => {
           </h2>
           <p class="text-gray-500 text-base max-w-2xl leading-relaxed">
             Só digitando em linguagem natural, você cadastra clientes, agenda
-            serviços, cria agendamentos recorrentes para mensalistas, consulta o
-            financeiro e muito mais — sem navegar por menus.
+            serviços, consulta o financeiro e muito mais — sem navegar por
+            menus.
           </p>
         </div>
 
@@ -1193,7 +1463,7 @@ const toggleFaq = (i: number) => {
                   'Agenda digital organizada, sem conflitos de horário',
                   'Confirmação e lembrete de agendamento via WhatsApp — automático',
                   'Avaliação enviada automaticamente no WhatsApp após cada serviço',
-                  'Mensalistas com agendamentos recorrentes e cobrança automática a cada 4 sessões',
+                  'Pacotes de serviços vendidos antecipado — receita garantida no mês',
                   'PDV com leitor de código de barras, troco automático e múltiplas formas de pagamento',
                   'Financeiro em tempo real: receita, despesas e lucro',
                   'Estoque atualizado automaticamente a cada venda',
